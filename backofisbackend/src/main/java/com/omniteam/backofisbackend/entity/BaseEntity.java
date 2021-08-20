@@ -1,22 +1,19 @@
 package com.omniteam.backofisbackend.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 
 @MappedSuperclass
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public abstract class BaseEntity  implements Serializable {
 
@@ -27,7 +24,7 @@ public abstract class BaseEntity  implements Serializable {
 
     @LastModifiedDate
     @Column(name = "modified_date", nullable = false)
-    private OffsetDateTime modifieDate;
+    private OffsetDateTime modifiedDate;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
