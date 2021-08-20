@@ -28,8 +28,4 @@ public abstract class BaseEntity  implements Serializable {
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
-
-
-
-
 }
