@@ -28,4 +28,5 @@ public class Role extends BaseEntity {
     private List<UserRole> userRoles;
 
 
+
 }
