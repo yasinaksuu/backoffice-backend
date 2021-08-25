@@ -1,10 +1,9 @@
 package com.omniteam.backofisbackend.repository;
 
-
-import com.omniteam.backofisbackend.entity.Country;
+import com.omniteam.backofisbackend.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CountryRepository extends JpaRepository<Country,Integer> {
+public interface ProductRepository extends JpaRepository<Product,Integer> {
 }
