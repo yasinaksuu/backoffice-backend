@@ -6,6 +6,7 @@ import com.omniteam.backofisbackend.repository.CategoryRepository;
 import com.omniteam.backofisbackend.service.CategoryService;
 import com.omniteam.backofisbackend.shared.constant.ResultMessage;
 import com.omniteam.backofisbackend.shared.mapper.category.CategoryMapper;
+import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public SuccessDataResult<List<CategoryDto>> getAll() {
+    public DataResult<List<CategoryDto>> getAll() {
         List<Category> categories = this.categoryRepository.findAll();
         List<CategoryDto> categoryDtoList = this.categoryMapper.toCategoryDtoList(categories);
         return new SuccessDataResult<>(ResultMessage.CATEGORY_LISTED,categoryDtoList);
