@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class CategoryDto {
+public class CategoryGetAllDto {
     private int categoryId;
     private String categoryName;
 }
