@@ -32,7 +32,7 @@ public class ProductPrice extends BaseEntity {
 
 
     @JoinColumn(name = "product_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     @OneToMany(mappedBy = "productPrice")

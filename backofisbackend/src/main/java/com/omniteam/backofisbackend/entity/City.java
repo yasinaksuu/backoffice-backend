@@ -25,7 +25,7 @@ public class City extends BaseEntity {
     private String cityName;
 
     @JoinColumn(name="country_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Country country;
 
     @OneToMany(mappedBy = "city")

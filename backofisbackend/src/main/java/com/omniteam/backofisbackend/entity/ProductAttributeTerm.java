@@ -24,16 +24,16 @@ public class ProductAttributeTerm extends BaseEntity  {
 
 
     @JoinColumn(name = "product_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
 
     @JoinColumn(name = "attribute_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Attribute attribute;
 
     @JoinColumn(name = "attribute_term_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private AttributeTerm attributeTerm;
 
 

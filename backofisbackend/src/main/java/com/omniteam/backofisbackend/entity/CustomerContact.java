@@ -39,16 +39,16 @@ public class CustomerContact extends  BaseEntity  {
 
 
     @JoinColumn(name = "country_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Country country;///@OneToOneda yapılabilir***
 
     @JoinColumn(name = "city_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private City city;///@OneToOneda yapılabilir***
 
 
     @JoinColumn(name = "district_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private District district;///@OneToOneda yapılabilir***
 
 

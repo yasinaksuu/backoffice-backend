@@ -27,12 +27,12 @@ public class District  extends BaseEntity {
 
 
     @JoinColumn(name="country_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Country country;
 
 
     @JoinColumn(name="city_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private City city;
 
 

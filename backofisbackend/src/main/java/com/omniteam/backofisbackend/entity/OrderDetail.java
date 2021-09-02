@@ -26,16 +26,16 @@ public class OrderDetail extends BaseEntity  {
     private String status;
 
     @JoinColumn(name = "order_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Order order;
 
 
     @JoinColumn(name = "product_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     @JoinColumn(name = "product_price_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ProductPrice productPrice;
 
 

@@ -8,6 +8,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 
@@ -20,11 +21,11 @@ public abstract class BaseEntity  implements Serializable {
 
     @CreatedDate
     @Column(name = "created_date", updatable = false, nullable = false)
-    private OffsetDateTime createdDate = OffsetDateTime.now();
+    private LocalDateTime createdDate = LocalDateTime.now();
 
     @LastModifiedDate
     @Column(name = "modified_date", nullable = false)
-    private OffsetDateTime modifiedDate;
+    private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;

@@ -28,11 +28,11 @@ public class Order extends  BaseEntity {
 
 
     @JoinColumn(name = "customer_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
 
     @JoinColumn(name = "user_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
 

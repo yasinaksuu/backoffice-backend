@@ -26,7 +26,7 @@ public class AttributeTerm extends BaseEntity  {
     private String attributeValue;
 
     @JoinColumn(name = "attribute_id")
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     private Attribute attribute;
 
     @OneToMany(mappedBy = "attributeTerm")

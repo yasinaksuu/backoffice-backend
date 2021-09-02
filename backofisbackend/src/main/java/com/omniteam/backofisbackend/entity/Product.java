@@ -46,7 +46,7 @@ public class Product extends BaseEntity  {
     private List<OrderDetail> orderDetails;
 
     @JoinColumn(name = "category_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
     @OneToMany(mappedBy = "product")

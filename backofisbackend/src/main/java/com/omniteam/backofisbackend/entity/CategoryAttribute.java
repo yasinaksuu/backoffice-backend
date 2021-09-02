@@ -21,12 +21,12 @@ public class CategoryAttribute extends BaseEntity {
     private Integer categoryAttributeId;
 
     @JoinColumn(name="category_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
 
 
     @JoinColumn(name="attribute_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Attribute attribute;
 
 

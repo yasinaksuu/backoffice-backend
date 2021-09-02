@@ -21,10 +21,10 @@ public class UserRole extends BaseEntity {
     private Integer userRoleId ;
 
     @JoinColumn(name = "user_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @JoinColumn(name = "role_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Role role;
 }

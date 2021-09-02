@@ -27,7 +27,7 @@ public class ProductImage extends BaseEntity {
     private String filePath;
 
     @JoinColumn(name = "product_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
 
