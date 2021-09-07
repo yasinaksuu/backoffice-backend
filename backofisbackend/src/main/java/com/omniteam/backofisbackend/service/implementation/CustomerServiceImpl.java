@@ -3,6 +3,7 @@ package com.omniteam.backofisbackend.service.implementation;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
+import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
 import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.CustomerContact;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
@@ -71,5 +72,13 @@ public class CustomerServiceImpl implements CustomerService {
         });
         this.customerRepository.save(customer);
         return new SuccessResult(ResultMessage.CUSTOMER_ADDED);
+    }
+
+    @Override
+    public Result update(CustomerUpdateDto customerUpdateDto) {
+        Customer customerToUpdate = this.customerRepository.getById(customerUpdateDto.getCustomerId());
+        this.customerMapper.update(customerToUpdate,customerUpdateDto);
+        this.customerRepository.save(customerToUpdate);
+        return new SuccessResult("Customer updated");
     }
 }

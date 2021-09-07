@@ -4,6 +4,7 @@ import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.customer.CustomerAddContactsDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
+import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactAddDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
 import com.omniteam.backofisbackend.service.CustomerContactService;
@@ -51,7 +52,12 @@ public class CustomersController {
     }
 
     @PostMapping(path = "/addcontacts")
-    public ResponseEntity<?> addContacts(@RequestBody CustomerAddContactsDto customerAddContactsDto){
+    public ResponseEntity<Result> addContacts(@RequestBody CustomerAddContactsDto customerAddContactsDto){
         return ResponseEntity.ok(this.customerContactService.add(customerAddContactsDto));
+    }
+
+    @PostMapping(path = "/update")
+    public ResponseEntity<Result> update(@RequestBody CustomerUpdateDto customerUpdateDto){
+        return ResponseEntity.ok(this.customerService.update(customerUpdateDto));
     }
 }
