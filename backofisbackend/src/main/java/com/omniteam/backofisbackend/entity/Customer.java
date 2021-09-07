@@ -2,6 +2,7 @@ package com.omniteam.backofisbackend.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,9 +32,11 @@ public class Customer extends  BaseEntity  {
     @Column(name="last_name")
     private String lastName;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL)
     private List<CustomerContact> customerContacts;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL)
     private List<Order> orders;
 

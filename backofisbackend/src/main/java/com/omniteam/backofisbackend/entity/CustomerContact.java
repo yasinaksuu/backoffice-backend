@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -41,10 +42,11 @@ public class CustomerContact extends  BaseEntity  {
     private Country country;
 
     @JoinColumn(name = "city_id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private City city;
 
 
+    @JsonBackReference
     @JoinColumn(name = "district_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private District district;
