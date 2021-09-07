@@ -27,16 +27,17 @@ public class Country  extends  BaseEntity  {
     @Column(name = "nation_code")
     private String nationCode;
 
-    @OneToMany(mappedBy = "country")
+    @OneToMany(mappedBy = "country",cascade = CascadeType.ALL)
     private List<City> cities;
 
-    @OneToMany(mappedBy = "country")
+    @OneToMany(mappedBy = "country",cascade = CascadeType.ALL)
+    private List<District> districts;
+
+    @OneToMany(mappedBy = "country",cascade = CascadeType.ALL)
     private List<CustomerContact> customerContacts;
 
 
-    @OneToMany(mappedBy = "country")
+    @OneToMany(mappedBy = "country",cascade = CascadeType.ALL)
     private List<User> users;
-
-
 
 }

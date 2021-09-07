@@ -1,19 +1,20 @@
 package com.omniteam.backofisbackend.entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="customers")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor()
+@AllArgsConstructor
 public class Customer extends  BaseEntity  {
 
     @Id
@@ -27,15 +28,13 @@ public class Customer extends  BaseEntity  {
     @Column(name = "first_name")
     private String firstName;
 
-
     @Column(name="last_name")
     private String lastName;
 
-
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL)
     private List<CustomerContact> customerContacts;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL)
     private List<Order> orders;
 
 }

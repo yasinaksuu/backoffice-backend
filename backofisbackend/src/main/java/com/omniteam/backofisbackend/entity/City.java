@@ -28,10 +28,12 @@ public class City extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Country country;
 
-    @OneToMany(mappedBy = "city")
+    @OneToMany(mappedBy = "city",cascade = CascadeType.ALL)
     private List<CustomerContact> customerContacts;
 
+    @OneToMany(mappedBy = "city",cascade = CascadeType.ALL)
+    private List<District> districts;
 
-    @OneToMany(mappedBy = "city")
+    @OneToMany(mappedBy = "city",cascade = CascadeType.ALL)
     private List<User> users;
 }

@@ -1,18 +1,25 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.entity.Customer;
+import com.omniteam.backofisbackend.entity.CustomerContact;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
 import com.omniteam.backofisbackend.service.CustomerService;
+import com.omniteam.backofisbackend.shared.constant.ResultMessage;
+import com.omniteam.backofisbackend.shared.mapper.CustomerContactMapper;
 import com.omniteam.backofisbackend.shared.mapper.CustomerMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
+import com.omniteam.backofisbackend.shared.result.Result;
 import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
+import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,5 +54,22 @@ public class CustomerServiceImpl implements CustomerService {
         );
 
         return new SuccessDataResult<>("", pagedDataWrapper);
+    }
+
+    @Override
+    @Transactional
+    public Result add(CustomerAddDto customerAddDto) {
+        Customer customer = this.customerMapper.toCustomer(customerAddDto);
+        customer.getCustomerContacts().forEach(customerContact -> {
+            customerContact.setCustomer(customer);
+            //nice to have : might be solved in mapstruct
+            if(customerContact.getCity().getCityId() == null){
+                customerContact.setCity(null);
+                customerContact.setCountry(null);
+                customerContact.setDistrict(null);
+            }
+        });
+        this.customerRepository.save(customer);
+        return new SuccessResult(ResultMessage.CUSTOMER_ADDED);
     }
 }

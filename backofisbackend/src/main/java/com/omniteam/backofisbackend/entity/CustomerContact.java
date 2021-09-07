@@ -34,22 +34,20 @@ public class CustomerContact extends  BaseEntity  {
     private Boolean isDefault;
 
     @JoinColumn(name = "customer_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Customer customer;
-
-
     @JoinColumn(name = "country_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Country country;///@OneToOneda yapılabilir***
+    private Country country;
 
     @JoinColumn(name = "city_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private City city;///@OneToOneda yapılabilir***
+    @ManyToOne(fetch = FetchType.EAGER)
+    private City city;
 
 
     @JoinColumn(name = "district_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private District district;///@OneToOneda yapılabilir***
+    private District district;
 
 
 

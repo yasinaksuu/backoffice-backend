@@ -36,15 +36,12 @@ public class District  extends BaseEntity {
     private City city;
 
 
-    @OneToMany(mappedBy = "district")
+    @OneToMany(mappedBy = "district",cascade = CascadeType.ALL)
     private List<CustomerContact> customerContacts;
 
 
-    @OneToMany(mappedBy = "district")
+    @OneToMany(mappedBy = "district",cascade = CascadeType.ALL)
     private List<User> users;
-
-
-
 
 
 }
