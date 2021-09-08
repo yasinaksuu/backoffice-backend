@@ -27,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     public DataResult<List<CategoryGetAllDto>> getAll() {
         List<Category> categories = this.categoryRepository.findAll();
         List<CategoryGetAllDto> categoryGetAllDtoList = this.categoryMapper.toCategoryDtoList(categories);
-        return new SuccessDataResult<>(ResultMessage.CATEGORY_LISTED, categoryGetAllDtoList);
+        return new SuccessDataResult<>(categoryGetAllDtoList);
     }
 
 }

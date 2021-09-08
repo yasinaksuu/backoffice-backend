@@ -28,5 +28,5 @@ public abstract class BaseEntity  implements Serializable {
     private LocalDateTime modifiedDate = LocalDateTime.now();
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive = true;
+    private Boolean isActive = true;
 }

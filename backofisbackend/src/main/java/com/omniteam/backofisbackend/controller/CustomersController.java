@@ -1,10 +1,7 @@
 package com.omniteam.backofisbackend.controller;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
-import com.omniteam.backofisbackend.dto.customer.CustomerAddContactsDto;
-import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
-import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
-import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
+import com.omniteam.backofisbackend.dto.customer.*;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactAddDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
 import com.omniteam.backofisbackend.service.CustomerContactService;
@@ -33,8 +30,9 @@ public class CustomersController {
     @GetMapping(path = "/getall")
     public ResponseEntity<DataResult<PagedDataWrapper<CustomerGetAllDto>>> getAll(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "30") int size ){
-        return new ResponseEntity<>(this.customerService.getAll(page,size), HttpStatus.OK);
+            @RequestParam(name = "size", required = false, defaultValue = "30") int size,
+            @RequestParam(name = "searchKey",required = false) String searchKey){
+        return new ResponseEntity<>(this.customerService.getAll(page,size,searchKey), HttpStatus.OK);
     }
 
     @PostMapping(
@@ -59,5 +57,12 @@ public class CustomersController {
     @PostMapping(path = "/update")
     public ResponseEntity<Result> update(@RequestBody CustomerUpdateDto customerUpdateDto){
         return ResponseEntity.ok(this.customerService.update(customerUpdateDto));
+    }
+
+    @GetMapping(
+            path = "/getbyid/{customerid}"
+    )
+    public ResponseEntity<DataResult<CustomerDto>> getById(@PathVariable(name = "customerid") int customerId){
+        return ResponseEntity.ok(this.customerService.getById(customerId));
     }
 }

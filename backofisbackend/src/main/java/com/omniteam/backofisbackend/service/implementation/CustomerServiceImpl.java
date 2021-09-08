@@ -2,6 +2,7 @@ package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
+import com.omniteam.backofisbackend.dto.customer.CustomerDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
 import com.omniteam.backofisbackend.entity.Customer;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -37,9 +39,15 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size) {
+    public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Customer> customers = this.customerRepository.findAll(pageable);
+        /*Page<Customer> customers = this.customerRepository.findAll(pageable);*/
+        Page<Customer> customers =
+                this.customerRepository.findCustomersByFirstNameContainsOrLastNameContainsOrNationNumberContains(
+                        searchKey,
+                        searchKey,
+                        searchKey,
+                        pageable);
 
         List<CustomerGetAllDto> customerGetAllDtoList = customers.getNumberOfElements() == 0
                 ? Collections.emptyList()
@@ -54,7 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
                 customers.isLast()
         );
 
-        return new SuccessDataResult<>("", pagedDataWrapper);
+        return new SuccessDataResult<>(pagedDataWrapper);
     }
 
     @Override
@@ -79,6 +87,13 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customerToUpdate = this.customerRepository.getById(customerUpdateDto.getCustomerId());
         this.customerMapper.update(customerToUpdate,customerUpdateDto);
         this.customerRepository.save(customerToUpdate);
-        return new SuccessResult("Customer updated");
+        return new SuccessResult(ResultMessage.CUSTOMER_UPDATED);
+    }
+
+    @Override
+    public DataResult<CustomerDto> getById(int customerId) {
+        Customer customer = this.customerRepository.getById(customerId);
+        CustomerDto customerDto = this.customerMapper.toCustomerDto(customer);
+        return new SuccessDataResult<>(customerDto);
     }
 }
