@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Table(name="customer_contacts")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor()
+@AllArgsConstructor
 public class CustomerContact extends  BaseEntity  {
 
     @Id

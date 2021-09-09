@@ -4,6 +4,7 @@ import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.customer.*;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactAddDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
+import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
 import com.omniteam.backofisbackend.service.CustomerContactService;
 import com.omniteam.backofisbackend.service.CustomerService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
@@ -64,5 +65,10 @@ public class CustomersController {
     )
     public ResponseEntity<DataResult<CustomerDto>> getById(@PathVariable(name = "customerid") int customerId){
         return ResponseEntity.ok(this.customerService.getById(customerId));
+    }
+
+    @PostMapping(path = "/updatecontacts")
+    public ResponseEntity<Result> updateContacts(@RequestBody CustomerUpdateContactsDto customerUpdateContactsDto){
+        return ResponseEntity.ok(this.customerContactService.update(customerUpdateContactsDto));
     }
 }

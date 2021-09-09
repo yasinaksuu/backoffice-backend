@@ -1,12 +1,15 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.customer.CustomerAddContactsDto;
+import com.omniteam.backofisbackend.dto.customer.CustomerUpdateContactsDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
+import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
 import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.CustomerContact;
 import com.omniteam.backofisbackend.repository.CustomerContactRepository;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
 import com.omniteam.backofisbackend.service.CustomerContactService;
+import com.omniteam.backofisbackend.shared.constant.ResultMessage;
 import com.omniteam.backofisbackend.shared.mapper.CustomerContactMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.Result;
@@ -14,6 +17,7 @@ import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,5 +63,26 @@ public class CustomerContactServiceImpl implements CustomerContactService {
 
         this.customerContactRepository.saveAll(customerContactList);
         return new SuccessResult("contacts added");
+    }
+
+    @Override
+    @Transactional
+    public Result update(CustomerUpdateContactsDto customerUpdateContactsDto) {
+        List<CustomerContactUpdateDto> customerContactUpdateDtoList= customerUpdateContactsDto.getCustomerContactUpdateDtoList();
+        customerContactUpdateDtoList.forEach(customerContactUpdateDto -> {
+            CustomerContact customerContactToUpdate = this.customerContactRepository.getById(customerContactUpdateDto.getCustomerContactId());
+            this.customerContactMapper.update(customerContactToUpdate,customerContactUpdateDto);
+            if(customerContactUpdateDto.getCityId()==0){
+                customerContactToUpdate.setCity(null);
+            }
+            if (customerContactUpdateDto.getCountryId()==0){
+                customerContactToUpdate.setCountry(null);
+            }
+            if (customerContactUpdateDto.getDistrictId()==0){
+                customerContactToUpdate.setDistrict(null);
+            }
+            this.customerContactRepository.save(customerContactToUpdate);
+        });
+        return new SuccessResult(ResultMessage.CUSTOMER_CONTACT_UPDATED);
     }
 }

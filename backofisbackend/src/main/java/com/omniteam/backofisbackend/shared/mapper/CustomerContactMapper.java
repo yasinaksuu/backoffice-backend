@@ -3,6 +3,7 @@ package com.omniteam.backofisbackend.shared.mapper;
 import com.omniteam.backofisbackend.dto.customer.CustomerAddContactsDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactAddDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
+import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
 import com.omniteam.backofisbackend.entity.CustomerContact;
 import org.mapstruct.*;
 
@@ -26,7 +27,14 @@ public interface CustomerContactMapper {
     @Mapping(target = "countryName",source = "country.countryName")
     @Mapping(target = "cityName",source = "city.cityName")
     @Mapping(target = "districtName",source = "district.districtName")
+    @Mapping(target = "countryId",source = "country.countryId")
+    @Mapping(target = "cityId",source = "city.cityId")
+    @Mapping(target = "districtId",source = "district.districtId")
     CustomerContactDto toCustomerContactDto(CustomerContact customerContact);
 
+    @Mapping(target = "country.countryId",source = "countryId")
+    @Mapping(target = "city.cityId",source = "cityId") //expression ile dene
+    @Mapping(target = "district.districtId",source = "districtId")
+    void update(@MappingTarget CustomerContact customerContact, CustomerContactUpdateDto customerContactUpdateDto);
 }
 
