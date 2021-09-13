@@ -6,6 +6,8 @@ import com.omniteam.backofisbackend.dto.customer.CustomerDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -15,6 +17,7 @@ import java.util.List;
 public class OrderDto {
     private Integer orderId;
     private String status;
+    private LocalDateTime createdDate;
     private CustomerDto customer;
     private List<OrderDetailDto> orderDetails;
 }
