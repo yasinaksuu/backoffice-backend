@@ -72,7 +72,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.getCustomerContacts().forEach(customerContact -> {
             customerContact.setCustomer(customer);
             //nice to have : might be solved in mapstruct
-            if(customerContact.getCity().getCityId() == null){
+            if(customerContact.getCity().getCityId() == null || customerContact.getCity().getCityId() == 0){
                 customerContact.setCity(null);
                 customerContact.setCountry(null);
                 customerContact.setDistrict(null);
