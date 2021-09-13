@@ -26,9 +26,19 @@ public class ProductImage extends BaseEntity {
     @Column(name = "file_path")
     private String filePath;
 
+    @Lob
+    @Column(name = "image")
+    private byte[] image;
+
+    @Column(name = "product_image_name")
+    private String productImageName;
+
+
     @JoinColumn(name = "product_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
+
+
 
 
 
