@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.controller;
 
 import com.omniteam.backofisbackend.base.ResponsePayload;
+import com.omniteam.backofisbackend.dto.category.CategoryDTO;
 import com.omniteam.backofisbackend.service.CategoryService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class CategoriesController {
     }
 
     @GetMapping(path = "/getbyid/{categoryId}")
-     public ResponsePayload   getById(@PathVariable(name = "categoryId") int categoryId) {
-        return new ResponsePayload(HttpStatus.OK.value(),categoryService.getById(categoryId));
+     public ResponseEntity<DataResult<CategoryDTO>>   getById(@PathVariable(name = "categoryId") int categoryId) {
+        return ResponseEntity.ok(this.categoryService.getById(categoryId));
     }
 
 

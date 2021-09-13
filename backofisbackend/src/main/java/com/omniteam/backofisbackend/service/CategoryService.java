@@ -9,9 +9,5 @@ import java.util.List;
 public interface CategoryService {
    DataResult<List<CategoryGetAllDto>> getAll();
 
-   CategoryDTO getById(Integer categoryId);
-
-
-
-
+   DataResult<CategoryDTO> getById(int categoryId);
 }

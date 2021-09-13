@@ -5,7 +5,6 @@ import com.omniteam.backofisbackend.dto.category.CategoryGetAllDto;
 import com.omniteam.backofisbackend.entity.Category;
 import com.omniteam.backofisbackend.repository.CategoryRepository;
 import com.omniteam.backofisbackend.service.CategoryService;
-import com.omniteam.backofisbackend.shared.constant.ResultMessage;
 import com.omniteam.backofisbackend.shared.mapper.CategoryMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
@@ -19,6 +18,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+
     @Autowired
     public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
@@ -32,12 +32,12 @@ public class CategoryServiceImpl implements CategoryService {
         return new SuccessDataResult<>(categoryGetAllDtoList);
     }
 
-
-   public  CategoryDTO getById(Integer categoryId) {
+    @Override
+    public DataResult<CategoryDTO> getById(int categoryId) {
         Category category = this.categoryRepository.getById(categoryId);
-        CategoryDTO categoryDTO =this.categoryMapper.mapToDTO(category);
-       return categoryDTO;
-   }
+        CategoryDTO categoryDTO = this.categoryMapper.mapToDTO(category);
+        return new SuccessDataResult<>(categoryDTO);
+    }
 
 
 }

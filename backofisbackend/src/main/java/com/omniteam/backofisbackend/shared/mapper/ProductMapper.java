@@ -8,12 +8,10 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper
+@Mapper(
+        componentModel = "spring"
+)
 public interface ProductMapper  {
 
     List<ProductGetAllDto> toProductGetAllDtoList(List<Product> products);
-
-
-
-
 }

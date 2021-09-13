@@ -14,7 +14,7 @@ import java.util.List;
 public interface CategoryMapper {
 
     List<CategoryGetAllDto> toCategoryDtoList(List<Category> categories);
-
-     CategoryDTO mapToDTO(Category category);
+    CategoryGetAllDto toCategoryDto(Category category);
+    CategoryDTO mapToDTO(Category category);
 
 }
