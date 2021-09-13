@@ -25,16 +25,12 @@ public class CategoriesController {
     }
 
     @GetMapping(path = "/getall")
-    public ResponseEntity<?> getAll(){
+    public ResponseEntity<?> getAll() {
         return new ResponseEntity<>(this.categoryService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/getbyid/{categoryId}")
-     public ResponseEntity<DataResult<CategoryDTO>>   getById(@PathVariable(name = "categoryId") int categoryId) {
+    public ResponseEntity<DataResult<CategoryDTO>> getById(@PathVariable(name = "categoryId") int categoryId) {
         return ResponseEntity.ok(this.categoryService.getById(categoryId));
     }
-
-
-
-
 }

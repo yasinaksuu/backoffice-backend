@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.omniteam.backofisbackend.entity.Category;
 import com.omniteam.backofisbackend.entity.ProductImage;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductDto {
 

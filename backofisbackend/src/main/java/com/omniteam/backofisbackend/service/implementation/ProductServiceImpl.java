@@ -43,28 +43,26 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired(required = false)
-    private ProductMapper productMapper;
+    private final ProductMapper productMapper;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final AttributeTermRepository  attributeTermRepository;
+    private final ProductImageRepository productImageRepository;
+    private final ProductAttributeTermRepository productAttributeTermRepository;
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private AttributeTermRepository  attributeTermRepository;
-
-    @Autowired
-    private ProductImageRepository productImageRepository;
-
-    @Autowired
-    private ProductAttributeTermRepository productAttributeTermRepository;
-
+    public ProductServiceImpl(ProductMapper productMapper, ProductRepository productRepository, CategoryRepository categoryRepository, AttributeTermRepository attributeTermRepository, ProductImageRepository productImageRepository, ProductAttributeTermRepository productAttributeTermRepository) {
+        this.productMapper = productMapper;
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.attributeTermRepository = attributeTermRepository;
+        this.productImageRepository = productImageRepository;
+        this.productAttributeTermRepository = productAttributeTermRepository;
+    }
 
 
     @Transactional
-    public void  saveProductToDB(MultipartFile file ,String productName,String description,Integer unitsInStock,String barcode,Integer categoryId,List<Integer> attributeId) throws IOException {
+    public Result saveProductToDB(MultipartFile file ,String productName,String description,Integer unitsInStock,String barcode,Integer categoryId,List<Integer> attributeId) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         ProductImage productImage = new ProductImage();
@@ -80,8 +78,6 @@ public class ProductServiceImpl implements ProductService {
                          0,product,x.getAttribute(),x
                  )).collect(Collectors.toList());
 
-
-
          product.setProductName(productName);
          product.setUnitsInStock(unitsInStock);
          product.setDescription(description);
@@ -89,25 +85,17 @@ public class ProductServiceImpl implements ProductService {
          product.setCategory(category);
          product.setProductAttributeTerms(productAttributeTerms);
 
-
-
         String url = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("//download")
                 .path(fileName)
                 .toUriString();
 
         productImage.setFilePath(url);
-
-
-
-
         productRepository.save(product);
-
         productImage.setProduct(product);
         productImageRepository.save(productImage);
         productAttributeTermRepository.saveAll(productAttributeTerms);
-
-
+        return new SuccessResult("Ürün eklendi");
     }
 
 

@@ -31,13 +31,13 @@ public class CategoryServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-      //  categoryService = new CategoryServiceImpl(categoryRepository, categoryMapper);
+      categoryService = new CategoryServiceImpl(categoryRepository, categoryMapper);
     }
 
     @Test
     public void when_getAll_called_it_should_returns_all_categories_as_list_of_categoryDto() {
 
-        /*Category category = new Category();
+        Category category = new Category();
         category.setCategoryId(1);
         category.setCategoryName("Bilgisayar");
 
@@ -51,10 +51,9 @@ public class CategoryServiceImplTest {
         List<CategoryGetAllDto> categoryGetAllDtos = Stream.of(categoryGetAllDto).collect(Collectors.toList());
         Mockito.when(categoryMapper.toCategoryDtoList(Mockito.anyList())).thenReturn(categoryGetAllDtos);
 
-        DataResult<List<CategoryGetAllDto>> result = categoryService.getAll();*/
+        DataResult<List<CategoryGetAllDto>> result = categoryService.getAll();
 
-        //assertEquals(1, result.getData().size());
-        assertEquals(1,1);
+        assertEquals(1, result.getData().size());
     }
 
 }
