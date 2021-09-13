@@ -1,7 +1,9 @@
 package com.omniteam.backofisbackend.shared.mapper;
 
+import com.omniteam.backofisbackend.dto.category.CategoryDTO;
 import com.omniteam.backofisbackend.dto.category.CategoryGetAllDto;
-import com.omniteam.backofisbackend.entity.Category;
+ import com.omniteam.backofisbackend.entity.Category;
+
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -12,4 +14,7 @@ import java.util.List;
 public interface CategoryMapper {
 
     List<CategoryGetAllDto> toCategoryDtoList(List<Category> categories);
+
+     CategoryDTO mapToDTO(Category category);
+
 }

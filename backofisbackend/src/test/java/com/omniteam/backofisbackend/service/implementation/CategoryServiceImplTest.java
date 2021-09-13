@@ -31,7 +31,7 @@ public class CategoryServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        categoryService = new CategoryServiceImpl(categoryRepository, categoryMapper);
+      //  categoryService = new CategoryServiceImpl(categoryRepository, categoryMapper);
     }
 
     @Test

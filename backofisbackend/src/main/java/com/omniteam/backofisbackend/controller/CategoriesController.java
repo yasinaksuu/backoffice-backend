@@ -1,18 +1,22 @@
 package com.omniteam.backofisbackend.controller;
 
+import com.omniteam.backofisbackend.base.ResponsePayload;
 import com.omniteam.backofisbackend.service.CategoryService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = "/api/v1/categories")
 public class CategoriesController {
+
     private final CategoryService categoryService;
+
 
     @Autowired
     public CategoriesController(CategoryService categoryService) {
@@ -23,4 +27,13 @@ public class CategoriesController {
     public ResponseEntity<?> getAll(){
         return new ResponseEntity<>(this.categoryService.getAll(), HttpStatus.OK);
     }
+
+    @GetMapping(path = "/getbyid/{categoryId}")
+     public ResponsePayload   getById(@PathVariable(name = "categoryId") int categoryId) {
+        return new ResponsePayload(HttpStatus.OK.value(),categoryService.getById(categoryId));
+    }
+
+
+
+
 }

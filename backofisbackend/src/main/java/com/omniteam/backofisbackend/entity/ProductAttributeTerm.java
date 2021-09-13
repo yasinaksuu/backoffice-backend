@@ -19,7 +19,7 @@ public class ProductAttributeTerm extends BaseEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_attribute_terms_id")
+    @Column(name = "product_attribute_term_id")
     private Integer productAttributeTermsId;
 
 
