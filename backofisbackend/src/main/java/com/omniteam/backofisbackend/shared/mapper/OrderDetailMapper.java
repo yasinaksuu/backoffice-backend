@@ -2,6 +2,7 @@ package com.omniteam.backofisbackend.shared.mapper;
 
 import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.entity.OrderDetail;
+import com.omniteam.backofisbackend.requests.order.OrderDetailAddRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -17,4 +18,7 @@ public interface OrderDetailMapper {
     @Mapping(target = "orderId",source = "order.orderId")
     OrderDetailDto toOrderDetailDto(OrderDetail orderDetail);
     List<OrderDetailDto> toOrderDetailDtoList(List<OrderDetail> orderDetailList);
+
+    @Mapping(target = "product.productId", source = "productId")
+    OrderDetail toOrderDetailFromOrderDetailAddRequest(OrderDetailAddRequest orderDetailAddRequest);
 }
