@@ -35,4 +35,12 @@ public class OrdersController {
     public ResponseEntity<DataResult<PagedDataWrapper<OrderDto>>> getAll(@RequestBody OrderGetAllRequest orderGetAllRequest){
         return ResponseEntity.ok(this.orderService.getAll(orderGetAllRequest));
     }
+
+    @PostMapping("/export/report")
+    public ResponseEntity<?> exportFullReport()
+    {
+
+        return ResponseEntity.ok().build();
+    }
+
 }

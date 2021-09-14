@@ -1,6 +1,8 @@
 package com.omniteam.backofisbackend.shared.result;
 
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Result {
     private boolean success;
     private String message;

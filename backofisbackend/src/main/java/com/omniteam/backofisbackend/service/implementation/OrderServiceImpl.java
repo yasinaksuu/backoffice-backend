@@ -1,7 +1,6 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
-import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.repository.OrderRepository;
@@ -15,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +24,7 @@ import java.util.Optional;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
@@ -40,15 +40,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public DataResult<PagedDataWrapper<OrderDto>> getAll(OrderGetAllRequest orderGetAllRequest) {
-        Pageable pageable = PageRequest.of(orderGetAllRequest.getPage(),orderGetAllRequest.getSize());
+        Pageable pageable = PageRequest.of(orderGetAllRequest.getPage(), orderGetAllRequest.getSize());
         Page<Order> orderPage =
                 this.orderRepository.findAll(
                         OrderSpec.getAllByFilter(
-                               orderGetAllRequest.getCustomerId(),
-                               orderGetAllRequest .getStatus(),
+                                orderGetAllRequest.getCustomerId(),
+                                orderGetAllRequest.getStatus(),
                                 orderGetAllRequest.getStartDate(),
                                 orderGetAllRequest.getEndDate()
-                        ),pageable);
+                        ), pageable);
 
         List<OrderDto> orderDtoList = this.orderMapper.toOrderDtoList(orderPage.getContent());
         PagedDataWrapper<OrderDto> pagedDataWrapper = new PagedDataWrapper<>(
@@ -61,5 +61,11 @@ public class OrderServiceImpl implements OrderService {
         );
 
         return new SuccessDataResult<>(pagedDataWrapper);
+    }
+
+    @Override
+    public DataResult<?> startOrderReportExport() {
+
+        return DataResult.builder().build();
     }
 }
