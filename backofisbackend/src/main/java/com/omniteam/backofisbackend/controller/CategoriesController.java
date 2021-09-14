@@ -1,7 +1,8 @@
 package com.omniteam.backofisbackend.controller;
 
-import com.omniteam.backofisbackend.base.ResponsePayload;
+import com.omniteam.backofisbackend.dto.attibute.AttributeDTO;
 import com.omniteam.backofisbackend.dto.category.CategoryDTO;
+import com.omniteam.backofisbackend.service.AttributeService;
 import com.omniteam.backofisbackend.service.CategoryService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +13,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path = "/api/v1/categories")
 public class CategoriesController {
 
     private final CategoryService categoryService;
-
+    private final AttributeService attributeService;
 
     @Autowired
-    public CategoriesController(CategoryService categoryService) {
+    public CategoriesController(CategoryService categoryService, AttributeService attributeService) {
         this.categoryService = categoryService;
+        this.attributeService = attributeService;
     }
 
     @GetMapping(path = "/getall")
@@ -32,5 +36,12 @@ public class CategoriesController {
     @GetMapping(path = "/getbyid/{categoryId}")
     public ResponseEntity<DataResult<CategoryDTO>> getById(@PathVariable(name = "categoryId") int categoryId) {
         return ResponseEntity.ok(this.categoryService.getById(categoryId));
+    }
+
+    @GetMapping(
+            path = "/{categoryid}/getattributes"
+    )
+    public ResponseEntity<DataResult<List<AttributeDTO>>> getAttributesByCategoryId(@PathVariable(name = "categoryid") int categoryId){
+        return ResponseEntity.ok(this.attributeService.getAttributesByCategoryId(categoryId));
     }
 }

@@ -18,5 +18,6 @@ public class AttributeDTO {
 
     private Integer attributeId;
     private  String attributeTitle;
-    private List<ProductAttributeTerm> productAttributeTerms;
+    private List<AttributeTermDTO> attributeTerms;
+    //private List<ProductAttributeTerm> productAttributeTerms;
 }

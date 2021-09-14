@@ -14,4 +14,5 @@ import java.util.List;
 )
 public interface AttributeTermMapper {
     List<AttributeTermDTO> mapToDTOs(List<AttributeTerm> attributeTerm);
+    AttributeTermDTO toAttributeTermDto(AttributeTerm attributeTerm);
 }
