@@ -17,7 +17,7 @@ import java.util.List;
 public class AttributeDTO {
 
     private Integer attributeId;
-    private  String attributeTitle;
+    private String attributeTitle;
     private List<AttributeTermDTO> attributeTerms;
     //private List<ProductAttributeTerm> productAttributeTerms;
 }
