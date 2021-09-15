@@ -1,5 +1,6 @@
 package com.omniteam.backofisbackend.dto.product;
 
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -8,19 +9,21 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ProductGetAllRequest {
+public class ProductUpdateDTO {
 
+    private Integer productId;
     private String productName;
-    private Double minPrice;
-    private Double maxPrice;
-    private Integer categoryId;
-    private List<Integer> attributeTermIdList;
-    private Integer  page;
-    private Integer size;
-    private String searchKey;
+    private String description;
+    private String shortDescription;
+    private Integer unitsInStock;
+    private Double actualPrice;
+
+
+
+
+
 }
