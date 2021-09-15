@@ -169,10 +169,10 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    public ProductDto getById(Integer productId){
+    public DataResult<ProductDto> getById(Integer productId){
         Product product = productRepository.getById(productId);
         ProductDto productDto = productMapper.mapToDTO(product);
-        return productDto;
+        return new SuccessDataResult<>(productDto);
     }
 
 

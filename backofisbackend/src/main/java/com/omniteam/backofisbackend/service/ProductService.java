@@ -20,7 +20,7 @@ public interface ProductService {
 
     public Result saveProductToDB(MultipartFile file , String productName, String description, Integer unitsInStock, String barcode, Integer categoryId, List<Integer> attributeId,Double actualPrice,String shortDescription) throws IOException;
 
-    public ProductDto getById(Integer productId);
+    public DataResult<ProductDto> getById(Integer productId);
 
     public Result productUpdate(ProductUpdateDTO productUpdateDTO);
 

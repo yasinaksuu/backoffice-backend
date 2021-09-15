@@ -65,8 +65,8 @@ public class ProductsController {
 
     @ApiOperation("Id ye göre Product Getiren Servis")
     @GetMapping(path = "/getbyid/{productId}")
-    public ResponsePayload getById(@PathVariable(name = "productId") int productId){
-        return new ResponsePayload(HttpStatus.OK.value(),productService.getById(productId));
+    public ResponseEntity<DataResult<ProductDto>> getById(@PathVariable(name = "productId") int productId){
+        return ResponseEntity.ok(productService.getById(productId));
     }
 
     @ApiOperation("Tüm Productları getiren servis")
