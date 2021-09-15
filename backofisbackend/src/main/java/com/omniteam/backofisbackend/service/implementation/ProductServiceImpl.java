@@ -2,12 +2,16 @@ package com.omniteam.backofisbackend.service.implementation;
 
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
-import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
+import com.omniteam.backofisbackend.dto.category.CategoryDTO;
+import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
+import com.omniteam.backofisbackend.dto.order.OrderDto;
+import com.omniteam.backofisbackend.dto.product.ProductDto;
 import com.omniteam.backofisbackend.dto.product.ProductGetAllDto;
-import com.omniteam.backofisbackend.dto.product.ProductGetAllRequest;
-import com.omniteam.backofisbackend.dto.product.ProductSaveRequestDTO;
+import com.omniteam.backofisbackend.dto.product.ProductUpdateDTO;
 import com.omniteam.backofisbackend.entity.*;
 import com.omniteam.backofisbackend.repository.*;
+import com.omniteam.backofisbackend.repository.productspecification.ProductSpec;
+import com.omniteam.backofisbackend.requests.ProductGetAllRequest;
 import com.omniteam.backofisbackend.service.ProductService;
 import com.omniteam.backofisbackend.shared.constant.ResultMessage;
 import com.omniteam.backofisbackend.shared.mapper.ProductMapper;
@@ -16,53 +20,48 @@ import com.omniteam.backofisbackend.shared.result.Result;
 import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductMapper productMapper;
-    private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
-    private final AttributeTermRepository  attributeTermRepository;
-    private final ProductImageRepository productImageRepository;
-    private final ProductAttributeTermRepository productAttributeTermRepository;
+    @Autowired
+    private ProductMapper productMapper;
 
     @Autowired
-    public ProductServiceImpl(ProductMapper productMapper, ProductRepository productRepository, CategoryRepository categoryRepository, AttributeTermRepository attributeTermRepository, ProductImageRepository productImageRepository, ProductAttributeTermRepository productAttributeTermRepository) {
-        this.productMapper = productMapper;
-        this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
-        this.attributeTermRepository = attributeTermRepository;
-        this.productImageRepository = productImageRepository;
-        this.productAttributeTermRepository = productAttributeTermRepository;
-    }
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private AttributeTermRepository  attributeTermRepository;
+
+    @Autowired
+    private ProductImageRepository productImageRepository;
+
+    @Autowired
+    private ProductAttributeTermRepository productAttributeTermRepository;
+
+    @Autowired
+    private ProductPriceRepository productPriceRepository;
+
 
 
     @Transactional
-    public Result saveProductToDB(MultipartFile file ,String productName,String description,Integer unitsInStock,String barcode,Integer categoryId,List<Integer> attributeId) throws IOException {
+    public Result  saveProductToDB(MultipartFile file ,String productName,String description,Integer unitsInStock,String barcode,Integer categoryId,List<Integer> attributeId,Double actualPrice,String shortDescription) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         ProductImage productImage = new ProductImage();
@@ -78,12 +77,20 @@ public class ProductServiceImpl implements ProductService {
                          0,product,x.getAttribute(),x
                  )).collect(Collectors.toList());
 
+
+
          product.setProductName(productName);
          product.setUnitsInStock(unitsInStock);
          product.setDescription(description);
          product.setBarcode(barcode);
          product.setCategory(category);
          product.setProductAttributeTerms(productAttributeTerms);
+         product.setShortDescription(shortDescription);
+
+
+          ProductPrice productPrice= new ProductPrice();
+          productPrice.setActualPrice(actualPrice);
+
 
         String url = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("//download")
@@ -91,18 +98,53 @@ public class ProductServiceImpl implements ProductService {
                 .toUriString();
 
         productImage.setFilePath(url);
+
+
         productRepository.save(product);
+
         productImage.setProduct(product);
+        productPrice.setProduct(product);
         productImageRepository.save(productImage);
         productAttributeTermRepository.saveAll(productAttributeTerms);
-        return new SuccessResult("Ürün eklendi");
+        productPriceRepository.save(productPrice);
+        return new SuccessResult(ResultMessage.PRODUCT_SAVE);
     }
 
 
 
     @Override
-    public DataResult<PagedDataWrapper<ProductGetAllDto>> getAll(int page, int size, String searchKey) {
-        Pageable pageable = PageRequest.of(page, size);
+    public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) {
+        Pageable pageable = PageRequest.of(productGetAllRequest.getPage(),productGetAllRequest.getSize());
+
+        Page<Product> productPage =
+                productRepository.findAll(
+                        ProductSpec.getAllByFilter(
+                                productGetAllRequest.getBarcode(),
+                                productGetAllRequest.getProductName(),
+                                productGetAllRequest.getDescription(),
+                                productGetAllRequest.getMinPrice(),
+                                productGetAllRequest.getMaxPrice(),
+                                productGetAllRequest.getStartDate(),
+                                productGetAllRequest.getEndDate()
+                        ),pageable);
+
+/*
+        Page<Product> productPage = productRepository.findAll(
+                ProductSpec.getProductByBarcode(productGetAllRequest.getBarcode())
+        ,pageable);*/
+
+        List<ProductDto> productDtoList  = productMapper.mapToDTOs(productPage.getContent());
+
+        PagedDataWrapper<ProductDto> pagedDataWrapper = new PagedDataWrapper<>(
+                productDtoList,
+                productPage.getNumber(),
+                productPage.getSize(),
+                productPage.getTotalElements(),
+                productPage.getTotalPages(),
+                productPage.isLast()
+        );
+
+        /*Pageable pageable = PageRequest.of(page, size);
         Page<Product> products =
                 this.productRepository.findProductsByProductNameContainingOrDescriptionContaining(
                         searchKey,
@@ -112,8 +154,8 @@ public class ProductServiceImpl implements ProductService {
         List<ProductGetAllDto> productGetAllDtoList = products.getNumberOfElements() == 0
                 ? Collections.emptyList()
                 : this.productMapper.toProductGetAllDtoList(products.getContent());
-
-
+*/
+/*
         PagedDataWrapper<ProductGetAllDto> pagedDataWrapper = new PagedDataWrapper<>(
                 productGetAllDtoList,
                 products.getNumber(),
@@ -122,10 +164,53 @@ public class ProductServiceImpl implements ProductService {
                 products.getTotalPages(),
                 products.isLast()
         );
-
+*/
         return new SuccessDataResult<>(pagedDataWrapper);
+
     }
 
+    public ProductDto getById(Integer productId){
+        Product product = productRepository.getById(productId);
+        ProductDto productDto = productMapper.mapToDTO(product);
+        return productDto;
+    }
+
+
+
+    public Result productUpdate(ProductUpdateDTO productUpdateDTO) {
+        Product productToUpdate = productRepository.getById(productUpdateDTO.getProductId());
+        if (Objects.nonNull(productToUpdate)) {
+            if (!productUpdateDTO.getProductName().isEmpty()) {
+                productToUpdate.setProductName(productUpdateDTO.getProductName());
+            }
+
+            if (!productUpdateDTO.getDescription().isEmpty()){
+                productToUpdate.setDescription(productUpdateDTO.getDescription());
+            }
+
+            if (!productUpdateDTO.getShortDescription().isEmpty()){
+                productToUpdate.setShortDescription(productUpdateDTO.getShortDescription());
+            }
+
+            if (productUpdateDTO.getUnitsInStock()!=null){
+                productToUpdate.setUnitsInStock(productUpdateDTO.getUnitsInStock());
+            }
+
+            if (productUpdateDTO.getUnitsInStock()!=null){
+                productToUpdate.setUnitsInStock(productUpdateDTO.getUnitsInStock());
+            }
+
+            if (productUpdateDTO.getActualPrice()!=null){
+                ProductPrice productPrice = productPriceRepository.findByProduct_ProductId(productUpdateDTO.getProductId());
+                productPrice.setActualPrice(productUpdateDTO.getActualPrice());
+                productPriceRepository.save(productPrice);
+            }
+        }
+
+            productRepository.save(productToUpdate);
+        //productMapper.update(productToUpdate,productUpdateDTO);
+        return new SuccessResult(ResultMessage.PRODUCT_UPDATED);
+    }
 
 
 }
