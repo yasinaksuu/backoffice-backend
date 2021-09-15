@@ -5,6 +5,10 @@ import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.requests.OrderGetAllRequest;
 import com.omniteam.backofisbackend.service.OrderService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +41,8 @@ public class OrdersController {
     }
 
     @PostMapping("/export/report")
-    public ResponseEntity<?> exportFullReport()
-    {
-
+    public ResponseEntity<?> exportFullReport() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        this.orderService.startOrderReportExport();
         return ResponseEntity.ok().build();
     }
 

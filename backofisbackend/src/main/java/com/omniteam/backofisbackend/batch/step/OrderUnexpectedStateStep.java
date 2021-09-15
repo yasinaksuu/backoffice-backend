@@ -7,10 +7,10 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecution;
 
 @Builder
-public class OrderWriteProccessFailedStep implements Step {
+public class OrderUnexpectedStateStep implements Step {
     @Override
     public String getName() {
-        return "OrderWriteFailed";
+        return "unexpected-state-step";
     }
 
     @Override
@@ -26,7 +26,7 @@ public class OrderWriteProccessFailedStep implements Step {
     @Override
     public void execute(StepExecution stepExecution) throws JobInterruptedException {
 
-        System.out.println("Order Write Failed");
+        System.out.println("Unexpected state");
         stepExecution.setExitStatus(ExitStatus.COMPLETED);
 
     }

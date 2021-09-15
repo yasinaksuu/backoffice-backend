@@ -1,12 +1,14 @@
 package com.omniteam.backofisbackend.batch.step;
 
 import lombok.Builder;
-import org.springframework.batch.core.JobInterruptedException;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.*;
+import org.springframework.batch.core.annotation.AfterStep;
+import org.springframework.batch.core.annotation.BeforeStep;
 
 @Builder
-public class OrderWriteToFileStep implements Step {
+public class OrderWriteToFileStep implements Step, StepExecutionListener {
+
+
 
     @Override
     public String getName() {
@@ -20,15 +22,30 @@ public class OrderWriteToFileStep implements Step {
 
     @Override
     public int getStartLimit() {
-        return 0;
+        return 1;
     }
 
     @Override
     public void execute(StepExecution stepExecution) throws JobInterruptedException {
-
         // Gerçekleştirilecek işlem
-        System.out.println("Step has worked.");
-
+        System.out.println("Writing proccess.");
+        stepExecution.setExitStatus(ExitStatus.COMPLETED);
 
     }
+
+
+    @BeforeStep
+    @Override
+    public void beforeStep(StepExecution stepExecution) {
+        System.out.println("order Write File step before");
+    }
+
+    @AfterStep
+    @Override
+    public ExitStatus afterStep(StepExecution stepExecution) {
+        System.out.println("order Write File step after");
+        return ExitStatus.UNKNOWN;
+    }
+
+
 }

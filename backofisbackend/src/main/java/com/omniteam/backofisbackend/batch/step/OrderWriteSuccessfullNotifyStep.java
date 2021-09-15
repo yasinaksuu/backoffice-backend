@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.batch.step;
 
 import lombok.Builder;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobInterruptedException;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepExecution;
@@ -19,12 +20,13 @@ public class OrderWriteSuccessfullNotifyStep implements Step {
 
     @Override
     public int getStartLimit() {
-        return 0;
+        return 1;
     }
 
     @Override
     public void execute(StepExecution stepExecution) throws JobInterruptedException {
         // Başarılı olduğu durumda kullanıcıya bildirim
         System.out.println("Export file has done");
+        stepExecution.setExitStatus(ExitStatus.COMPLETED);
     }
 }
