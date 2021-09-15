@@ -4,10 +4,13 @@ import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
+import com.omniteam.backofisbackend.requests.order.OrderDeleteRequest;
 import com.omniteam.backofisbackend.requests.order.OrderGetAllRequest;
+import com.omniteam.backofisbackend.requests.order.OrderUpdateRequest;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.service.OrderService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
+import com.omniteam.backofisbackend.shared.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +55,19 @@ public class OrdersController {
     )
     public ResponseEntity<DataResult<OrderDto>> add(@RequestBody OrderAddRequest orderAddRequest){
         return ResponseEntity.ok(this.orderService.add(orderAddRequest));
+    }
+
+    @PostMapping(
+            path = "/update"
+    )
+    public ResponseEntity<DataResult<OrderDto>> update(@RequestBody OrderUpdateRequest orderUpdateRequest){
+        return ResponseEntity.ok(this.orderService.update(orderUpdateRequest));
+    }
+
+    @PostMapping(
+            path = "/delete"
+    )
+    public ResponseEntity<Result> delete(@RequestBody OrderDeleteRequest orderDeleteRequest){
+        return ResponseEntity.ok(this.orderService.delete(orderDeleteRequest));
     }
 }

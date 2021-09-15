@@ -3,8 +3,10 @@ package com.omniteam.backofisbackend.shared.mapper;
 import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.entity.OrderDetail;
 import com.omniteam.backofisbackend.requests.order.OrderDetailAddRequest;
+import com.omniteam.backofisbackend.requests.order.OrderDetailUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -21,4 +23,5 @@ public interface OrderDetailMapper {
 
     @Mapping(target = "product.productId", source = "productId")
     OrderDetail toOrderDetailFromOrderDetailAddRequest(OrderDetailAddRequest orderDetailAddRequest);
+    void update(@MappingTarget OrderDetail orderDetail, OrderDetailUpdateRequest orderDetailUpdateRequest);
 }
