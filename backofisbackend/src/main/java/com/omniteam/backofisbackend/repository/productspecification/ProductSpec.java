@@ -1,13 +1,10 @@
 package com.omniteam.backofisbackend.repository.productspecification;
 
-import com.omniteam.backofisbackend.entity.Order;
-import com.omniteam.backofisbackend.entity.OrderDetail;
+
 import com.omniteam.backofisbackend.entity.Product;
 import com.omniteam.backofisbackend.entity.ProductPrice;
-import org.hibernate.Metamodel;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 
@@ -15,35 +12,28 @@ public class ProductSpec {
 
     public static Specification<Product> getAllByFilter( String barcode,String productName, String description,Double minPrice,Double maxPrice, LocalDateTime startDate, LocalDateTime endDate) {
         return Specification
-                .where(getProductByBarcode(barcode).and(getProductByProductName(productName)));
+                .where(getProductByBarcode(barcode)
+                        .and(getProductByProductName(productName))
+                        .and(getProductByDescription(description))
+                        .and(getProductByMinPrice(minPrice))
+                        .and(getProductByMaxPrice(maxPrice))
+                        .and(getProductByStartDate(startDate))
+                        .and(getProductByEndDate(endDate)));
 
-               // .or(getProductByDescription(description))
-                //.or(getProductByDoubleRange(minPrice,maxPrice))
-                //.or(getProductByDateTimeRange(startDate,endDate)
-               // );
+
     }
 
 
-/*
-    private static Specification<Product> getProductByProductId(Integer productId) {
-        return (root, query, criteriaBuilder) -> {
-            if(productId == 0){
-                return criteriaBuilder.conjunction();
-            }
-            Predicate equalPredicate = criteriaBuilder.equal(root.get("product"), productId);
-            return equalPredicate;
-        };
-    }
-*/
+
 
     public static Specification<Product> getProductByProductName(String productName) {
         return (root, query, criteriaBuilder) -> {
             if(productName == null || productName.isEmpty()){
                 return criteriaBuilder.conjunction();
             }
-            Predicate equalPredicate = criteriaBuilder.like(root.get("productName"), productName);
+            Predicate likePredicate = criteriaBuilder.like(root.get("productName"), productName);
 
-            return equalPredicate;
+            return likePredicate;
         };
     }
     private static Specification<Product> getProductByDescription(String description) {
@@ -51,8 +41,8 @@ public class ProductSpec {
             if(description == null || description.isEmpty()){
                 return criteriaBuilder.conjunction();
             }
-            Predicate equalPredicate = criteriaBuilder.equal(root.get("description"), description);
-            return equalPredicate;
+            Predicate likePredicate = criteriaBuilder.like(root.get("description"), description);
+            return likePredicate;
         };
     }
     public static Specification<Product> getProductByBarcode(String barcode) {
@@ -60,20 +50,40 @@ public class ProductSpec {
             if(barcode == null || barcode.isEmpty()){
                 return criteriaBuilder.conjunction();
             }
-            Predicate equalPredicate = criteriaBuilder.like(root.get("barcode"), barcode);
-            return equalPredicate;
+            Predicate likePredicate = criteriaBuilder.like(root.get("barcode"), barcode);
+            return likePredicate;
         };
     }
 
 
-    private static Specification<Product> getProductByDoubleRange(Double minPrice, Double maxPrice) {
+    private static Specification<Product> getProductByMinPrice(Double minPrice) {
         return (root, query, criteriaBuilder) -> {
-        // ListJoin<Product, ProductPrice> productPriceListJoin  = root.joinList("Product_.productPrices");
+        ListJoin<Product, ProductPrice> productPriceListJoin  = root.joinList("productPrices");
 
-              if(minPrice==null && maxPrice ==null){
+
+              if(minPrice==null){
                 return criteriaBuilder.conjunction();
             }
-            Predicate betweenPredicate = criteriaBuilder.between(root.get("actual_price"),minPrice,maxPrice);
+
+
+            Predicate betweenPredicate = criteriaBuilder.greaterThanOrEqualTo(productPriceListJoin.get("actualPrice"),minPrice);
+
+
+            return betweenPredicate;
+        };
+    }
+
+    private static Specification<Product> getProductByMaxPrice(Double maxPrice) {
+        return (root, query, criteriaBuilder) -> {
+            ListJoin<Product, ProductPrice> productPriceListJoin  = root.joinList("productPrices");
+
+
+            if(maxPrice==null){
+                return criteriaBuilder.conjunction();
+            }
+
+
+            Predicate betweenPredicate = criteriaBuilder.lessThanOrEqualTo(productPriceListJoin.get("actualPrice"),maxPrice);
 
 
             return betweenPredicate;
@@ -82,12 +92,23 @@ public class ProductSpec {
 
 
 
-    private static Specification<Product> getProductByDateTimeRange(LocalDateTime startDate, LocalDateTime endDate) {
+    private static Specification<Product> getProductByStartDate(LocalDateTime startDate) {
         return (root, query, criteriaBuilder) -> {
-            if(startDate==null && endDate ==null){
+            if(startDate==null ){
                 return criteriaBuilder.conjunction();
             }
-            Predicate betweenPredicate = criteriaBuilder.between(root.get("createdDate"),startDate,endDate);
+            Predicate betweenPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"),startDate);
+            return betweenPredicate;
+        };
+    }
+
+
+    private static Specification<Product> getProductByEndDate(LocalDateTime endDate) {
+        return (root, query, criteriaBuilder) -> {
+            if(endDate==null ){
+                return criteriaBuilder.conjunction();
+            }
+            Predicate betweenPredicate = criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"),endDate);
             return betweenPredicate;
         };
     }
