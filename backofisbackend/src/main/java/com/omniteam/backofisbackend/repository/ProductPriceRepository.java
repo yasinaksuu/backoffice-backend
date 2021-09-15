@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductPriceRepository extends JpaRepository<ProductPrice,Integer> {
 
-    /*@Query(nativeQuery = true,value = "select top 1 pd from ProductPrice pd, Product p where pd.product.productId=:productId order by pd.createdDate desc")
-    ProductPrice getByProductId(Integer productId);*/
+
+
 
     ProductPrice findFirstByProductAndIsActiveOrderByCreatedDateDesc(Product product,Boolean isActive);
 }
