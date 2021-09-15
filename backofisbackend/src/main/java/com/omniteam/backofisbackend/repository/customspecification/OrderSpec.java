@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 public class OrderSpec {
     public static Specification<Order> getAllByFilter(int customerId, String status, LocalDateTime startDate,LocalDateTime endDate) {
         return Specification
-                .where(getOrdersByCustomerId(customerId))
-                .or(getOrdersByStatus(status))
-                .or(getOrdersByDateTimeRange(startDate,endDate)
+                .where(
+                        getOrdersByCustomerId(customerId)
+                        .and(getOrdersByStatus(status))
+                        .and(getOrdersByDateTimeRange(startDate,endDate)
+                )
         );
     }
 
