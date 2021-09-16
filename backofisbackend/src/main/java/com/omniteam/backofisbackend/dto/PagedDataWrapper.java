@@ -2,7 +2,10 @@ package com.omniteam.backofisbackend.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.omniteam.backofisbackend.entity.JobRequest;
 import lombok.Data;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +33,18 @@ public class PagedDataWrapper<T> {
         this.totalPages = totalPages;
         this.last = last;
     }
+
+    public PagedDataWrapper(Page<T> pagedData) {
+        this(
+                pagedData.getContent(),
+                pagedData.getNumber(),
+                pagedData.getSize(),
+                pagedData.getTotalElements(),
+                pagedData.getTotalPages(),
+                pagedData.isLast()
+        );
+    }
+
 
     public List<T> getContent() {
         return content == null ? null : new ArrayList<>(content);

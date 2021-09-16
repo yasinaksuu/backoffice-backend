@@ -6,9 +6,7 @@ import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;
 
 @Builder
-public class OrderWriteToFileStep implements Step, StepExecutionListener {
-
-
+public class OrderWriteToFileStep implements Step {
 
     @Override
     public String getName() {
@@ -33,19 +31,6 @@ public class OrderWriteToFileStep implements Step, StepExecutionListener {
 
     }
 
-
-    @BeforeStep
-    @Override
-    public void beforeStep(StepExecution stepExecution) {
-        System.out.println("order Write File step before");
-    }
-
-    @AfterStep
-    @Override
-    public ExitStatus afterStep(StepExecution stepExecution) {
-        System.out.println("order Write File step after");
-        return ExitStatus.UNKNOWN;
-    }
 
 
 }
