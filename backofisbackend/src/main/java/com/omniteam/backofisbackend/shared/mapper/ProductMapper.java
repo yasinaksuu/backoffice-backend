@@ -26,6 +26,13 @@ public interface ProductMapper  {
     ProductDto mapToDTO(Product product);
 
 
+    @Mapping(source="categoryId",target="category.categoryId")
+    @Mapping(source ="productPriceDTOS",target = "productPrices")
+    Product mapToEntity(ProductSaveRequestDTO productSaveRequestDTO);
+
+
+
+
     void update(@MappingTarget Product product , ProductUpdateDTO productUpdateDTO);
 
     List<ProductDto> mapToDTOs(List<Product> products);
@@ -35,6 +42,8 @@ public interface ProductMapper  {
 
     List<ProductImageDto> mapToProductImageDtos(List<ProductImage> productImage);
 
-    List<ProductPriceDTO> mapToProductPriceDto(List<ProductPrice> productPrice);
+    List<ProductPriceDTO> mapToProductPriceDtos(List<ProductPrice> productPrice);
+
+    List<ProductPrice> mapToEntities(List<ProductPriceDTO> productPriceDTOS);
 
 }

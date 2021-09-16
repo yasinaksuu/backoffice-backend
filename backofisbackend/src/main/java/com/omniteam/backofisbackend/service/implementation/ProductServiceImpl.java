@@ -7,6 +7,7 @@ import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.dto.product.ProductDto;
 import com.omniteam.backofisbackend.dto.product.ProductGetAllDto;
+import com.omniteam.backofisbackend.dto.product.ProductSaveRequestDTO;
 import com.omniteam.backofisbackend.dto.product.ProductUpdateDTO;
 import com.omniteam.backofisbackend.entity.*;
 import com.omniteam.backofisbackend.repository.*;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,6 +62,56 @@ public class ProductServiceImpl implements ProductService {
 
 
 
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
+    public Result saveProductImageDB(MultipartFile file,Integer productId) throws IOException {
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+          Product product =productRepository.getById(productId);
+
+        ProductImage productImage = new ProductImage();
+        productImage.setImage(file.getBytes());
+        productImage.setProductImageName(fileName);
+
+        String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("//download")
+                .path(fileName)
+                .toUriString();
+
+        productImage.setFilePath(url);
+        productImage.setProduct(product);
+        productImageRepository.save(productImage);
+
+        return new SuccessResult(ResultMessage.PRODUCT_IMAGE_SAVE);
+
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
+    public Integer saveProductToDB(ProductSaveRequestDTO productSaveRequestDTO){
+
+        Product product = productMapper.mapToEntity(productSaveRequestDTO);
+        List<ProductPrice> productPrice = productMapper.mapToEntities(productSaveRequestDTO.getProductPriceDTOS());
+
+
+        productRepository.save(product);
+        for(int i=0;i<productPrice.size();i++){
+            productPrice.get(i).setProduct(product);
+        }
+        productPriceRepository.saveAll(productPrice);
+
+        AttributeTerm attributeTerm =attributeTermRepository.getById(productSaveRequestDTO.getAttributeTermId());
+        ProductAttributeTerm productAttributeTerm =new ProductAttributeTerm();
+
+        productAttributeTerm.setAttributeTerm(attributeTerm);
+        productAttributeTerm.setAttribute(attributeTerm.getAttribute());
+        productAttributeTerm.setProduct(product);
+        productAttributeTermRepository.save(productAttributeTerm);
+
+         return product.getProductId();
+
+
+    }
+
+/*
     @Transactional
     public Result  saveProductToDB(MultipartFile file ,String productName,String description,Integer unitsInStock,String barcode,Integer categoryId,List<Integer> attributeId,Double actualPrice,String shortDescription) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -109,12 +161,13 @@ public class ProductServiceImpl implements ProductService {
         productPriceRepository.save(productPrice);
         return new SuccessResult(ResultMessage.PRODUCT_SAVE);
     }
-
+*/
 
 
     @Override
     public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) {
         Pageable pageable = PageRequest.of(productGetAllRequest.getPage(),productGetAllRequest.getSize());
+
 
         Page<Product> productPage =
                 productRepository.findAll(

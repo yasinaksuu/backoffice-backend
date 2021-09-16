@@ -7,6 +7,7 @@ import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.dto.product.ProductDto;
 import com.omniteam.backofisbackend.dto.product.ProductGetAllDto;
+import com.omniteam.backofisbackend.dto.product.ProductSaveRequestDTO;
 import com.omniteam.backofisbackend.dto.product.ProductUpdateDTO;
 import com.omniteam.backofisbackend.requests.ProductGetAllRequest;
 import com.omniteam.backofisbackend.service.ProductService;
@@ -32,6 +33,35 @@ public class ProductsController {
         this.productService = productService;
     }
 
+    @ApiOperation("Product Kayıt Yapan Servis")
+    @PostMapping(path = "/add")
+    public ResponseEntity<Integer> saveProduct(@RequestBody ProductSaveRequestDTO productSaveRequestDTO){
+        return ResponseEntity.ok(productService.saveProductToDB(productSaveRequestDTO));
+    }
+
+    @ApiOperation("Product Image Kayıt Yapan Servis")
+    @PostMapping(path = "/Imageadd")
+        public ResponseEntity<Result> saveProductImage (
+                @RequestParam("file") MultipartFile file,
+                @RequestParam("productId") Integer productId
+                ){
+            String message = "";
+            try {
+                Result result = productService.saveProductImageDB(
+                        file,
+                        productId
+                        );
+
+                return ResponseEntity.ok(result);
+            } catch (Exception e) {
+                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ErrorResult(message));
+            }
+
+        }
+
+
+    /*
     @ApiOperation("Product Kayıt Yapan Servis")
     @PostMapping(path = "/add")
     public ResponseEntity<Result> saveProduct(
@@ -62,7 +92,7 @@ public class ProductsController {
         }
 
     }
-
+*/
     @ApiOperation("Id ye göre Product Getiren Servis")
     @GetMapping(path = "/getbyid/{productId}")
     public ResponseEntity<DataResult<ProductDto>> getById(@PathVariable(name = "productId") int productId){

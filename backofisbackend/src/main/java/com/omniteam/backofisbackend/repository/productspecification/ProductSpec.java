@@ -51,6 +51,7 @@ public class ProductSpec {
                 return criteriaBuilder.conjunction();
             }
             Predicate likePredicate = criteriaBuilder.like(root.get("barcode"), barcode);
+
             return likePredicate;
         };
     }
@@ -60,8 +61,7 @@ public class ProductSpec {
         return (root, query, criteriaBuilder) -> {
         ListJoin<Product, ProductPrice> productPriceListJoin  = root.joinList("productPrices");
 
-
-              if(minPrice==null){
+           if(minPrice==null){
                 return criteriaBuilder.conjunction();
             }
 

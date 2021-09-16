@@ -6,5 +6,7 @@ public class ResultMessage {
     public static final String CUSTOMER_CONTACT_UPDATED = "Müşteri iletişim bilgileri güncellendi.";
     public static final String PRODUCT_SAVE = "Product Eklendi";
     public static final String PRODUCT_UPDATED = "Product Güncellendi";
+    public static final String PRODUCT_IMAGE_SAVE  = "Product Image Eklendi";
+
 
 }
