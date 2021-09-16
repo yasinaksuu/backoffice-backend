@@ -1,12 +1,10 @@
 package com.omniteam.backofisbackend.shared.mapper;
 
 
-import com.omniteam.backofisbackend.dto.product.ProductDto;
-import com.omniteam.backofisbackend.dto.product.ProductGetAllDto;
-import com.omniteam.backofisbackend.dto.product.ProductImageDto;
-import com.omniteam.backofisbackend.dto.product.ProductUpdateDTO;
+import com.omniteam.backofisbackend.dto.product.*;
 import com.omniteam.backofisbackend.entity.Product;
 import com.omniteam.backofisbackend.entity.ProductImage;
+import com.omniteam.backofisbackend.entity.ProductPrice;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -24,6 +22,7 @@ public interface ProductMapper  {
     @Mapping(target="categoryId",source="category.categoryId")
     @Mapping(target="categoryName",source="category.categoryName")
     @Mapping(target ="productImageDtoList",source = "productImages")
+    @Mapping(target ="productPriceDTOS",source = "productPrices")
     ProductDto mapToDTO(Product product);
 
 
@@ -36,5 +35,6 @@ public interface ProductMapper  {
 
     List<ProductImageDto> mapToProductImageDtos(List<ProductImage> productImage);
 
+    List<ProductPriceDTO> mapToProductPriceDto(List<ProductPrice> productPrice);
 
 }

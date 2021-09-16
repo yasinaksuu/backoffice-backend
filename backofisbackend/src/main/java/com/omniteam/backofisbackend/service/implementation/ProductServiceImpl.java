@@ -128,10 +128,7 @@ public class ProductServiceImpl implements ProductService {
                                 productGetAllRequest.getEndDate()
                         ),pageable);
 
-/*
-        Page<Product> productPage = productRepository.findAll(
-                ProductSpec.getProductByBarcode(productGetAllRequest.getBarcode())
-        ,pageable);*/
+
 
         List<ProductDto> productDtoList  = productMapper.mapToDTOs(productPage.getContent());
 
@@ -144,27 +141,7 @@ public class ProductServiceImpl implements ProductService {
                 productPage.isLast()
         );
 
-        /*Pageable pageable = PageRequest.of(page, size);
-        Page<Product> products =
-                this.productRepository.findProductsByProductNameContainingOrDescriptionContaining(
-                        searchKey,
-                        searchKey,
-                        pageable);
 
-        List<ProductGetAllDto> productGetAllDtoList = products.getNumberOfElements() == 0
-                ? Collections.emptyList()
-                : this.productMapper.toProductGetAllDtoList(products.getContent());
-*/
-/*
-        PagedDataWrapper<ProductGetAllDto> pagedDataWrapper = new PagedDataWrapper<>(
-                productGetAllDtoList,
-                products.getNumber(),
-                products.getSize(),
-                products.getTotalElements(),
-                products.getTotalPages(),
-                products.isLast()
-        );
-*/
         return new SuccessDataResult<>(pagedDataWrapper);
 
     }
@@ -176,19 +153,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-
     public Result productUpdate(ProductUpdateDTO productUpdateDTO) {
         Product productToUpdate = productRepository.getById(productUpdateDTO.getProductId());
         if (Objects.nonNull(productToUpdate)) {
-            if (!productUpdateDTO.getProductName().isEmpty()) {
+            if (productUpdateDTO.getProductName()!=null) {
                 productToUpdate.setProductName(productUpdateDTO.getProductName());
             }
 
-            if (!productUpdateDTO.getDescription().isEmpty()){
+            if (productUpdateDTO.getDescription()!=null){
                 productToUpdate.setDescription(productUpdateDTO.getDescription());
             }
 
-            if (!productUpdateDTO.getShortDescription().isEmpty()){
+            if (productUpdateDTO.getShortDescription()!=null){
                 productToUpdate.setShortDescription(productUpdateDTO.getShortDescription());
             }
 
@@ -205,11 +181,23 @@ public class ProductServiceImpl implements ProductService {
                 productPrice.setActualPrice(productUpdateDTO.getActualPrice());
                 productPriceRepository.save(productPrice);
             }
+
+            if (productUpdateDTO.getCategoryId()!=null){
+                Category category = categoryRepository.getById(productUpdateDTO.getCategoryId());
+                productToUpdate.setCategory(category);
+
+            }
+            if (productUpdateDTO.getAttributeTermId()!=null){
+                AttributeTerm attributeTerm =attributeTermRepository.getById(productUpdateDTO.getAttributeTermId());
+                ProductAttributeTerm productAttributeTerm = productAttributeTermRepository.findByProduct_ProductId(productUpdateDTO.getProductId());
+                productAttributeTerm.setAttributeTerm(attributeTerm);
+                productAttributeTerm.setAttribute(attributeTerm.getAttribute());
+                productAttributeTermRepository.save(productAttributeTerm);
+            }
         }
 
-            productRepository.save(productToUpdate);
-        //productMapper.update(productToUpdate,productUpdateDTO);
-        return new SuccessResult(ResultMessage.PRODUCT_UPDATED);
+        productRepository.save(productToUpdate);
+         return new SuccessResult(ResultMessage.PRODUCT_UPDATED);
     }
 
 

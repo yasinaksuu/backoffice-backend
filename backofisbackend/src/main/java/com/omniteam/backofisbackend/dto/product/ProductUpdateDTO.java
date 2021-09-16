@@ -21,6 +21,9 @@ public class ProductUpdateDTO {
     private String shortDescription;
     private Integer unitsInStock;
     private Double actualPrice;
+    private Integer categoryId;
+    private Integer attributeTermId;
+
 
 
 
