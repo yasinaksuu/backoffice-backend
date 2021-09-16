@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 public class OrderSpec {
     public static Specification<Order> getAllByFilter(int customerId, String status, LocalDateTime startDate,LocalDateTime endDate) {
         return Specification
-                .where(getOrdersByCustomerId(customerId))
-                .or(getOrdersByStatus(status))
-                .or(getOrdersByDateTimeRange(startDate,endDate)
+                .where(
+                        getOrdersByCustomerId(customerId)
+                        .and(getOrdersByStatus(status))
+                        .and(getOrdersByStartDate(startDate))
+                        .and(getOrdersByEndDate(endDate))
         );
     }
 
@@ -38,13 +40,22 @@ public class OrderSpec {
         };
     }
 
-    public static Specification<Order> getOrdersByDateTimeRange(LocalDateTime startDate,LocalDateTime endDate){
+    public static Specification<Order> getOrdersByStartDate(LocalDateTime startDate){
         return (root, query, criteriaBuilder) -> {
-            if(startDate==null && endDate ==null){
+            if(startDate==null){
                 return criteriaBuilder.conjunction();
             }
-            Predicate betweenPredicate = criteriaBuilder.between(root.get("createdDate"),startDate,endDate);
-            return betweenPredicate;
+            return criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"),startDate);
+        };
+    }
+
+
+    public static Specification<Order> getOrdersByEndDate(LocalDateTime endDate){
+        return (root, query, criteriaBuilder) -> {
+            if(endDate ==null){
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"),endDate);
         };
     }
 }

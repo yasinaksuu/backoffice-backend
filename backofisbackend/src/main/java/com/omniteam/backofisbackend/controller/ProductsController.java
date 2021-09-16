@@ -1,13 +1,15 @@
 package com.omniteam.backofisbackend.controller;
 
 
-import com.omniteam.backofisbackend.base.ResponseMessage;
 import com.omniteam.backofisbackend.base.ResponsePayload;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
+import com.omniteam.backofisbackend.dto.order.OrderDto;
+import com.omniteam.backofisbackend.dto.product.ProductDto;
 import com.omniteam.backofisbackend.dto.product.ProductGetAllDto;
-import com.omniteam.backofisbackend.dto.product.ProductGetAllRequest;
 import com.omniteam.backofisbackend.dto.product.ProductSaveRequestDTO;
-import com.omniteam.backofisbackend.entity.ProductImage;
+import com.omniteam.backofisbackend.dto.product.ProductUpdateDTO;
+import com.omniteam.backofisbackend.requests.ProductGetAllRequest;
 import com.omniteam.backofisbackend.service.ProductService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.ErrorResult;
@@ -19,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -34,12 +35,43 @@ public class ProductsController {
 
     @ApiOperation("Product Kayıt Yapan Servis")
     @PostMapping(path = "/add")
+    public ResponseEntity<Integer> saveProduct(@RequestBody ProductSaveRequestDTO productSaveRequestDTO){
+        return ResponseEntity.ok(productService.saveProductToDB(productSaveRequestDTO));
+    }
+
+    @ApiOperation("Product Image Kayıt Yapan Servis")
+    @PostMapping(path = "/Imageadd")
+        public ResponseEntity<Result> saveProductImage (
+                @RequestParam("file") MultipartFile file,
+                @RequestParam("productId") Integer productId
+                ){
+            String message = "";
+            try {
+                Result result = productService.saveProductImageDB(
+                        file,
+                        productId
+                        );
+
+                return ResponseEntity.ok(result);
+            } catch (Exception e) {
+                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
+                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ErrorResult(message));
+            }
+
+        }
+
+
+    /*
+    @ApiOperation("Product Kayıt Yapan Servis")
+    @PostMapping(path = "/add")
     public ResponseEntity<Result> saveProduct(
             @RequestParam("file") MultipartFile file, @RequestParam("productName") String productName,
             @RequestParam("description") String description,
             @RequestParam("unitsInStock") Integer unitsInStock,
             @RequestParam("barcode") String barcode, @RequestParam("categoryId") Integer categoryId,
-            @RequestParam("attributeId") List<Integer> attributeId) {
+            @RequestParam("attributeId") List<Integer> attributeId,
+            @RequestParam("actualPrice") Double actualPrice ,
+            @RequestParam("shortDescription") String shortDescription ){
         String message = "";
         try {
             Result result = productService.saveProductToDB(
@@ -49,7 +81,9 @@ public class ProductsController {
                     unitsInStock,
                     barcode,
                     categoryId,
-                    attributeId);
+                    attributeId,
+                    actualPrice,
+                    shortDescription);
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -58,9 +92,28 @@ public class ProductsController {
         }
 
     }
-
+*/
+    @ApiOperation("Id ye göre Product Getiren Servis")
+    @GetMapping(path = "/getbyid/{productId}")
+    public ResponseEntity<DataResult<ProductDto>> getById(@PathVariable(name = "productId") int productId){
+        return ResponseEntity.ok(productService.getById(productId));
+    }
 
     @ApiOperation("Tüm Productları getiren servis")
+    @PostMapping(path = "/getall")
+    public ResponseEntity<DataResult<PagedDataWrapper<ProductDto>>> getAll(@RequestBody ProductGetAllRequest productGetAllRequest){
+        return ResponseEntity.ok(productService.getAll(productGetAllRequest));
+    }
+
+    @ApiOperation("Product Güncelleme Yapan  Servis")
+    @PostMapping(path = "/update")
+    public ResponseEntity<Result> update(@RequestBody ProductUpdateDTO productUpdateDTO){
+        return ResponseEntity.ok(productService.productUpdate(productUpdateDTO));
+    }
+
+
+    /*
+
     @PostMapping(path = "/getall")
     public ResponseEntity<DataResult<PagedDataWrapper<ProductGetAllDto>>> getAll(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -68,6 +121,6 @@ public class ProductsController {
             @RequestParam(name = "searchKey", required = false) String searchKey
     ) {
         return ResponseEntity.ok(this.productService.getAll(page, size, searchKey));
-    }
+    }*/
 
 }

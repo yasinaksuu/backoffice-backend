@@ -7,14 +7,26 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ProductImageDto {
+public class ProductUpdateDTO {
 
-    private Integer productImageId;
-    private String shortDescrition;
-    private String productImageName;
-    private String filePath;
+    private Integer productId;
+    private String productName;
+    private String description;
+    private String shortDescription;
+    private Integer unitsInStock;
+    private Double actualPrice;
+    private Integer categoryId;
+    private Integer attributeTermId;
+
+
+
+
+
+
 }

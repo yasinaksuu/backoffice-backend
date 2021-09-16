@@ -19,7 +19,7 @@ public class OrderDetail extends BaseEntity  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_detail_id")
-    private Long orderDetailId;
+    private Integer orderDetailId;
 
 
     @Column(name="status")

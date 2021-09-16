@@ -1,14 +1,20 @@
 package com.omniteam.backofisbackend.controller;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
-import com.omniteam.backofisbackend.requests.OrderGetAllRequest;
+import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
+import com.omniteam.backofisbackend.requests.order.OrderDeleteRequest;
+import com.omniteam.backofisbackend.requests.order.OrderGetAllRequest;
+import com.omniteam.backofisbackend.requests.order.OrderUpdateRequest;
+import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.service.OrderService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import com.omniteam.backofisbackend.shared.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,10 +26,11 @@ import java.util.List;
 public class OrdersController {
 
     private final OrderService orderService;
-
+    private final OrderDetailService orderDetailService;
     @Autowired
-    public OrdersController(OrderService orderService) {
+    public OrdersController(OrderService orderService, OrderDetailService orderDetailService) {
         this.orderService = orderService;
+        this.orderDetailService = orderDetailService;
     }
 
     @GetMapping(
@@ -46,4 +53,32 @@ public class OrdersController {
         return ResponseEntity.ok().build();
     }
 
+
+    @GetMapping(
+            path = "/getorderdetails/{orderid}"
+    )
+    public ResponseEntity<DataResult<List<OrderDetailDto>>> getOrderDetails(@PathVariable(name = "orderid") int orderId){
+        return ResponseEntity.ok(this.orderDetailService.getByOrderId(orderId));
+    }
+
+    @PostMapping(
+            path = "/add"
+    )
+    public ResponseEntity<DataResult<OrderDto>> add(@RequestBody OrderAddRequest orderAddRequest){
+        return ResponseEntity.ok(this.orderService.add(orderAddRequest));
+    }
+
+    @PostMapping(
+            path = "/update"
+    )
+    public ResponseEntity<DataResult<OrderDto>> update(@RequestBody OrderUpdateRequest orderUpdateRequest){
+        return ResponseEntity.ok(this.orderService.update(orderUpdateRequest));
+    }
+
+    @PostMapping(
+            path = "/delete"
+    )
+    public ResponseEntity<Result> delete(@RequestBody OrderDeleteRequest orderDeleteRequest){
+        return ResponseEntity.ok(this.orderService.delete(orderDeleteRequest));
+    }
 }

@@ -28,7 +28,7 @@ public class Attribute extends  BaseEntity  {
     private  String attributeTitle;
 
     @OneToMany(mappedBy = "attribute" )
-    private List<AttributeTerm> attributeTerm;
+    private List<AttributeTerm> attributeTerms;
 
 
     @OneToMany(mappedBy = "attribute")

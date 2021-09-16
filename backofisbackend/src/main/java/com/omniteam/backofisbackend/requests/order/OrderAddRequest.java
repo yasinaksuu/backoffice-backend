@@ -1,9 +1,8 @@
-package com.omniteam.backofisbackend.dto.attibute;
-
+package com.omniteam.backofisbackend.requests.order;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.omniteam.backofisbackend.entity.ProductAttributeTerm;
+import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class AttributeDTO {
-
-    private Integer attributeId;
-    private String attributeTitle;
-    private List<AttributeTermDTO> attributeTerms;
-    //private List<ProductAttributeTerm> productAttributeTerms;
+public class OrderAddRequest {
+    private Integer userId;
+    private String status;
+    private Integer customerId;
+    private List<OrderDetailAddRequest> orderDetails;
 }

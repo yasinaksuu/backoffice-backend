@@ -1,5 +1,4 @@
-package com.omniteam.backofisbackend.dto.product;
-
+package com.omniteam.backofisbackend.requests.order;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -11,10 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ProductImageDto {
-
-    private Integer productImageId;
-    private String shortDescrition;
-    private String productImageName;
-    private String filePath;
+public class OrderDeleteRequest {
+    private Integer orderId;
 }

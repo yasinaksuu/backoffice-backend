@@ -1,7 +1,6 @@
-package com.omniteam.backofisbackend.requests;
+package com.omniteam.backofisbackend.requests.order;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +17,6 @@ public class OrderGetAllRequest {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status;
-    private int page;
-    private int size;
+    private int page=0;
+    private int size=20;
 }

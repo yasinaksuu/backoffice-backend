@@ -9,16 +9,21 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductSaveRequestDTO implements Serializable {
-    private String productName;
-    private Integer unitsInStock;
-    private String description;
-    private String barcode;
+
+    private Integer productId;
     private Integer categoryId;
-    private Integer attributeId;
+    private String productName;
+    private String description;
+    private String shortDescription;
+    private Integer unitsInStock;
+    private String barcode;
+    private Integer attributeTermId;
+    private List<ProductPriceDTO> productPriceDTOS;
 }

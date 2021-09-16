@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface ProductAttributeTermRepository extends JpaRepository<ProductAttributeTerm,Integer> {
 
+     ProductAttributeTerm findByProduct_ProductId(Integer productId);
 
-  //  List<ProductAttributeTerm> findAllByProductAttributeTermsId(List<Integer> Id);
 }

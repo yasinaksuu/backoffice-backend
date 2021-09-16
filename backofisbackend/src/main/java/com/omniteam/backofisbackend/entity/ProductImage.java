@@ -26,6 +26,7 @@ public class ProductImage extends BaseEntity {
     @Column(name = "file_path")
     private String filePath;
 
+
     @Lob
     @Column(name = "image")
     private byte[] image;
