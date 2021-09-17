@@ -82,15 +82,5 @@ public class ProductsController {
     }
 
 
-    /*
-
-    @PostMapping(path = "/getall")
-    public ResponseEntity<DataResult<PagedDataWrapper<ProductGetAllDto>>> getAll(
-            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "30") int size,
-            @RequestParam(name = "searchKey", required = false) String searchKey
-    ) {
-        return ResponseEntity.ok(this.productService.getAll(page, size, searchKey));
-    }*/
 
 }

@@ -119,13 +119,12 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage =
                 productRepository.findAll(
                         ProductSpec.getAllByFilter(
-                                productGetAllRequest.getBarcode(),
-                                productGetAllRequest.getProductName(),
-                                productGetAllRequest.getDescription(),
+                                productGetAllRequest.getSearchKey(),
                                 productGetAllRequest.getMinPrice(),
                                 productGetAllRequest.getMaxPrice(),
                                 productGetAllRequest.getStartDate(),
-                                productGetAllRequest.getEndDate()
+                                productGetAllRequest.getEndDate(),
+                                productGetAllRequest.getAttributeIdsCollections()
                         ),pageable);
 
 

@@ -1,72 +1,68 @@
 package com.omniteam.backofisbackend.repository.productspecification;
 
 
+import com.omniteam.backofisbackend.entity.AttributeTerm;
 import com.omniteam.backofisbackend.entity.Product;
+import com.omniteam.backofisbackend.entity.ProductAttributeTerm;
 import com.omniteam.backofisbackend.entity.ProductPrice;
+import io.swagger.models.auth.In;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductSpec {
-
-    public static Specification<Product> getAllByFilter( String barcode,String productName, String description,Double minPrice,Double maxPrice, LocalDateTime startDate, LocalDateTime endDate) {
-        return Specification
-                .where(getProductByBarcode(barcode)
-                        .and(getProductByProductName(productName))
-                        .and(getProductByDescription(description))
+    public static Specification<Product> getAllByFilter(
+            String searchKey,
+            Double minPrice,
+            Double maxPrice,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            List<List<Integer>> attributeIdsCollections) {
+        Specification specification = Specification
+                .where(searchProductBySearchKey(searchKey)
                         .and(getProductByMinPrice(minPrice))
                         .and(getProductByMaxPrice(maxPrice))
                         .and(getProductByStartDate(startDate))
                         .and(getProductByEndDate(endDate)));
-
-
+        if(attributeIdsCollections!=null && attributeIdsCollections.size()!=0){
+            for(List<Integer> attributeIds:attributeIdsCollections){
+                specification = specification.and(filterProductsByAttributeIdList(attributeIds));
+            }
+        }
+        return specification;
     }
 
 
-
-
-    public static Specification<Product> getProductByProductName(String productName) {
+    public static Specification<Product> searchProductBySearchKey(String searchKey) {
         return (root, query, criteriaBuilder) -> {
-            if(productName == null || productName.isEmpty()){
+            if (searchKey == null || searchKey.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            Predicate likePredicate = criteriaBuilder.like(root.get("productName"), productName);
+            Predicate likePredicate = criteriaBuilder.or(criteriaBuilder.like(
+                    root.get("productName"), "%"+searchKey+"%"
+            ),criteriaBuilder.like(
+                    root.get("barcode"), "%"+searchKey+"%"
+            ),criteriaBuilder.like(
+                    root.get("description"), "%"+searchKey+"%"
+            ));
+
 
             return likePredicate;
         };
     }
-    private static Specification<Product> getProductByDescription(String description) {
-        return (root, query, criteriaBuilder) -> {
-            if(description == null || description.isEmpty()){
-                return criteriaBuilder.conjunction();
-            }
-            Predicate likePredicate = criteriaBuilder.like(root.get("description"), description);
-            return likePredicate;
-        };
-    }
-    public static Specification<Product> getProductByBarcode(String barcode) {
-        return (root, query, criteriaBuilder) -> {
-            if(barcode == null || barcode.isEmpty()){
-                return criteriaBuilder.conjunction();
-            }
-            Predicate likePredicate = criteriaBuilder.like(root.get("barcode"), barcode);
-            return likePredicate;
-        };
-    }
-
 
     private static Specification<Product> getProductByMinPrice(Double minPrice) {
         return (root, query, criteriaBuilder) -> {
-        ListJoin<Product, ProductPrice> productPriceListJoin  = root.joinList("productPrices");
 
-
-              if(minPrice==null){
+            if (minPrice == null) {
                 return criteriaBuilder.conjunction();
             }
+            ListJoin<Product, ProductPrice> productPriceListJoin = root.joinList("productPrices",JoinType.LEFT);
 
-
-            Predicate betweenPredicate = criteriaBuilder.greaterThanOrEqualTo(productPriceListJoin.get("actualPrice"),minPrice);
+            Predicate betweenPredicate = criteriaBuilder.greaterThanOrEqualTo(productPriceListJoin.get("actualPrice"), minPrice);
 
 
             return betweenPredicate;
@@ -75,15 +71,12 @@ public class ProductSpec {
 
     private static Specification<Product> getProductByMaxPrice(Double maxPrice) {
         return (root, query, criteriaBuilder) -> {
-            ListJoin<Product, ProductPrice> productPriceListJoin  = root.joinList("productPrices");
-
-
-            if(maxPrice==null){
+            if (maxPrice == null) {
                 return criteriaBuilder.conjunction();
             }
+            ListJoin<Product, ProductPrice> productPriceListJoin = root.joinList("productPrices",JoinType.LEFT);
 
-
-            Predicate betweenPredicate = criteriaBuilder.lessThanOrEqualTo(productPriceListJoin.get("actualPrice"),maxPrice);
+            Predicate betweenPredicate = criteriaBuilder.lessThanOrEqualTo(productPriceListJoin.get("actualPrice"), maxPrice);
 
 
             return betweenPredicate;
@@ -91,13 +84,12 @@ public class ProductSpec {
     }
 
 
-
     private static Specification<Product> getProductByStartDate(LocalDateTime startDate) {
         return (root, query, criteriaBuilder) -> {
-            if(startDate==null ){
+            if (startDate == null) {
                 return criteriaBuilder.conjunction();
             }
-            Predicate betweenPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"),startDate);
+            Predicate betweenPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), startDate);
             return betweenPredicate;
         };
     }
@@ -105,17 +97,36 @@ public class ProductSpec {
 
     private static Specification<Product> getProductByEndDate(LocalDateTime endDate) {
         return (root, query, criteriaBuilder) -> {
-            if(endDate==null ){
+            if (endDate == null) {
                 return criteriaBuilder.conjunction();
             }
-            Predicate betweenPredicate = criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"),endDate);
-            return betweenPredicate;
+            return criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), endDate);
         };
     }
 
+    public static Specification<Product> filterProductsByAttributeIdList(List<Integer> attributeIdList){
+        return new Specification<Product>() {
+            @Override
+            public Predicate toPredicate(Root<Product> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                if (attributeIdList == null || attributeIdList.size()==0) {
+                    return criteriaBuilder.conjunction();
+                }
+                final List<Predicate> predicates = new ArrayList<>();
+                final Subquery<ProductAttributeTerm> subquery = criteriaQuery.subquery(ProductAttributeTerm.class);
+                final Root<ProductAttributeTerm> productAttributeTerm = subquery.from(ProductAttributeTerm.class);
+                subquery.select(productAttributeTerm.get("product").get("productId"));
+                subquery
+                        .where(
+                                criteriaBuilder.in(
+                                        productAttributeTerm.get("attributeTerm").get("attributeTermId")
+                                ).value(attributeIdList)
+                        );
+                predicates.add(root.get("productId").in(subquery));
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
 
-
-
+            }
+        };
+    }
 
 
 }

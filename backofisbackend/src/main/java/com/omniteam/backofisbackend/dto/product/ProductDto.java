@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductDto {
-
     private Integer productId;
     private Integer categoryId;
     private String categoryName;

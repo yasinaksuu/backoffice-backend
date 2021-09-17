@@ -5,6 +5,7 @@ import com.omniteam.backofisbackend.dto.product.*;
 import com.omniteam.backofisbackend.entity.Product;
 import com.omniteam.backofisbackend.entity.ProductImage;
 import com.omniteam.backofisbackend.entity.ProductPrice;
+import org.hibernate.id.uuid.StandardRandomStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -35,6 +36,8 @@ public interface ProductMapper  {
 
     List<ProductImageDto> mapToProductImageDtos(List<ProductImage> productImage);
 
+    @Mapping(target = "isActive", expression = "java(productPrice.getIsActive())")
+    @Mapping(target = "createdDate", expression = "java(productPrice.getIsActive())")
     List<ProductPriceDTO> mapToProductPriceDto(List<ProductPrice> productPrice);
 
 }
