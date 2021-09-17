@@ -25,6 +25,7 @@ public class ProductDto {
     private Integer unitsInStock;
     private String barcode;
     private Boolean isActive;
+
     private List<ProductImageDto> productImageDtoList;
     private List<ProductPriceDTO> productPriceDTOS;
 

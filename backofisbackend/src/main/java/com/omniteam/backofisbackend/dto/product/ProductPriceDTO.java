@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ProductPriceDTO {
 
-    private Integer productPriceId;
+
     private Double actualPrice;
     private Double discountedPrice;
     private Boolean isActive;

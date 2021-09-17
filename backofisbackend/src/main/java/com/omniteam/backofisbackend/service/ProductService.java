@@ -3,6 +3,7 @@ package com.omniteam.backofisbackend.service;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.product.ProductDto;
 import com.omniteam.backofisbackend.dto.product.ProductGetAllDto;
+import com.omniteam.backofisbackend.dto.product.ProductSaveRequestDTO;
 import com.omniteam.backofisbackend.dto.product.ProductUpdateDTO;
 import com.omniteam.backofisbackend.requests.ProductGetAllRequest;
 import com.omniteam.backofisbackend.shared.result.DataResult;
@@ -14,11 +15,12 @@ import java.util.List;
 
 public interface ProductService {
 
-   //  DataResult<PagedDataWrapper<ProductGetAllDto>> getAll(int page, int size, String searchKey);
+    public Result saveProductImageDB(MultipartFile file,Integer productId) throws IOException;
+
+    public Integer saveProductToDB(ProductSaveRequestDTO productSaveRequestDTO);
 
     public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) ;
 
-    public Result saveProductToDB(MultipartFile file , String productName, String description, Integer unitsInStock, String barcode, Integer categoryId, List<Integer> attributeId,Double actualPrice,String shortDescription) throws IOException;
 
     public DataResult<ProductDto> getById(Integer productId);
 
