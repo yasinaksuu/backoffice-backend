@@ -6,13 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
+import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserAddRequest {
+public class UserUpdateRequest {
     private String firstName;
     private String lastName;
     private String title;
@@ -22,5 +21,5 @@ public class UserAddRequest {
     private Integer countryId;
     private Integer cityId;
     private Integer districtId;
-    private Set<Integer> roleIdList;
+    private List<Integer> roleIdList;
 }

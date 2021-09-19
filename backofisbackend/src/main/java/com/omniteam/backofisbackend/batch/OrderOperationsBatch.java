@@ -1,9 +1,6 @@
 package com.omniteam.backofisbackend.batch;
 
-import com.omniteam.backofisbackend.batch.step.OrderUnexpectedStateStep;
-import com.omniteam.backofisbackend.batch.step.OrderWriteProccessFailedStep;
 import com.omniteam.backofisbackend.batch.step.OrderWriteSuccessfullNotifyStep;
-import com.omniteam.backofisbackend.batch.step.OrderWriteToFileStep;
 import com.omniteam.backofisbackend.dto.jobrequest.JobRequestAddDto;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.entity.RequestStatus;
@@ -23,11 +20,15 @@ import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.RequestScope;
 
-@Component
+@Service
 public class OrderOperationsBatch {
 
     @Autowired
@@ -40,24 +41,12 @@ public class OrderOperationsBatch {
     private JobRequestServiceImpl jobRequestService;
 
     @Bean
-    private Step writeFileStep() {
-        return OrderWriteToFileStep.builder().build();
-    }
-
-    @Bean
-    private Step writeFailStep() {
-        return OrderWriteProccessFailedStep.builder().build();
-    }
-
-    @Bean
-    private Step writeUnexpectedStep() {
-        return OrderUnexpectedStateStep.builder().build();
-    }
-
-    @Bean
     private OrderWriteSuccessfullNotifyStep writeDoneStep(JobRequestServiceImpl jobRequestService) {
         return new OrderWriteSuccessfullNotifyStep(jobRequestService);
     }
+
+    @Autowired
+    SessionFactory sessionFactory;
 
     @Bean
     public HibernateCursorItemReader orderItemReader(SessionFactory sessionFactory) {
@@ -67,10 +56,6 @@ public class OrderOperationsBatch {
                 .sessionFactory(sessionFactory)
                 .queryString("from orders").build();
     }
-
-
-    @Autowired
-    SessionFactory sessionFactory;
 
 
     @Bean
@@ -98,7 +83,6 @@ public class OrderOperationsBatch {
         StepExecutionListener listener = new StepExecutionListener() {
             @Override
             public void beforeStep(StepExecution stepExecution) {
-
             }
 
             @Override
@@ -127,16 +111,13 @@ public class OrderOperationsBatch {
 
     @Qualifier("orderExporterJob")
     @Bean
+    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public Job OrderExporterJob() {
         return this.jobBuilderFactory.get("order-export")
                 .incrementer(new RunIdIncrementer())
-//                .preventRestart()
+                .preventRestart()
                 .start(Write2FileStep())
                 .next(fileReady())
-//                .on("COMPLETED").to(writeDoneStep())
-//                .from(writeFileStep()).on("FAILED").to(writeFailStep())
-//                .from(writeFileStep()).on("*").to(writeUnexpectedStep())
-//                .end()
                 .build();
 
     }

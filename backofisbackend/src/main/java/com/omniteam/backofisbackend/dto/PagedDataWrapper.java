@@ -44,6 +44,16 @@ public class PagedDataWrapper<T> {
                 pagedData.isLast()
         );
     }
+    public PagedDataWrapper(List<T> content,Page page) {
+        this(
+                content,
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
+    }
 
 
     public List<T> getContent() {

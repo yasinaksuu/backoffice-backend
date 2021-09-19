@@ -1,9 +1,10 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
-import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
-import com.omniteam.backofisbackend.entity.*;
+import com.omniteam.backofisbackend.entity.Order;
+import com.omniteam.backofisbackend.entity.OrderDetail;
+import com.omniteam.backofisbackend.entity.ProductPrice;
 import com.omniteam.backofisbackend.repository.OrderDetailRepository;
 import com.omniteam.backofisbackend.repository.OrderRepository;
 import com.omniteam.backofisbackend.repository.ProductPriceRepository;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailMapper orderDetailMapper;
     private final ProductPriceRepository productPriceRepository;
     private final OrderDetailRepository orderDetailRepository;
+
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, ProductPriceRepository productPriceRepository, OrderDetailRepository orderDetailRepository) {
         this.orderRepository = orderRepository;
@@ -90,8 +91,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public DataResult<?> startOrderReportExport() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        JobParameters parameters = new JobParametersBuilder().addParameter("proccess-key",new JobParameter(UUID.randomUUID().toString())).toJobParameters();
-        this.jobLauncher.run(orderExporterJob,parameters);
+        JobParameters parameters = new JobParametersBuilder().addParameter("proccess-key", new JobParameter(UUID.randomUUID().toString())).toJobParameters();
+        this.jobLauncher.run(orderExporterJob, parameters);
         return DataResult.builder().build();
     }
 
@@ -102,30 +103,30 @@ public class OrderServiceImpl implements OrderService {
         order.getOrderDetails().forEach(orderDetail -> {
             ProductPrice productPrice =
                     this.productPriceRepository.findFirstByProductAndIsActiveOrderByCreatedDateDesc(
-                            orderDetail.getProduct(),true);
+                            orderDetail.getProduct(), true);
             orderDetail.setOrder(order);
             orderDetail.setProductPrice(productPrice);
         });
         this.orderRepository.save(order);
         this.orderDetailRepository.saveAll(order.getOrderDetails());
         OrderDto orderDto = this.orderMapper.toOrderDto(order);
-        return new SuccessDataResult<>("ürün sepete eklendi",orderDto);
+        return new SuccessDataResult<>("ürün sepete eklendi", orderDto);
     }
 
     @Override
     @Transactional
     public DataResult<OrderDto> update(OrderUpdateRequest orderUpdateRequest) {
         Order orderToUpdate = this.orderRepository.getById(orderUpdateRequest.getOrderId());
-        this.orderMapper.update(orderToUpdate,orderUpdateRequest);
+        this.orderMapper.update(orderToUpdate, orderUpdateRequest);
         orderToUpdate.setModifiedDate(LocalDateTime.now());
-        for(OrderDetail orderDetail: orderToUpdate.getOrderDetails()){
+        for (OrderDetail orderDetail : orderToUpdate.getOrderDetails()) {
             Optional<OrderDetailUpdateRequest> orderDetailUpdateRequest
                     = orderUpdateRequest.getOrderDetails()
-                        .stream()
-                        .filter(od -> od.getOrderDetailId().intValue() == orderDetail.getOrderDetailId().intValue())
+                    .stream()
+                    .filter(od -> od.getOrderDetailId().intValue() == orderDetail.getOrderDetailId().intValue())
                     .findFirst();
-            if (orderDetailUpdateRequest.isPresent()){
-                this.orderDetailMapper.update(orderDetail,orderDetailUpdateRequest.get());
+            if (orderDetailUpdateRequest.isPresent()) {
+                this.orderDetailMapper.update(orderDetail, orderDetailUpdateRequest.get());
                 orderDetail.setModifiedDate(LocalDateTime.now());
             }
 
@@ -145,7 +146,7 @@ public class OrderServiceImpl implements OrderService {
         orderToDelete.setIsActive(false);
         orderToDelete.setModifiedDate(LocalDateTime.now());
 
-        for(OrderDetail orderDetail: orderToDelete.getOrderDetails()){
+        for (OrderDetail orderDetail : orderToDelete.getOrderDetails()) {
             orderDetail.setModifiedDate(LocalDateTime.now());
             orderDetail.setStatus("DELETED");
             orderDetail.setIsActive(false);

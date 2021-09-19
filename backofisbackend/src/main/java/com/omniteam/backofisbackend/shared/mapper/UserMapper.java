@@ -6,6 +6,8 @@ import com.omniteam.backofisbackend.requests.user.UserAddRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(
         componentModel = "spring",
         uses = {RoleMapper.class}
@@ -20,4 +22,17 @@ public interface UserMapper {
     @Mapping(target = "city.cityId", source = "cityId")
     @Mapping(target = "district.districtId",source = "districtId")
     User toUserFromUserAddRequest(UserAddRequest userAddRequest);
+
+
+    @Mapping(target = "country.countryId", source = "countryId")
+    @Mapping(target = "city.cityId", source = "cityId")
+    @Mapping(target = "district.districtId",source = "districtId")
+    List<User> toUserList(List<UserDto> userDtoList);
+
+    @Mapping(target = "country.countryId", source = "countryId")
+    @Mapping(target = "city.cityId", source = "cityId")
+    @Mapping(target = "district.districtId",source = "districtId")
+    List<UserDto> toUserDtoList(List<User> userList);
+
+
 }

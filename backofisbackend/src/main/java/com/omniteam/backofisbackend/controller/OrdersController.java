@@ -10,11 +10,11 @@ import com.omniteam.backofisbackend.requests.order.OrderUpdateRequest;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.service.OrderService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
+import com.omniteam.backofisbackend.shared.result.Result;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
-import com.omniteam.backofisbackend.shared.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +27,7 @@ public class OrdersController {
 
     private final OrderService orderService;
     private final OrderDetailService orderDetailService;
+
     @Autowired
     public OrdersController(OrderService orderService, OrderDetailService orderDetailService) {
         this.orderService = orderService;
@@ -36,14 +37,14 @@ public class OrdersController {
     @GetMapping(
             path = "/getbyid/{orderid}"
     )
-    public ResponseEntity<DataResult<OrderDto>> getById(@PathVariable(name = "orderid") int orderId){
+    public ResponseEntity<DataResult<OrderDto>> getById(@PathVariable(name = "orderid") int orderId) {
         return ResponseEntity.ok(this.orderService.getById(orderId));
     }
 
     @PostMapping(
             path = "/getall"
     )
-    public ResponseEntity<DataResult<PagedDataWrapper<OrderDto>>> getAll(@RequestBody OrderGetAllRequest orderGetAllRequest){
+    public ResponseEntity<DataResult<PagedDataWrapper<OrderDto>>> getAll(@RequestBody OrderGetAllRequest orderGetAllRequest) {
         return ResponseEntity.ok(this.orderService.getAll(orderGetAllRequest));
     }
 
@@ -57,28 +58,28 @@ public class OrdersController {
     @GetMapping(
             path = "/getorderdetails/{orderid}"
     )
-    public ResponseEntity<DataResult<List<OrderDetailDto>>> getOrderDetails(@PathVariable(name = "orderid") int orderId){
+    public ResponseEntity<DataResult<List<OrderDetailDto>>> getOrderDetails(@PathVariable(name = "orderid") int orderId) {
         return ResponseEntity.ok(this.orderDetailService.getByOrderId(orderId));
     }
 
     @PostMapping(
             path = "/add"
     )
-    public ResponseEntity<DataResult<OrderDto>> add(@RequestBody OrderAddRequest orderAddRequest){
+    public ResponseEntity<DataResult<OrderDto>> add(@RequestBody OrderAddRequest orderAddRequest) {
         return ResponseEntity.ok(this.orderService.add(orderAddRequest));
     }
 
     @PostMapping(
             path = "/update"
     )
-    public ResponseEntity<DataResult<OrderDto>> update(@RequestBody OrderUpdateRequest orderUpdateRequest){
+    public ResponseEntity<DataResult<OrderDto>> update(@RequestBody OrderUpdateRequest orderUpdateRequest) {
         return ResponseEntity.ok(this.orderService.update(orderUpdateRequest));
     }
 
     @PostMapping(
             path = "/delete"
     )
-    public ResponseEntity<Result> delete(@RequestBody OrderDeleteRequest orderDeleteRequest){
+    public ResponseEntity<Result> delete(@RequestBody OrderDeleteRequest orderDeleteRequest) {
         return ResponseEntity.ok(this.orderService.delete(orderDeleteRequest));
     }
 }
