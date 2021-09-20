@@ -28,5 +28,10 @@ public class Role extends BaseEntity {
     private List<UserRole> userRoles;
 
 
+    public Role(String roleName)
+    {
+        this.roleName=roleName;
+    }
+
 
 }

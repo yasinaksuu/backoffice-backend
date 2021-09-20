@@ -1,13 +1,16 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.role.RoleDto;
 import com.omniteam.backofisbackend.dto.user.UserDto;
+import com.omniteam.backofisbackend.entity.Role;
 import com.omniteam.backofisbackend.entity.User;
 import com.omniteam.backofisbackend.entity.UserRole;
 import com.omniteam.backofisbackend.repository.RoleRepository;
 import com.omniteam.backofisbackend.repository.UserRepository;
 import com.omniteam.backofisbackend.repository.UserRoleRepository;
 import com.omniteam.backofisbackend.requests.user.UserAddRequest;
+import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
 import com.omniteam.backofisbackend.service.RoleService;
 import com.omniteam.backofisbackend.service.UserService;
 import com.omniteam.backofisbackend.shared.mapper.UserMapper;
@@ -16,11 +19,15 @@ import com.omniteam.backofisbackend.shared.result.Result;
 import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -54,19 +61,65 @@ public class UserServiceImpl implements UserService {
         return new SuccessDataResult<>(userDto);
     }
 
-    @Override
     @Transactional
+    @Override
     public Result add(UserAddRequest userAddRequest) {
         User user = this.userMapper.toUserFromUserAddRequest(userAddRequest);
+        if(userAddRequest.getCountryId()==null)
+            user.setCountry(null);
+        if(userAddRequest.getCityId()==null)
+            user.setCity(null);
+        if(userAddRequest.getDistrictId()==null)
+            user.setDistrict(null);
         //to do kullanıcı parola hashleme işlemleri...
-        List<UserRole> userRoles = new ArrayList<>(userAddRequest.getRoleIdList().size());
-        userAddRequest.getRoleIdList().forEach(roleId ->{
-            UserRole userRole = new UserRole();
-            userRole.setUser(user);
-            userRole.setRole(this.roleRepository.getById(roleId));
-        });
         this.userRepository.save(user);
-        this.userRoleRepository.saveAll(userRoles);
-        return new SuccessResult("Kullanıcı başarıyla eklendi.");
+        if(userAddRequest.getRoleIdList()!=null) // Role atama işlemleri
+        {
+            List<Role> wantingTheRolesToUser = this.roleRepository.findAllByRoleIdIn(userAddRequest.getRoleIdList());
+            Set<UserRole> userRoles = wantingTheRolesToUser.stream().map(role->{
+                UserRole userRole = new UserRole();
+                userRole.setUser(user);
+                userRole.setRole(role);
+                return userRole;
+            }).collect(Collectors.toSet());
+            this.userRoleRepository.saveAll(userRoles);
+        }
+        return new SuccessResult(user.getUserId(),"Kullanıcı başarıyla eklendi.");
+    }
+
+    @Transactional
+    @Override
+    public Result update(Integer userId,UserUpdateRequest userUpdateRequest) {
+        User existingUser = this.userRepository.getById(userId);
+        this.userMapper.update(existingUser,userUpdateRequest);
+        if(userUpdateRequest.getCountryId()==null)
+            existingUser.setCountry(null);
+        if(userUpdateRequest.getCityId()==null)
+            existingUser.setCity(null);
+        if(userUpdateRequest.getDistrictId()==null)
+            existingUser.setDistrict(null);
+
+        this.userRepository.save(existingUser);
+        this.userRoleRepository.deleteAllByUser(existingUser);
+        if(userUpdateRequest.getRoleIdList()!=null) // Role atama işlemleri
+        {
+            List<Role> wantingTheRolesToUser = this.roleRepository.findAllByRoleIdIn(userUpdateRequest.getRoleIdList());
+            Set<UserRole> userRoles = wantingTheRolesToUser.stream().map(role->{
+                UserRole userRole = new UserRole();
+                userRole.setUser(existingUser);
+                userRole.setRole(role);
+                return userRole;
+            }).collect(Collectors.toSet());
+            this.userRoleRepository.saveAll(userRoles);
+        }
+        return new SuccessResult(existingUser.getUserId(),"Kullanıcı başarıyla güncellendi.");
+    }
+
+    @Override
+    public Result getAll(Pageable pageable) {
+        Page<User> userPage = this.userRepository.findAll(pageable);
+        List<UserDto> userDtoList = this.userMapper.toUserDtoList(userPage.getContent());
+        PagedDataWrapper<UserDto> userPagedWrapper = new PagedDataWrapper(userDtoList,userPage);
+        return new SuccessDataResult(userPagedWrapper);
     }
 }

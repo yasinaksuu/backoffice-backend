@@ -1,8 +1,14 @@
 package com.omniteam.backofisbackend.shared.result;
 
+import com.omniteam.backofisbackend.entity.BaseEntity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class Result {
     private boolean success;
+    @Getter
+    private Integer id;
     private String message;
 
     public Result(boolean success) {
@@ -14,6 +20,11 @@ public class Result {
         this.message = message;
     }
 
+    public Result(Boolean success,Integer id) {
+        this.id=id;
+        this.success=success;
+    }
+
     public boolean isSuccess() {
         return this.success;
     }
@@ -21,4 +32,10 @@ public class Result {
     public String getMessage() {
         return this.message;
     }
+
+    protected void setMessage(String message) {this.message=message;}
+
+
+
+
 }
