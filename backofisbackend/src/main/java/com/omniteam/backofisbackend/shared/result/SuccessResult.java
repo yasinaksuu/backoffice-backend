@@ -17,4 +17,8 @@ public class SuccessResult extends Result {
     public SuccessResult(Integer id) {
         super(true,id);
     }
+    public SuccessResult(Integer id,String message) {
+        super(true,id);
+        this.setMessage(message);
+    }
 }

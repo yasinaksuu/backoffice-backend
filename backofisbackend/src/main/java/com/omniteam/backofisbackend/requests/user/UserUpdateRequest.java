@@ -6,7 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,5 +22,5 @@ public class UserUpdateRequest {
     private Integer countryId;
     private Integer cityId;
     private Integer districtId;
-    private List<Integer> roleIdList;
+    private Set<Integer> roleIdList;
 }

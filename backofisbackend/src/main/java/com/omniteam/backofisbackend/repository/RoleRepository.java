@@ -25,6 +25,10 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
     @Transactional
     List<Role> findAllByRoleIdIn(Set<Integer> roleIds);
 
+    List<Role> findAllBy();
+
+    Integer countAllBy();
+
 
 
 }

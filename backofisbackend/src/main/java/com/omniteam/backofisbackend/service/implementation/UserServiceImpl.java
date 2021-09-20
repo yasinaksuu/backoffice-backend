@@ -82,14 +82,37 @@ public class UserServiceImpl implements UserService {
                 userRole.setRole(role);
                 return userRole;
             }).collect(Collectors.toSet());
-            this.userRepository.setUserRoles(user,userRoles);
+            this.userRoleRepository.saveAll(userRoles);
         }
-        return new SuccessResult("Kullanıcı başarıyla eklendi.");
+        return new SuccessResult(user.getUserId(),"Kullanıcı başarıyla eklendi.");
     }
 
+    @Transactional
     @Override
-    public Result update(UserUpdateRequest userUpdateRequest) {
-        return null;
+    public Result update(Integer userId,UserUpdateRequest userUpdateRequest) {
+        User existingUser = this.userRepository.getById(userId);
+        this.userMapper.update(existingUser,userUpdateRequest);
+        if(userUpdateRequest.getCountryId()==null)
+            existingUser.setCountry(null);
+        if(userUpdateRequest.getCityId()==null)
+            existingUser.setCity(null);
+        if(userUpdateRequest.getDistrictId()==null)
+            existingUser.setDistrict(null);
+
+        this.userRepository.save(existingUser);
+        this.userRoleRepository.deleteAllByUser(existingUser);
+        if(userUpdateRequest.getRoleIdList()!=null) // Role atama işlemleri
+        {
+            List<Role> wantingTheRolesToUser = this.roleRepository.findAllByRoleIdIn(userUpdateRequest.getRoleIdList());
+            Set<UserRole> userRoles = wantingTheRolesToUser.stream().map(role->{
+                UserRole userRole = new UserRole();
+                userRole.setUser(existingUser);
+                userRole.setRole(role);
+                return userRole;
+            }).collect(Collectors.toSet());
+            this.userRoleRepository.saveAll(userRoles);
+        }
+        return new SuccessResult(existingUser.getUserId(),"Kullanıcı başarıyla güncellendi.");
     }
 
     @Override

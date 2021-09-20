@@ -33,6 +33,8 @@ public class Result {
         return this.message;
     }
 
+    protected void setMessage(String message) {this.message=message;}
+
 
 
 

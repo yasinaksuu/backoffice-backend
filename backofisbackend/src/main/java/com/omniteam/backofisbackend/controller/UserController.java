@@ -1,7 +1,7 @@
 package com.omniteam.backofisbackend.controller;
 
 import com.omniteam.backofisbackend.requests.user.UserAddRequest;
-import com.omniteam.backofisbackend.service.RoleService;
+import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
 import com.omniteam.backofisbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -25,9 +25,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity saveUser(@RequestBody UserAddRequest addRequest)
-    {
+    public ResponseEntity saveUser(@RequestBody UserAddRequest addRequest) {
         return ResponseEntity.ok(userService.add(addRequest));
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity updateUser(@PathVariable("id") Integer userId, @RequestBody UserUpdateRequest updateRequest) {
+        return ResponseEntity.ok(userService.update(userId, updateRequest));
     }
 
 

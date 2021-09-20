@@ -11,6 +11,6 @@ import org.springframework.data.domain.Pageable;
 public interface UserService {
     DataResult<UserDto> getByEmail(String email);
     Result add(UserAddRequest userAddRequest);
-    Result update(UserUpdateRequest userUpdateRequest);
+    Result update(Integer userId,UserUpdateRequest userUpdateRequest);
     Result getAll(Pageable pageable);
 }
