@@ -172,6 +172,7 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productPage =
                 productRepository.findAll(
                         ProductSpec.getAllByFilter(
+                                productGetAllRequest.getCategoryId(),
                                 productGetAllRequest.getSearchKey(),
                                 productGetAllRequest.getMinPrice(),
                                 productGetAllRequest.getMaxPrice(),

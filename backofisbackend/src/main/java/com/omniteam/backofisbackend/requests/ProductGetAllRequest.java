@@ -13,7 +13,8 @@ import java.util.List;
 public class ProductGetAllRequest {
 
     private Integer productId ;
-    private  String searchKey;
+    private Integer categoryId ;
+    private  String searchKey="";
     private Double minPrice;
     private  Double maxPrice;
     private LocalDateTime startDate;

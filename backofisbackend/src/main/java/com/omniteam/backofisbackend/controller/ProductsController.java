@@ -28,6 +28,7 @@ import java.util.List;
 public class ProductsController {
 
     private final ProductService productService;
+
     @Autowired
     public ProductsController(ProductService productService) {
         this.productService = productService;
@@ -35,55 +36,22 @@ public class ProductsController {
 
     @ApiOperation("Product Kayıt Yapan Servis")
     @PostMapping(path = "/add")
-    public ResponseEntity<Integer> saveProduct(@RequestBody ProductSaveRequestDTO productSaveRequestDTO){
+    public ResponseEntity<Integer> saveProduct(@RequestBody ProductSaveRequestDTO productSaveRequestDTO) {
         return ResponseEntity.ok(productService.saveProductToDB(productSaveRequestDTO));
     }
 
     @ApiOperation("Product Image Kayıt Yapan Servis")
     @PostMapping(path = "/Imageadd")
-        public ResponseEntity<Result> saveProductImage (
-                @RequestParam("file") MultipartFile file,
-                @RequestParam("productId") Integer productId
-                ){
-            String message = "";
-            try {
-                Result result = productService.saveProductImageDB(
-                        file,
-                        productId
-                        );
-
-                return ResponseEntity.ok(result);
-            } catch (Exception e) {
-                message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-                return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ErrorResult(message));
-            }
-
-        }
-
-
-    /*
-    @ApiOperation("Product Kayıt Yapan Servis")
-    @PostMapping(path = "/add")
-    public ResponseEntity<Result> saveProduct(
-            @RequestParam("file") MultipartFile file, @RequestParam("productName") String productName,
-            @RequestParam("description") String description,
-            @RequestParam("unitsInStock") Integer unitsInStock,
-            @RequestParam("barcode") String barcode, @RequestParam("categoryId") Integer categoryId,
-            @RequestParam("attributeId") List<Integer> attributeId,
-            @RequestParam("actualPrice") Double actualPrice ,
-            @RequestParam("shortDescription") String shortDescription ){
+    public ResponseEntity<Result> saveProductImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("productId") Integer productId
+    ) {
         String message = "";
         try {
-            Result result = productService.saveProductToDB(
+            Result result = productService.saveProductImageDB(
                     file,
-                    productName,
-                    description,
-                    unitsInStock,
-                    barcode,
-                    categoryId,
-                    attributeId,
-                    actualPrice,
-                    shortDescription);
+                    productId
+            );
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -92,25 +60,24 @@ public class ProductsController {
         }
 
     }
-*/
+
     @ApiOperation("Id ye göre Product Getiren Servis")
     @GetMapping(path = "/getbyid/{productId}")
-    public ResponseEntity<DataResult<ProductDto>> getById(@PathVariable(name = "productId") int productId){
+    public ResponseEntity<DataResult<ProductDto>> getById(@PathVariable(name = "productId") int productId) {
         return ResponseEntity.ok(productService.getById(productId));
     }
 
     @ApiOperation("Tüm Productları getiren servis")
     @PostMapping(path = "/getall")
-    public ResponseEntity<DataResult<PagedDataWrapper<ProductDto>>> getAll(@RequestBody ProductGetAllRequest productGetAllRequest){
+    public ResponseEntity<DataResult<PagedDataWrapper<ProductDto>>> getAll(@RequestBody ProductGetAllRequest productGetAllRequest) {
         return ResponseEntity.ok(productService.getAll(productGetAllRequest));
     }
 
     @ApiOperation("Product Güncelleme Yapan  Servis")
     @PostMapping(path = "/update")
-    public ResponseEntity<Result> update(@RequestBody ProductUpdateDTO productUpdateDTO){
+    public ResponseEntity<Result> update(@RequestBody ProductUpdateDTO productUpdateDTO) {
         return ResponseEntity.ok(productService.productUpdate(productUpdateDTO));
     }
-
 
 
 }

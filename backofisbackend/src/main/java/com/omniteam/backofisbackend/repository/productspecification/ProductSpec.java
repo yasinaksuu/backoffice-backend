@@ -1,10 +1,8 @@
 package com.omniteam.backofisbackend.repository.productspecification;
 
 
-import com.omniteam.backofisbackend.entity.AttributeTerm;
-import com.omniteam.backofisbackend.entity.Product;
-import com.omniteam.backofisbackend.entity.ProductAttributeTerm;
-import com.omniteam.backofisbackend.entity.ProductPrice;
+import com.omniteam.backofisbackend.entity.*;
+import com.omniteam.backofisbackend.entity.Order;
 import io.swagger.models.auth.In;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -15,6 +13,7 @@ import java.util.List;
 
 public class ProductSpec {
     public static Specification<Product> getAllByFilter(
+            Integer categoryId,
             String searchKey,
             Double minPrice,
             Double maxPrice,
@@ -23,6 +22,7 @@ public class ProductSpec {
             List<List<Integer>> attributeIdsCollections) {
         Specification specification = Specification
                 .where(searchProductBySearchKey(searchKey)
+                        .and(getProductByCategoryId(categoryId))
                         .and(getProductByMinPrice(minPrice))
                         .and(getProductByMaxPrice(maxPrice))
                         .and(getProductByStartDate(startDate))
@@ -35,12 +35,18 @@ public class ProductSpec {
         return specification;
     }
 
-
-    public static Specification<Product> searchProductBySearchKey(String searchKey) {
+    public static Specification<Product> getProductByCategoryId(Integer categoryId){
         return (root, query, criteriaBuilder) -> {
-            if (searchKey == null || searchKey.isEmpty()) {
+            if(categoryId ==null || categoryId == 0){
                 return criteriaBuilder.conjunction();
             }
+            Predicate equalPredicate = criteriaBuilder.equal(root.get("category"), categoryId);
+            return equalPredicate;
+        };
+    }
+    public static Specification<Product> searchProductBySearchKey(String searchKey) {
+        return (root, query, criteriaBuilder) -> {
+
             Predicate likePredicate = criteriaBuilder.or(criteriaBuilder.like(
                     root.get("productName"), "%"+searchKey+"%"
             ),criteriaBuilder.like(
