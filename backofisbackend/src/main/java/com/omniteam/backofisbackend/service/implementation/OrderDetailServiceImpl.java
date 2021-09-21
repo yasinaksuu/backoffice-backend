@@ -18,6 +18,7 @@ import java.util.List;
 public class OrderDetailServiceImpl implements OrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
     private final OrderDetailMapper orderDetailMapper;
+
     @Autowired
     public OrderDetailServiceImpl(OrderDetailRepository orderDetailRepository, OrderDetailMapper orderDetailMapper) {
         this.orderDetailRepository = orderDetailRepository;
@@ -26,8 +27,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Override
     public DataResult<List<OrderDetailDto>> getByOrderId(int orderId) {
-        if (orderId == 0){
-            return new ErrorDataResult<>("Lütfen detaylarını görmek istediğiniz siparişi belirtiniz",null);
+        if (orderId == 0) {
+            return new ErrorDataResult<>("Lütfen detaylarını görmek istediğiniz siparişi belirtiniz", null);
         }
         Order order = new Order();
         order.setOrderId(orderId);

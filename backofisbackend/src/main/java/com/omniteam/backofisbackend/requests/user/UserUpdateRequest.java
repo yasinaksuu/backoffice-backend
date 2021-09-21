@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserAddRequest {
+public class UserUpdateRequest {
     private String firstName;
     private String lastName;
     private String title;

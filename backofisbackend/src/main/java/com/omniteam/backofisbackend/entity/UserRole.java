@@ -27,4 +27,5 @@ public class UserRole extends BaseEntity {
     @JoinColumn(name = "role_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Role role;
+
 }
