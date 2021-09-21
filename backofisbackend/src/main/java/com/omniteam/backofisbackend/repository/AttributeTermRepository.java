@@ -13,4 +13,4 @@ public interface AttributeTermRepository extends JpaRepository<AttributeTerm,Int
 
     List<AttributeTerm> findAllByAttribute_AttributeId(Integer attributeId);
 
-}
+ }

@@ -29,7 +29,7 @@ public class ProductImage extends BaseEntity {
 
     @Lob
     @Column(name = "image")
-    private byte[] image;
+    private String image;
 
     @Column(name = "product_image_name")
     private String productImageName;

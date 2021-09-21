@@ -32,8 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,7 +67,9 @@ public class ProductServiceImpl implements ProductService {
           Product product =productRepository.getById(productId);
 
         ProductImage productImage = new ProductImage();
-        productImage.setImage(file.getBytes());
+      //  productImage.setImage(file.getBytes());
+        productImage.setImage(Base64.getEncoder().encodeToString(file.getBytes()));
+
         productImage.setProductImageName(fileName);
 
         String url = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -98,70 +99,19 @@ public class ProductServiceImpl implements ProductService {
         }
         productPriceRepository.saveAll(productPrice);
 
-        AttributeTerm attributeTerm =attributeTermRepository.getById(productSaveRequestDTO.getAttributeTermId());
-        ProductAttributeTerm productAttributeTerm =new ProductAttributeTerm();
 
-        productAttributeTerm.setAttributeTerm(attributeTerm);
-        productAttributeTerm.setAttribute(attributeTerm.getAttribute());
-        productAttributeTerm.setProduct(product);
-        productAttributeTermRepository.save(productAttributeTerm);
 
+        List<ProductAttributeTerm> productAttributeTerms =productMapper.mapToProductAttributeTerm(productSaveRequestDTO.getProductAttributeTermDTOS());
+
+        productAttributeTerms.stream().forEach(item->item.setProduct(product));
+
+
+        productAttributeTermRepository.saveAll(productAttributeTerms);
          return product.getProductId();
 
 
     }
 
-/*
-    @Transactional
-    public Result  saveProductToDB(MultipartFile file ,String productName,String description,Integer unitsInStock,String barcode,Integer categoryId,List<Integer> attributeId,Double actualPrice,String shortDescription) throws IOException {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
-        ProductImage productImage = new ProductImage();
-        productImage.setImage(file.getBytes());
-        productImage.setProductImageName(fileName);
-
-         Product product = new Product();
-
-         Category category = categoryRepository.getById(categoryId);
-         List<AttributeTerm> attributeTerms = attributeTermRepository.findAllById(attributeId);
-         List<ProductAttributeTerm> productAttributeTerms = attributeTerms.stream()
-                 .map(x->new ProductAttributeTerm(
-                         0,product,x.getAttribute(),x
-                 )).collect(Collectors.toList());
-
-
-
-         product.setProductName(productName);
-         product.setUnitsInStock(unitsInStock);
-         product.setDescription(description);
-         product.setBarcode(barcode);
-         product.setCategory(category);
-         product.setProductAttributeTerms(productAttributeTerms);
-         product.setShortDescription(shortDescription);
-
-
-          ProductPrice productPrice= new ProductPrice();
-          productPrice.setActualPrice(actualPrice);
-
-
-        String url = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("//download")
-                .path(fileName)
-                .toUriString();
-
-        productImage.setFilePath(url);
-
-
-        productRepository.save(product);
-
-        productImage.setProduct(product);
-        productPrice.setProduct(product);
-        productImageRepository.save(productImage);
-        productAttributeTermRepository.saveAll(productAttributeTerms);
-        productPriceRepository.save(productPrice);
-        return new SuccessResult(ResultMessage.PRODUCT_SAVE);
-    }
-*/
 
 
     @Override
@@ -209,49 +159,52 @@ public class ProductServiceImpl implements ProductService {
     public Result productUpdate(ProductUpdateDTO productUpdateDTO) {
         Product productToUpdate = productRepository.getById(productUpdateDTO.getProductId());
         if (Objects.nonNull(productToUpdate)) {
-            if (productUpdateDTO.getProductName()!=null) {
+            if (productUpdateDTO.getProductName() != null) {
                 productToUpdate.setProductName(productUpdateDTO.getProductName());
             }
-
-            if (productUpdateDTO.getDescription()!=null){
+            if (productUpdateDTO.getBarcode()!= null) {
+                productToUpdate.setBarcode(productUpdateDTO.getBarcode());
+            }
+            if (productUpdateDTO.getDescription() != null) {
                 productToUpdate.setDescription(productUpdateDTO.getDescription());
             }
 
-            if (productUpdateDTO.getShortDescription()!=null){
+            if (productUpdateDTO.getShortDescription() != null) {
                 productToUpdate.setShortDescription(productUpdateDTO.getShortDescription());
             }
 
-            if (productUpdateDTO.getUnitsInStock()!=null){
+            if (productUpdateDTO.getUnitsInStock() != null) {
                 productToUpdate.setUnitsInStock(productUpdateDTO.getUnitsInStock());
             }
 
-            if (productUpdateDTO.getUnitsInStock()!=null){
+            if (productUpdateDTO.getUnitsInStock() != null) {
                 productToUpdate.setUnitsInStock(productUpdateDTO.getUnitsInStock());
             }
 
-            if (productUpdateDTO.getActualPrice()!=null){
+            if (productUpdateDTO.getActualPrice() != null) {
                 ProductPrice productPrice = productPriceRepository.findByProduct_ProductId(productUpdateDTO.getProductId());
                 productPrice.setActualPrice(productUpdateDTO.getActualPrice());
                 productPriceRepository.save(productPrice);
             }
 
-            if (productUpdateDTO.getCategoryId()!=null){
+            if (productUpdateDTO.getCategoryId() != null) {
                 Category category = categoryRepository.getById(productUpdateDTO.getCategoryId());
                 productToUpdate.setCategory(category);
 
             }
-            if (productUpdateDTO.getAttributeTermId()!=null){
-                AttributeTerm attributeTerm =attributeTermRepository.getById(productUpdateDTO.getAttributeTermId());
-                ProductAttributeTerm productAttributeTerm = productAttributeTermRepository.findByProduct_ProductId(productUpdateDTO.getProductId());
-                productAttributeTerm.setAttributeTerm(attributeTerm);
-                productAttributeTerm.setAttribute(attributeTerm.getAttribute());
-                productAttributeTermRepository.save(productAttributeTerm);
+            if (productUpdateDTO.getProductAttributeTermDTOS() != null) {
+
+                List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productUpdateDTO.getProductAttributeTermDTOS());
+                productAttributeTermRepository.deleteAll(productAttributeTerms);
+
+                productAttributeTerms.stream().forEach(item -> item.setProduct(productToUpdate));
+                productAttributeTermRepository.saveAll(productAttributeTerms);
+
             }
+
+
         }
-
         productRepository.save(productToUpdate);
-         return new SuccessResult(ResultMessage.PRODUCT_UPDATED);
+        return new SuccessResult(ResultMessage.PRODUCT_UPDATED);
     }
-
-
-}
+    }

@@ -17,4 +17,6 @@ public class ProductImageDto {
     private String shortDescrition;
     private String productImageName;
     private String filePath;
+    private String image;
+
 }

@@ -27,6 +27,7 @@ public class ProductDto {
     private Boolean isActive;
 
     private List<ProductImageDto> productImageDtoList;
-    private List<ProductPriceDTO> productPriceDTOS;
+    private List<ProductPriceDTO> productPriceDTO;
+    private List<ProductAttributeTermDTO> productAttributeTermDTOS;
 
 }
