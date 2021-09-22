@@ -54,4 +54,12 @@ public interface ProductMapper  {
 
     List<ProductAttributeTerm> mapToProductAttributeTerm(List<ProductAttributeTermDTO> productAttributeTermDTOS);
 
+
+    @Mapping(source = "product.productId", target = "productId")
+    @Mapping(source = "attribute.attributeId", target = "attributeId")
+    @Mapping(source = "attributeTerm.attributeTermId", target = "attributeTermId")
+
+    ProductAttributeTermDTO mapToProductAttributeTermDto (ProductAttributeTerm productAttributeTerm);
+
+    List<ProductAttributeTermDTO> mapToProductAttributeTermDtoList(List<ProductAttributeTerm> productAttributeTermList);
 }
