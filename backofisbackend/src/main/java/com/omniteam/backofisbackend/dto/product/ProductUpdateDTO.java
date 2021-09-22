@@ -20,10 +20,10 @@ public class ProductUpdateDTO {
     private String description;
     private String shortDescription;
     private Integer unitsInStock;
-    private Double actualPrice;
     private Integer categoryId;
     private String barcode;
     private List<ProductAttributeTermDTO> productAttributeTermDTOS;
+    private List<ProductPriceDTO> productPriceDTOS;
 
 
 

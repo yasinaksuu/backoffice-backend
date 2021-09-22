@@ -63,8 +63,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
     public Result saveProductImageDB(MultipartFile file,Integer productId) throws IOException {
+
+        Product product =productRepository.getById(productId);
+        List<ProductImage> productImages = productImageRepository.findAllByProduct_ProductId(productId);
+        if(productImages!=null){
+            productImageRepository.deleteAllByProduct_ProductId(productId);
+
+        }
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-          Product product =productRepository.getById(productId);
 
         ProductImage productImage = new ProductImage();
       //  productImage.setImage(file.getBytes());
@@ -155,7 +161,7 @@ public class ProductServiceImpl implements ProductService {
         return new SuccessDataResult<>(productDto);
     }
 
-
+@Transactional
     public Result productUpdate(ProductUpdateDTO productUpdateDTO) {
         Product productToUpdate = productRepository.getById(productUpdateDTO.getProductId());
         if (Objects.nonNull(productToUpdate)) {
@@ -181,10 +187,13 @@ public class ProductServiceImpl implements ProductService {
                 productToUpdate.setUnitsInStock(productUpdateDTO.getUnitsInStock());
             }
 
-            if (productUpdateDTO.getActualPrice() != null) {
-                ProductPrice productPrice = productPriceRepository.findByProduct_ProductId(productUpdateDTO.getProductId());
-                productPrice.setActualPrice(productUpdateDTO.getActualPrice());
-                productPriceRepository.save(productPrice);
+            if (productUpdateDTO.getProductPriceDTOS()!= null) {
+                productAttributeTermRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
+                List<ProductPrice> productPrices = productMapper.mapToEntities(productUpdateDTO.getProductPriceDTOS());
+
+                productPrices.stream().forEach(item-> item.setProduct(productToUpdate));
+                productPriceRepository.saveAll(productPrices);
+
             }
 
             if (productUpdateDTO.getCategoryId() != null) {
@@ -193,12 +202,13 @@ public class ProductServiceImpl implements ProductService {
 
             }
             if (productUpdateDTO.getProductAttributeTermDTOS() != null) {
+               productAttributeTermRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
 
-                List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productUpdateDTO.getProductAttributeTermDTOS());
-                productAttributeTermRepository.deleteAll(productAttributeTerms);
 
-                productAttributeTerms.stream().forEach(item -> item.setProduct(productToUpdate));
-                productAttributeTermRepository.saveAll(productAttributeTerms);
+              List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productUpdateDTO.getProductAttributeTermDTOS());
+
+               productAttributeTerms.stream().forEach(item -> item.setProduct(productToUpdate));
+               productAttributeTermRepository.saveAll(productAttributeTerms);
 
             }
 

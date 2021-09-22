@@ -14,5 +14,6 @@ public interface ProductAttributeTermRepository extends JpaRepository<ProductAtt
 
      List<ProductAttributeTerm> findAllByProduct_ProductId(Integer productId);
 
+     List<ProductAttributeTerm> deleteAllByProduct_ProductId(Integer productId);
     //Integer deleteById(ProductAttributeTermDTO productAttributeTermDTO);
 }

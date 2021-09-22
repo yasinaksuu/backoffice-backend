@@ -27,7 +27,7 @@ public class ProductImage extends BaseEntity {
     private String filePath;
 
 
-    @Lob
+
     @Column(name = "image")
     private String image;
 
