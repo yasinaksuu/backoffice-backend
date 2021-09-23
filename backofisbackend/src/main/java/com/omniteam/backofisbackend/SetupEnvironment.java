@@ -27,11 +27,11 @@ public class SetupEnvironment {
     public void setupStandartRoles()
     {
         List<Role> roleList = new ArrayList();
-        roleList.add(new Role("standart"));
-        roleList.add(new Role("leader"));
-        roleList.add(new Role("chief"));
-        roleList.add(new Role("admin"));
-        roleList.add(new Role("owner"));
+        roleList.add(new Role("Admin"));
+        roleList.add(new Role("Seller"));
+        roleList.add(new Role("Chief"));
+        roleList.add(new Role("Manager"));
+        roleList.add(new Role("Standard"));
         roleRepository.saveAll(roleList);
     }
 

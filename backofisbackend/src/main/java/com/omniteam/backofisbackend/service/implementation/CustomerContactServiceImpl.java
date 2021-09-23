@@ -72,13 +72,13 @@ public class CustomerContactServiceImpl implements CustomerContactService {
         customerContactUpdateDtoList.forEach(customerContactUpdateDto -> {
             CustomerContact customerContactToUpdate = this.customerContactRepository.getById(customerContactUpdateDto.getCustomerContactId());
             this.customerContactMapper.update(customerContactToUpdate,customerContactUpdateDto);
-            if(customerContactUpdateDto.getCityId()==0){
+            if(customerContactUpdateDto.getCityId()==null || customerContactUpdateDto.getCityId()==0){
                 customerContactToUpdate.setCity(null);
             }
-            if (customerContactUpdateDto.getCountryId()==0){
+            if (customerContactUpdateDto.getCountryId()==null || customerContactUpdateDto.getCountryId()==0){
                 customerContactToUpdate.setCountry(null);
             }
-            if (customerContactUpdateDto.getDistrictId()==0){
+            if (customerContactUpdateDto.getDistrictId()==null || customerContactUpdateDto.getDistrictId()==0){
                 customerContactToUpdate.setDistrict(null);
             }
             this.customerContactRepository.save(customerContactToUpdate);
