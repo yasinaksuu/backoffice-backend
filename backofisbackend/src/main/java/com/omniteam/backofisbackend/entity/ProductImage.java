@@ -27,9 +27,9 @@ public class ProductImage extends BaseEntity {
     private String filePath;
 
 
-    @Lob
+
     @Column(name = "image")
-    private byte[] image;
+    private String image;
 
     @Column(name = "product_image_name")
     private String productImageName;
@@ -38,8 +38,6 @@ public class ProductImage extends BaseEntity {
     @JoinColumn(name = "product_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
-
-
 
 
 

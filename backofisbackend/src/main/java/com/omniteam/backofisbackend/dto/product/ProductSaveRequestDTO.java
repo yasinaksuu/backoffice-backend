@@ -24,6 +24,6 @@ public class ProductSaveRequestDTO implements Serializable {
     private String shortDescription;
     private Integer unitsInStock;
     private String barcode;
-    private Integer attributeTermId;
+    private List<ProductAttributeTermDTO> productAttributeTermDTOS;
     private List<ProductPriceDTO> productPriceDTOS;
 }

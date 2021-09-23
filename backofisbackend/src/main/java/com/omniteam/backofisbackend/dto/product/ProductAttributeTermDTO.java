@@ -3,6 +3,7 @@ package com.omniteam.backofisbackend.dto.product;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.omniteam.backofisbackend.entity.Attribute;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,12 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ProductImageDto {
+public class ProductAttributeTermDTO {
 
-    private Integer productImageId;
-    private String shortDescrition;
-    private String productImageName;
-    private String filePath;
-    private String image;
+    private Integer productId;
+    private Integer attributeId;
+    private Integer attributeTermId;
 
 }
