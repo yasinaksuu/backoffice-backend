@@ -188,9 +188,9 @@ public class ProductServiceImpl implements ProductService {
             }
 
             if (productUpdateDTO.getProductPriceDTOS()!= null) {
-                productAttributeTermRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
-                List<ProductPrice> productPrices = productMapper.mapToEntities(productUpdateDTO.getProductPriceDTOS());
 
+                productPriceRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
+                List<ProductPrice> productPrices = productMapper.mapToEntities(productUpdateDTO.getProductPriceDTOS());
                 productPrices.stream().forEach(item-> item.setProduct(productToUpdate));
                 productPriceRepository.saveAll(productPrices);
 
@@ -201,12 +201,11 @@ public class ProductServiceImpl implements ProductService {
                 productToUpdate.setCategory(category);
 
             }
+
             if (productUpdateDTO.getProductAttributeTermDTOS() != null) {
+
                productAttributeTermRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
-
-
-              List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productUpdateDTO.getProductAttributeTermDTOS());
-
+               List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productUpdateDTO.getProductAttributeTermDTOS());
                productAttributeTerms.stream().forEach(item -> item.setProduct(productToUpdate));
                productAttributeTermRepository.saveAll(productAttributeTerms);
 
