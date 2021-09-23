@@ -17,4 +17,5 @@ public interface ProductPriceRepository extends JpaRepository<ProductPrice,Integ
     ProductPrice findFirstByProductAndIsActiveOrderByCreatedDateDesc(Product product, Boolean isActive);
 
     List<ProductPrice>  deleteAllByProduct_ProductId(Integer productId);
+    List<ProductPrice>  getAllByProduct_ProductId(Integer productId);
 }

@@ -188,8 +188,11 @@ public class ProductServiceImpl implements ProductService {
             }
 
             if (productUpdateDTO.getProductPriceDTOS()!= null) {
+                productPriceRepository.getAllByProduct_ProductId(productToUpdate.getProductId()).stream().forEach(item-> {
+                    item.setIsActive(false);
+                    productPriceRepository.save(item);
+                });
 
-                productPriceRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
                 List<ProductPrice> productPrices = productMapper.mapToEntities(productUpdateDTO.getProductPriceDTOS());
                 productPrices.stream().forEach(item-> item.setProduct(productToUpdate));
                 productPriceRepository.saveAll(productPrices);
