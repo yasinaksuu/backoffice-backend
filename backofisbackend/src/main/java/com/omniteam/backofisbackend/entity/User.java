@@ -69,7 +69,7 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user")
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<UserRole> userRoles;
 
 }
