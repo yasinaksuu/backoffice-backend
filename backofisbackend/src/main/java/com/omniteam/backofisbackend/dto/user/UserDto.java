@@ -1,5 +1,6 @@
 package com.omniteam.backofisbackend.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.omniteam.backofisbackend.dto.role.RoleDto;
@@ -20,6 +21,8 @@ public class UserDto {
     private String lastName;
     private String title;
     private String email;
+    @JsonIgnore
+    private String password;
     private String phoneNumber;
     private String address;
     private Integer countryId;

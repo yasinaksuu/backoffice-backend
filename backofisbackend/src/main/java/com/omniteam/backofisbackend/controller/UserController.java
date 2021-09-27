@@ -3,6 +3,7 @@ package com.omniteam.backofisbackend.controller;
 import com.omniteam.backofisbackend.requests.user.UserAddRequest;
 import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
 import com.omniteam.backofisbackend.service.UserService;
+import com.omniteam.backofisbackend.shared.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,8 @@ public class UserController {
         return ResponseEntity.ok(userService.getAll(pageable));
     }
 
-    @PostMapping
-    public ResponseEntity saveUser(@RequestBody UserAddRequest addRequest) {
+    @PostMapping("/add")
+    public ResponseEntity<Result> saveUser(@RequestBody UserAddRequest addRequest) {
         return ResponseEntity.ok(userService.add(addRequest));
     }
 

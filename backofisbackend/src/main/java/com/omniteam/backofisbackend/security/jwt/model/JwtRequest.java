@@ -1,4 +1,4 @@
-package com.omniteam.backofisbackend.requests.user;
+package com.omniteam.backofisbackend.security.jwt.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -6,22 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserAddRequest {
-    private String firstName;
-    private String lastName;
-    private String title;
+public class JwtRequest {
     private String email;
     private String password;
-    private String phoneNumber;
-    private String address;
-    private Integer countryId;
-    private Integer cityId;
-    private Integer districtId;
-    private Set<Integer> roleIdList;
 }
