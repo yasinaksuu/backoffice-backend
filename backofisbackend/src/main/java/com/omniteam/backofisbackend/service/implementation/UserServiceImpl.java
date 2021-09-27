@@ -18,34 +18,27 @@ import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.Result;
 import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessResult;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
     private final RoleService roleService;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserRoleRepository userRoleRepository, UserMapper userMapper, RoleService roleService) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.userMapper = userMapper;
-        this.roleService = roleService;
-    }
-
+    private final PasswordEncoder bcryptEncoder;
     @Override
     public DataResult<UserDto> getByEmail(String email) {
         User user = this.userRepository.findUserByEmailAndIsActive(email,true);
@@ -64,6 +57,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Result add(UserAddRequest userAddRequest) {
+        userAddRequest.setPassword(bcryptEncoder.encode(userAddRequest.getPassword()));
         User user = this.userMapper.toUserFromUserAddRequest(userAddRequest);
         if(userAddRequest.getCountryId()==null)
             user.setCountry(null);

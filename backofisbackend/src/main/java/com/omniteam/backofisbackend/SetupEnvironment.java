@@ -10,20 +10,15 @@ import java.util.List;
 
 @Component
 public class SetupEnvironment {
-
-
     RoleRepository roleRepository;
-
     public SetupEnvironment(@Autowired RoleRepository roleRep) {
         this.roleRepository=roleRep;
         System.out.println("Setup check is going to starting..");
-        if(this.roleRepository.countAllBy()<=0)
+        if(this.roleRepository.countAllBy()<=0){
             setupStandartRoles();
+        }
+
     }
-
-
-
-
     public void setupStandartRoles()
     {
         List<Role> roleList = new ArrayList();
@@ -34,6 +29,4 @@ public class SetupEnvironment {
         roleList.add(new Role("Standard"));
         roleRepository.saveAll(roleList);
     }
-
-
 }

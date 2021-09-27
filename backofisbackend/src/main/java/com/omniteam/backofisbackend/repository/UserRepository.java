@@ -16,13 +16,9 @@ import java.util.Set;
 public interface UserRepository extends JpaRepository<User, Integer> {
     User findUserByEmailAndIsActive(String email, Boolean isActive);
 
-
     @Modifying
     @Query("update User u set u.userRoles = ?1")
     void setUserRoles(User user, Set<UserRole> userRoles);
-
-
-
     Page<User> findAllBy(Pageable pageable);
 
 }
