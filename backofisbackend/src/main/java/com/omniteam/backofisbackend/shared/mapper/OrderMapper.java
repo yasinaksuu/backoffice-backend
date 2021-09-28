@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.shared.mapper;
 
 import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
+import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.Order;

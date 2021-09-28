@@ -5,6 +5,7 @@ import com.omniteam.backofisbackend.dto.customer.*;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactAddDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
+import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.service.CustomerContactService;
 import com.omniteam.backofisbackend.service.CustomerService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
@@ -67,8 +68,23 @@ public class CustomersController {
         return ResponseEntity.ok(this.customerService.getById(customerId));
     }
 
+    //TODO güncellemede sorun var bakılacak
     @PostMapping(path = "/updatecontacts")
     public ResponseEntity<Result> updateContacts(@RequestBody CustomerUpdateContactsDto customerUpdateContactsDto){
         return ResponseEntity.ok(this.customerContactService.update(customerUpdateContactsDto));
     }
+
+    //TODO customerId ye göre sepeti getiren endpoint
+    //aynı üründen order details de varsa onu sepetteki sayısını topla
+    //sepet yoksa oluştur (ilk ürün eklendiğinde) varsa mevcut sepeti getir (status waiting)
+    @GetMapping(
+            "/{customerid}/getcustomercart/{cartstatus}"
+    )
+    public ResponseEntity<DataResult<OrderDto>> getCustomerCart(@PathVariable(name = "customerid") Integer customerId
+                                                               , @PathVariable(name = "cartstatus") String status)
+    {
+        return ResponseEntity.ok().body(this.customerService.getOrderByCustomerIdAndStatus(customerId,status));
+    }
+
+
 }

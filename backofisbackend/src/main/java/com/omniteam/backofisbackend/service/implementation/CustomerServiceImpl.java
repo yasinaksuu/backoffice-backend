@@ -5,17 +5,19 @@ import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
+import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.Customer;
-import com.omniteam.backofisbackend.entity.CustomerContact;
+import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
+import com.omniteam.backofisbackend.repository.OrderRepository;
 import com.omniteam.backofisbackend.service.CustomerService;
 import com.omniteam.backofisbackend.shared.constant.ResultMessage;
-import com.omniteam.backofisbackend.shared.mapper.CustomerContactMapper;
 import com.omniteam.backofisbackend.shared.mapper.CustomerMapper;
-import com.omniteam.backofisbackend.shared.result.DataResult;
-import com.omniteam.backofisbackend.shared.result.Result;
-import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
-import com.omniteam.backofisbackend.shared.result.SuccessResult;
+import com.omniteam.backofisbackend.shared.mapper.OrderMapper;
+import com.omniteam.backofisbackend.shared.result.*;
+import javassist.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,18 +27,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
     private final CustomerMapper customerMapper;
 
-    @Autowired
-    public CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+   /* @Autowired
+    public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, OrderMapper orderMapper, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
+        this.orderRepository = orderRepository;
+        this.orderMapper = orderMapper;
         this.customerMapper = customerMapper;
-    }
+    }*/
 
     @Override
     public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) {
@@ -96,4 +102,13 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerDto customerDto = this.customerMapper.toCustomerDto(customer);
         return new SuccessDataResult<>(customerDto);
     }
+
+    @Override
+    public DataResult<OrderDto> getOrderByCustomerIdAndStatus(Integer customerId, String status) {
+        Order order = this.orderRepository.findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc(status,true,customerId);
+        OrderDto orderDto = this.orderMapper.toOrderDto(order);
+        return new SuccessDataResult<OrderDto>(orderDto);
+    }
+
+
 }

@@ -24,4 +24,5 @@ public class CustomerContactDto {
     private String contactType;
     private String contactValue;
     private String contactDescription;
+    private Boolean isActive;
 }

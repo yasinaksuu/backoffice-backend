@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer>, JpaSpecificationExecutor<Order> {
-
+    Order findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc(String status,Boolean isActive, Integer customerId);
 }

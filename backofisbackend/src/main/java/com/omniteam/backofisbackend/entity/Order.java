@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name="orders")
@@ -38,10 +39,5 @@ public class Order extends  BaseEntity {
 
 
     @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderDetails;
-
-
-
-
-
+    private List<OrderDetail> orderDetails = new ArrayList<>();
 }

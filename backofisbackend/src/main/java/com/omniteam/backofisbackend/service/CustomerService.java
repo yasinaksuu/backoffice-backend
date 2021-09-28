@@ -5,6 +5,7 @@ import com.omniteam.backofisbackend.dto.customer.CustomerAddDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
+import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.Result;
 
@@ -14,4 +15,6 @@ public interface CustomerService {
     Result update(CustomerUpdateDto customerUpdateDto);
 
     DataResult<CustomerDto> getById(int customerId);
+
+    DataResult<OrderDto> getOrderByCustomerIdAndStatus(Integer customerId, String status);
 }
