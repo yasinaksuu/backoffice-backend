@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
             user.setCity(null);
         if(userAddRequest.getDistrictId()==null)
             user.setDistrict(null);
-        //to do kullanıcı parola hashleme işlemleri...
         this.userRepository.save(user);
         if(userAddRequest.getRoleIdList()!=null) // Role atama işlemleri
         {

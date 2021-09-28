@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.controller;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
@@ -82,4 +83,14 @@ public class OrdersController {
     public ResponseEntity<Result> delete(@RequestBody OrderDeleteRequest orderDeleteRequest) {
         return ResponseEntity.ok(this.orderService.delete(orderDeleteRequest));
     }
+
+    @PostMapping(
+            path = "/addProductToCart"
+    )
+    public ResponseEntity<Result> addProductToCart(@RequestBody AddProductToCartRequest addProductToCartRequest) {
+        return ResponseEntity.ok(this.orderService.addProductToCart(addProductToCartRequest));
+    }
+
+    //TODO sepete ürün ekleyen endpoint
+    //TODO sepetteki ürünü güncelleme ve silme
 }

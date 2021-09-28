@@ -1,13 +1,10 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
-import com.omniteam.backofisbackend.entity.Order;
-import com.omniteam.backofisbackend.entity.OrderDetail;
-import com.omniteam.backofisbackend.entity.ProductPrice;
-import com.omniteam.backofisbackend.repository.OrderDetailRepository;
-import com.omniteam.backofisbackend.repository.OrderRepository;
-import com.omniteam.backofisbackend.repository.ProductPriceRepository;
+import com.omniteam.backofisbackend.entity.*;
+import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.repository.customspecification.OrderSpec;
 import com.omniteam.backofisbackend.requests.order.*;
 import com.omniteam.backofisbackend.service.OrderService;
@@ -30,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,14 +45,20 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailMapper orderDetailMapper;
     private final ProductPriceRepository productPriceRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, ProductPriceRepository productPriceRepository, OrderDetailRepository orderDetailRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, ProductPriceRepository productPriceRepository, OrderDetailRepository orderDetailRepository, CustomerRepository customerRepository, UserRepository userRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.orderDetailMapper = orderDetailMapper;
         this.productPriceRepository = productPriceRepository;
         this.orderDetailRepository = orderDetailRepository;
+        this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -156,5 +160,41 @@ public class OrderServiceImpl implements OrderService {
         this.orderDetailRepository.saveAll(orderToDelete.getOrderDetails());
 
         return new SuccessResult("Sipariş silindi");
+    }
+
+    @Override
+    @Transactional
+    public DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest) {
+        Order order =
+                this.orderRepository
+                        .findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc("Waiting",true,addProductToCartRequest.getCustomerId());
+        if(order == null){
+            order = new Order();
+            order.setStatus("Waiting");
+            Customer customer = this.customerRepository.getById(addProductToCartRequest.getCustomerId());
+            order.setCustomer(customer);
+            //TODO inquire user from database by email in the jwttoken
+            User user = this.userRepository.getById(1);
+            order.setUser(user);
+        }
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        Product product = this.productRepository.getById(addProductToCartRequest.getProductId());
+        ProductPrice currentPrice =
+                this.productPriceRepository.findFirstByProductAndIsActiveOrderByCreatedDateDesc(product,true);
+        for (int i=0; i<addProductToCartRequest.getCount();i++){
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setStatus("Confirmed");
+            orderDetail.setOrder(order);
+            orderDetail.setProduct(product);
+            orderDetail.setProductPrice(currentPrice);
+            order.getOrderDetails().add(orderDetail);
+            orderDetails.add(orderDetail);
+        }
+
+
+        this.orderRepository.save(order);
+        this.orderDetailRepository.saveAll(orderDetails);
+        DataResult<OrderDto> orderDtoDataResult = this.getById(order.getOrderId());
+        return new SuccessDataResult<OrderDto>("Ürün sepete eklendi",orderDtoDataResult.getData());
     }
 }

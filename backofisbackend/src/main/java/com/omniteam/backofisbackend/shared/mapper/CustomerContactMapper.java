@@ -30,6 +30,7 @@ public interface CustomerContactMapper {
     @Mapping(target = "countryId",source = "country.countryId")
     @Mapping(target = "cityId",source = "city.cityId")
     @Mapping(target = "districtId",source = "district.districtId")
+    @Mapping(target = "isActive", expression = "java(customerContact.getIsActive())")
     CustomerContactDto toCustomerContactDto(CustomerContact customerContact);
 
     @Mapping(target = "country.countryId",source = "countryId")

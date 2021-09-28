@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.service;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
 import com.omniteam.backofisbackend.requests.order.OrderDeleteRequest;
@@ -26,4 +27,6 @@ public interface OrderService {
     DataResult<OrderDto> update(OrderUpdateRequest orderUpdateRequest);
 
     Result delete(OrderDeleteRequest orderDeleteRequest);
+
+    DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest);
 }
