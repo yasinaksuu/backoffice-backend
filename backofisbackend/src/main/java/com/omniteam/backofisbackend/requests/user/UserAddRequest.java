@@ -24,4 +24,11 @@ public class UserAddRequest {
     private Integer cityId;
     private Integer districtId;
     private Set<Integer> roleIdList;
+
+    public UserAddRequest(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
 }
