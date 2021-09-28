@@ -29,6 +29,11 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
 
     Integer countAllBy();
 
+    @Query( value = "from Role where (?1 is null or roleName like %?1%)",
+            countQuery = "select count(roleId) from Role where (?1 is null or roleName like %?1%)")
+    Page<Role> findAllByFilter(String searchText,Pageable pageable);
+
+
 
 
 }
