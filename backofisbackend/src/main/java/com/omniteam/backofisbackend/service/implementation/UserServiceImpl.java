@@ -14,10 +14,7 @@ import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
 import com.omniteam.backofisbackend.service.RoleService;
 import com.omniteam.backofisbackend.service.UserService;
 import com.omniteam.backofisbackend.shared.mapper.UserMapper;
-import com.omniteam.backofisbackend.shared.result.DataResult;
-import com.omniteam.backofisbackend.shared.result.Result;
-import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
-import com.omniteam.backofisbackend.shared.result.SuccessResult;
+import com.omniteam.backofisbackend.shared.result.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,8 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,27 +53,30 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Result add(UserAddRequest userAddRequest) {
-        userAddRequest.setPassword(bcryptEncoder.encode(userAddRequest.getPassword()));
-        User user = this.userMapper.toUserFromUserAddRequest(userAddRequest);
-        if(userAddRequest.getCountryId()==null)
-            user.setCountry(null);
-        if(userAddRequest.getCityId()==null)
-            user.setCity(null);
-        if(userAddRequest.getDistrictId()==null)
-            user.setDistrict(null);
-        this.userRepository.save(user);
-        if(userAddRequest.getRoleIdList()!=null) // Role atama işlemleri
-        {
-            List<Role> wantingTheRolesToUser = this.roleRepository.findAllByRoleIdIn(userAddRequest.getRoleIdList());
-            Set<UserRole> userRoles = wantingTheRolesToUser.stream().map(role->{
-                UserRole userRole = new UserRole();
-                userRole.setUser(user);
-                userRole.setRole(role);
-                return userRole;
-            }).collect(Collectors.toSet());
-            this.userRoleRepository.saveAll(userRoles);
+        try {
+            userAddRequest.setPassword(bcryptEncoder.encode(userAddRequest.getPassword()));
+            User user = this.userMapper.toUserFromUserAddRequest(userAddRequest);
+            if (userAddRequest.getCountryId() == null)
+                user.setCountry(null);
+            if (userAddRequest.getCityId() == null)
+                user.setCity(null);
+            if (userAddRequest.getDistrictId() == null)
+                user.setDistrict(null);
+            //to do kullanıcı parola hashleme işlemleri...
+            this.userRepository.save(user);
+            if (userAddRequest.getRoleIdList() != null) // Role atama işlemleri
+            {
+                this.setUserRoles(user, (Integer[]) userAddRequest.getRoleIdList().toArray());
+            }
+            return new SuccessResult(user.getUserId(), "Kullanıcı başarıyla eklendi.");
         }
-        return new SuccessResult(user.getUserId(),"Kullanıcı başarıyla eklendi.");
+        catch (Exception ex)
+        {
+            return new ErrorResult(ex.getMessage());
+        }
+        finally {
+            //anythink
+        }
     }
 
     @Transactional
@@ -115,4 +114,36 @@ public class UserServiceImpl implements UserService {
         PagedDataWrapper<UserDto> userPagedWrapper = new PagedDataWrapper(userDtoList,userPage);
         return new SuccessDataResult(userPagedWrapper);
     }
+
+    @Override
+    public Result setUserRoles(User user, Role role) throws Exception {
+        if(role==null)
+            throw new Exception("Role cannot be null!");
+        return this.setUserRoles(user, Arrays.asList(role));
+    }
+
+    @Override
+    public Result setUserRoles(User user, List<Role> roles) throws Exception {
+        if(user.getUserId()==null)
+            throw new Exception("User henüz kaydedilmemiş.");
+
+        Set<UserRole> userRoles = roles.stream().map(role->{
+            UserRole userRole = new UserRole();
+            userRole.setUser(user);
+            userRole.setRole(role);
+            return userRole;
+        }).collect(Collectors.toSet());
+        this.userRoleRepository.saveAll(userRoles);
+
+        return new SuccessResult(user.getUserId(),"Kullanıcının rol seçimi kaydedildi.");
+
+    }
+
+    @Override
+    public Result setUserRoles(User user, Integer[] roleIds) throws Exception {
+        List<Role> roleList = roleRepository.findAllByRoleIdIn(new HashSet(Arrays.asList(roleIds)));
+        return this.setUserRoles(user,roleList);
+    }
+
+
 }

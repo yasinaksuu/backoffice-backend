@@ -15,6 +15,7 @@ import java.util.Set;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     User findUserByEmailAndIsActive(String email, Boolean isActive);
+    User findUserByUserId(Integer userId);
 
     @Modifying
     @Query("update User u set u.userRoles = ?1")
