@@ -1,6 +1,8 @@
 package com.omniteam.backofisbackend.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.omniteam.backofisbackend.jms.EmailPublisherMQ;
+import com.omniteam.backofisbackend.service.AMQPService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +16,16 @@ public class MQController {
 
 
     @Autowired
-    EmailPublisherMQ publisherMQ;
+    AMQPService amqpService;
 
     @GetMapping
     public ResponseEntity runMQTest()
     {
-        publisherMQ.sendToEmailQueue(new String("asdadasdas"));
+        try {
+            amqpService.sendSystemEmail("orcunozbay@gmail.com","test mail");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.ok().build();
     }
 
