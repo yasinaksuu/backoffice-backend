@@ -41,17 +41,10 @@ public class AuthController {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private PasswordEncoder bcryptEncoder;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<DataResult<JwtResponse>> login(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
-        UserDto userDto = this.userService.getByEmail(authenticationRequest.getEmail()).getData();
-        String cryptedPassword  = bcryptEncoder.encode(authenticationRequest.getPassword());
-        if(!cryptedPassword.equals(userDto.getPassword())){
-            return ResponseEntity.ok(new ErrorDataResult<JwtResponse>("Kullancı bulunamadı",null));
-        }
         authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());

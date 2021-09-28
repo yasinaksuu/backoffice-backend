@@ -7,11 +7,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-
+@CrossOrigin("http://localhost:4200")
 @EnableBatchProcessing
 @EnableSwagger2
 @SpringBootApplication
@@ -24,6 +25,7 @@ public class BackofisbackendApplication {
 
 
 	//Cors
+/*
 	@Bean
 	public WebMvcConfigurer corsConfigurer(){
 		return new WebMvcConfigurer() {
@@ -32,9 +34,11 @@ public class BackofisbackendApplication {
 				registry
 						.addMapping("/**")
 						.allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH")
-						.allowedOrigins("*");
+						.allowedOrigins("*")
+						.allowedHeaders("*")
+				;
 			}
 		};
-	}
+	}*/
 
 }
