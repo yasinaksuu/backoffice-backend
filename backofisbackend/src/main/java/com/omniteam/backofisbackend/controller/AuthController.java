@@ -2,6 +2,7 @@ package com.omniteam.backofisbackend.controller;
 
 import com.omniteam.backofisbackend.dto.user.UserDto;
 import com.omniteam.backofisbackend.entity.RefreshToken;
+import com.omniteam.backofisbackend.entity.User;
 import com.omniteam.backofisbackend.security.jwt.JwtTokenUtil;
 import com.omniteam.backofisbackend.security.jwt.exception.TokenRefreshException;
 import com.omniteam.backofisbackend.security.jwt.model.JwtRefreshRequest;
@@ -11,6 +12,9 @@ import com.omniteam.backofisbackend.security.jwt.model.JwtResponse;
 import com.omniteam.backofisbackend.security.jwt.service.JwtUserDetailsService;
 import com.omniteam.backofisbackend.service.RefreshTokenService;
 import com.omniteam.backofisbackend.service.UserService;
+import com.omniteam.backofisbackend.shared.result.DataResult;
+import com.omniteam.backofisbackend.shared.result.ErrorDataResult;
+import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +22,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,10 +41,17 @@ public class AuthController {
     private RefreshTokenService refreshTokenService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PasswordEncoder bcryptEncoder;
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authenticationRequest) throws Exception {
+    public ResponseEntity<DataResult<JwtResponse>> login(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
+        UserDto userDto = this.userService.getByEmail(authenticationRequest.getEmail()).getData();
+        String cryptedPassword  = bcryptEncoder.encode(authenticationRequest.getPassword());
+        if(!cryptedPassword.equals(userDto.getPassword())){
+            return ResponseEntity.ok(new ErrorDataResult<JwtResponse>("Kullancı bulunamadı",null));
+        }
         authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
@@ -47,7 +59,7 @@ public class AuthController {
         final String accessToken = jwtTokenUtil.generateToken(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUsername());
 
-        return ResponseEntity.ok(new JwtResponse(accessToken,refreshToken.getToken()));
+        return ResponseEntity.ok(new SuccessDataResult<>(new JwtResponse(accessToken,refreshToken.getToken())));
     }
 
     @PostMapping(path = "/refreshtoken")
