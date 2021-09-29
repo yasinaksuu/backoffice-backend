@@ -11,5 +11,5 @@ import java.util.List;
 public interface CountryRepository extends JpaRepository<Country,Integer> {
 
 
-    List<Country> findByCountryNameContainingIgnoreCase(String countryName);
+    List<Country> findFirst10ByCountryNameContainingIgnoreCaseOrderByCountryIdAsc(String countryName);
 }
