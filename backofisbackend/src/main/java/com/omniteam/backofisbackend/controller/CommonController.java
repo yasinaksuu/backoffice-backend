@@ -30,14 +30,6 @@ public class CommonController {
         this.districtService = districtService;
     }
 
-
-/*    @GetMapping(path = "/getall")
-    public ResponseEntity<DataResult<PagedDataWrapper<CustomerGetAllDto>>> getAll(
-            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "30") int size,
-            @RequestParam(name = "searchKey",required = false) String searchKey){
-        return new ResponseEntity<>(this.customerService.getAll(page,size,searchKey), HttpStatus.OK);
-    }*/
     @GetMapping(path = "/getcountries")
     public ResponseEntity<DataResult<List<CountryDto>>> getCountries(
             @RequestParam(name = "countryname", required = false, defaultValue = ""
