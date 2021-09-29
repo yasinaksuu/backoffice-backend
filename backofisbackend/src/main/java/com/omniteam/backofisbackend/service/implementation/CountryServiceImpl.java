@@ -24,7 +24,7 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public DataResult<List<CountryDto>> getAll(String countryName) {
-        List<Country> countryList = this.countryRepository.findByCountryNameContaining(countryName);
+        List<Country> countryList = this.countryRepository.findByCountryNameContainingIgnoreCase(countryName);
         List<CountryDto> countryDtoList = this.countryMapper.toCountryDtoList(countryList);
         return new SuccessDataResult<>("",countryDtoList);
     }

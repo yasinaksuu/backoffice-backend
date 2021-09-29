@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface CountryRepository extends JpaRepository<Country,Integer> {
 
-    List<Country> findByCountryNameContaining(String countryName);
+
+    List<Country> findByCountryNameContainingIgnoreCase(String countryName);
 }
