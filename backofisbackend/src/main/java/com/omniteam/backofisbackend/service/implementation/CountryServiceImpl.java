@@ -23,8 +23,8 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public DataResult<List<CountryDto>> getAll() {
-        List<Country> countryList = this.countryRepository.findAll();
+    public DataResult<List<CountryDto>> getAll(String countryName) {
+        List<Country> countryList = this.countryRepository.findByCountryNameContaining(countryName);
         List<CountryDto> countryDtoList = this.countryMapper.toCountryDtoList(countryList);
         return new SuccessDataResult<>("",countryDtoList);
     }

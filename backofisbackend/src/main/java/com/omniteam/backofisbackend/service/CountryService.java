@@ -6,5 +6,5 @@ import com.omniteam.backofisbackend.shared.result.DataResult;
 import java.util.List;
 
 public interface CountryService {
-    DataResult<List<CountryDto>> getAll();
+    DataResult<List<CountryDto>> getAll(String countryName);
 }

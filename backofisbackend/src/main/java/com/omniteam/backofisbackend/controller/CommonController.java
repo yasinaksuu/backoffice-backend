@@ -1,13 +1,16 @@
 package com.omniteam.backofisbackend.controller;
 
+import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.city.CityDto;
 import com.omniteam.backofisbackend.dto.country.CountryDto;
+import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.dto.district.DistrictDto;
 import com.omniteam.backofisbackend.service.CityService;
 import com.omniteam.backofisbackend.service.CountryService;
 import com.omniteam.backofisbackend.service.DistrictService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +29,20 @@ public class CommonController {
         this.cityService = cityService;
         this.districtService = districtService;
     }
+
+
+/*    @GetMapping(path = "/getall")
+    public ResponseEntity<DataResult<PagedDataWrapper<CustomerGetAllDto>>> getAll(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "30") int size,
+            @RequestParam(name = "searchKey",required = false) String searchKey){
+        return new ResponseEntity<>(this.customerService.getAll(page,size,searchKey), HttpStatus.OK);
+    }*/
     @GetMapping(path = "/getcountries")
-    public ResponseEntity<DataResult<List<CountryDto>>> getCountries(){
-        return ResponseEntity.ok(this.countryService.getAll());
+    public ResponseEntity<DataResult<List<CountryDto>>> getCountries(
+            @RequestParam(name = "countryname", required = false, defaultValue = ""
+            ) String countryName){
+        return ResponseEntity.ok(this.countryService.getAll(countryName));
     }
 
     @GetMapping(path = "/{countryid}/getcitiesbycountry")
