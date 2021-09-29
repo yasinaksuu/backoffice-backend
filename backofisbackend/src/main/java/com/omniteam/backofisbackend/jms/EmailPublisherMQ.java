@@ -28,5 +28,9 @@ public class EmailPublisherMQ {
 
     }
 
+    public void sendAsSystem(String to,String message) throws JsonProcessingException {
+        this.send("orcunozbay.etiya@gmail.com",to,message);
+    }
+
 
 }

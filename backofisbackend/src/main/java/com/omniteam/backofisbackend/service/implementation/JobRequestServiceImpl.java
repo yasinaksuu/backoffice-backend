@@ -17,16 +17,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 @Service
-@Component
 public class JobRequestServiceImpl implements JobRequestService {
-    JobRequestRepository jobRequestRepository;
-    JobRequestMapper jobRequestMapper;
 
     @Autowired
-    public JobRequestServiceImpl(JobRequestRepository jobRequestRepository, JobRequestMapper requestMapper) {
-        this.jobRequestRepository = jobRequestRepository;
-        this.jobRequestMapper = requestMapper;
-    }
+    JobRequestRepository jobRequestRepository;
+    @Autowired
+    JobRequestMapper jobRequestMapper;
+
 
     @Override
     public DataResult<PagedDataWrapper<JobRequest>> getAll(Pageable pageable) {
