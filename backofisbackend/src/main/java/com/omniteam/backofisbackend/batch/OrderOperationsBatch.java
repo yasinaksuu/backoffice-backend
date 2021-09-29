@@ -40,10 +40,13 @@ public class OrderOperationsBatch {
     @Autowired
     private JobRequestServiceImpl jobRequestService;
 
-    @Bean
-    private OrderWriteSuccessfullNotifyStep writeDoneStep(JobRequestServiceImpl jobRequestService) {
-        return new OrderWriteSuccessfullNotifyStep(jobRequestService);
-    }
+    @Autowired
+    OrderWriteSuccessfullNotifyStep writeDoneStep;
+
+//    @Bean
+//    private OrderWriteSuccessfullNotifyStep writeDoneStep() {
+//        return new OrderWriteSuccessfullNotifyStep();
+//    }
 
     @Autowired
     SessionFactory sessionFactory;
@@ -104,7 +107,7 @@ public class OrderOperationsBatch {
     @Bean
     public Step fileReady() {
         return this.stepBuilderFactory.get("readyFileStep-02")
-                .tasklet(writeDoneStep(jobRequestService))
+                .tasklet(writeDoneStep)
                 .build();
     }
 
