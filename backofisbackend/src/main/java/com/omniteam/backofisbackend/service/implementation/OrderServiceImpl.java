@@ -94,11 +94,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public DataResult<?> startOrderReportExport() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        String loggedUserEmail="orcun.ozbay@etiya.com";
+    public DataResult<?> startOrderReportExport(String username) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParameters parameters = new JobParametersBuilder()
                 .addParameter("proccess-key", new JobParameter(UUID.randomUUID().toString()))
-                .addParameter("user-email",new JobParameter(loggedUserEmail))
+                .addParameter("user-email",new JobParameter(username))
                 .toJobParameters();
         this.jobLauncher.run(orderExporterJob, parameters);
         return DataResult.builder().build();

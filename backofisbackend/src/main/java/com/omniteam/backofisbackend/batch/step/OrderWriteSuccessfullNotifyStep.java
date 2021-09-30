@@ -10,6 +10,14 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
+
 @Component
 public class OrderWriteSuccessfullNotifyStep implements Tasklet {
 
@@ -28,7 +36,24 @@ public class OrderWriteSuccessfullNotifyStep implements Tasklet {
         Integer jobRequestID = Integer.valueOf(chunkContext.getStepContext().getJobExecutionContext().get("JobRequestID").toString());
         jobRequestService.setStatus(jobRequestID, RequestStatus.DONE);
         String mailTo=chunkContext.getStepContext().getJobParameters().get("user-email").toString();
-        publisherMQ.sendAsSystem(mailTo,"Order Report has ready!");
+        publisherMQ.sendAsSystem(mailTo,readLines("target/test-outputs/orders.txt"));
         return RepeatStatus.FINISHED;
+    }
+
+
+    private static String readLines(String filePath)
+    {
+        StringBuilder contentBuilder = new StringBuilder();
+
+        try (Stream<String> stream = Files.lines( Paths.get(filePath), StandardCharsets.UTF_8))
+        {
+            stream.forEach(s -> contentBuilder.append(s).append("\n"));
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        return contentBuilder.toString();
     }
 }

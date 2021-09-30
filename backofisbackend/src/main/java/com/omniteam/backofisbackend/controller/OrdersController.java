@@ -8,6 +8,7 @@ import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
 import com.omniteam.backofisbackend.requests.order.OrderDeleteRequest;
 import com.omniteam.backofisbackend.requests.order.OrderGetAllRequest;
 import com.omniteam.backofisbackend.requests.order.OrderUpdateRequest;
+import com.omniteam.backofisbackend.security.jwt.JwtTokenUtil;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.service.OrderService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
@@ -17,9 +18,11 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -28,6 +31,9 @@ public class OrdersController {
 
     private final OrderService orderService;
     private final OrderDetailService orderDetailService;
+
+     @Autowired
+    JwtTokenUtil tokenUtil;
 
     @Autowired
     public OrdersController(OrderService orderService, OrderDetailService orderDetailService) {
@@ -50,8 +56,10 @@ public class OrdersController {
     }
 
     @PostMapping("/export/report")
-    public ResponseEntity<?> exportFullReport() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        this.orderService.startOrderReportExport();
+    public ResponseEntity<?> exportFullReport(HttpServletRequest httpServletRequest) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        String token = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION).replace("Bearer ","");
+        String loggedUsername = tokenUtil.getUsernameFromToken(token);
+        this.orderService.startOrderReportExport(loggedUsername);
         return ResponseEntity.ok().build();
     }
 

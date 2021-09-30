@@ -19,7 +19,7 @@ public interface OrderService {
 
     DataResult<PagedDataWrapper<OrderDto>> getAll(OrderGetAllRequest orderGetAllRequest);
 
-    DataResult<?> startOrderReportExport() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException;
+    DataResult<?> startOrderReportExport(String username) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException;
 
 
     DataResult<OrderDto> add(OrderAddRequest orderAddRequest);

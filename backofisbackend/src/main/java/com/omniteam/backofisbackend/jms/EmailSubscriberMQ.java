@@ -4,6 +4,7 @@ package com.omniteam.backofisbackend.jms;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,6 +14,12 @@ import org.springframework.stereotype.Component;
 import javax.jms.JMSException;
 import javax.jms.TextMessage;
 import javax.mail.AuthenticationFailedException;
+import javax.mail.Message;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Component
 public class EmailSubscriberMQ {
@@ -27,6 +34,7 @@ public class EmailSubscriberMQ {
     public void receive(TextMessage messageObject)
     {
         try {
+
             EmailMessage emailMessage = objectMapper.readValue(messageObject.getText(),EmailMessage.class);
             System.out.println(emailMessage);
             SimpleMailMessage mail = new SimpleMailMessage();
@@ -44,8 +52,9 @@ public class EmailSubscriberMQ {
         catch (MailException ex)
         {
             ex.printStackTrace();
-        }
-        finally {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
 
         }
     }
