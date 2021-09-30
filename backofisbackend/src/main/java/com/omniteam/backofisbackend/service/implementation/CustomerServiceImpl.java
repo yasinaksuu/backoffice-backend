@@ -10,7 +10,9 @@ import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
 import com.omniteam.backofisbackend.repository.OrderRepository;
+import com.omniteam.backofisbackend.repository.UserRepository;
 import com.omniteam.backofisbackend.service.CustomerService;
+import com.omniteam.backofisbackend.service.SecurityVerificationService;
 import com.omniteam.backofisbackend.shared.constant.ResultMessage;
 import com.omniteam.backofisbackend.shared.mapper.CustomerMapper;
 import com.omniteam.backofisbackend.shared.mapper.OrderMapper;
@@ -35,7 +37,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final CustomerMapper customerMapper;
+    private final UserRepository userRepository;
 
+    private final SecurityVerificationService securityVerificationService;
    /* @Autowired
     public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, OrderMapper orderMapper, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
@@ -78,7 +82,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.getCustomerContacts().forEach(customerContact -> {
             customerContact.setCustomer(customer);
             //nice to have : might be solved in mapstruct
-            if(customerContact.getCity().getCityId() == null || customerContact.getCity().getCityId() == 0){
+            if (customerContact.getCity().getCityId() == null || customerContact.getCity().getCityId() == 0) {
                 customerContact.setCity(null);
                 customerContact.setCountry(null);
                 customerContact.setDistrict(null);
@@ -91,7 +95,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Result update(CustomerUpdateDto customerUpdateDto) {
         Customer customerToUpdate = this.customerRepository.getById(customerUpdateDto.getCustomerId());
-        this.customerMapper.update(customerToUpdate,customerUpdateDto);
+        this.customerMapper.update(customerToUpdate, customerUpdateDto);
         this.customerRepository.save(customerToUpdate);
         return new SuccessResult(ResultMessage.CUSTOMER_UPDATED);
     }
@@ -105,7 +109,17 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public DataResult<OrderDto> getOrderByCustomerIdAndStatus(Integer customerId, String status) {
-        Order order = this.orderRepository.findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc(status,true,customerId);
+        Order order = this.orderRepository.findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc(status, true, customerId);
+        if (order == null) {
+            order = new Order();
+            order.setStatus(status);
+            order.setCustomer(customerRepository.getById(customerId));
+            order.setUser(userRepository.getById(securityVerificationService.inquireLoggedInUser().getUserId()));
+            orderRepository.save(order);
+            return new SuccessDataResult<>(
+                    this.orderMapper.toOrderDto(orderRepository.getById(order.getOrderId()))
+            );
+        }
         OrderDto orderDto = this.orderMapper.toOrderDto(order);
         return new SuccessDataResult<OrderDto>(orderDto);
     }

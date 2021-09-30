@@ -17,4 +17,7 @@ public class OrderDetailDto {
     private String status;
     private String productName;
     private Double productPrice;
+    private String productDescription;
+    private String productShortDescription;
+    private String productBarcode;
 }

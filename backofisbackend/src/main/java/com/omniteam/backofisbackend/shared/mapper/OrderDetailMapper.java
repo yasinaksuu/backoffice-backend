@@ -15,6 +15,9 @@ import java.util.List;
 )
 public interface OrderDetailMapper {
     @Mapping(target = "productName",source = "product.productName")
+    @Mapping(target = "productDescription",source = "product.description")
+    @Mapping(target = "productShortDescription",source = "product.shortDescription")
+    @Mapping(target = "productBarcode",source = "product.barcode")
     @Mapping(target = "productPrice",source = "productPrice.actualPrice")
     @Mapping(target = "productId",source = "product.productId")
     @Mapping(target = "orderId",source = "order.orderId")
