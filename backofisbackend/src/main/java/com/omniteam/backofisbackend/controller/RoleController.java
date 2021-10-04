@@ -6,10 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/api/v1/roles")
@@ -24,7 +21,7 @@ public class RoleController {
        }*/
 
     @ApiOperation("Rolleri getiren servis")
-    @GetMapping("/getall")
+    @PostMapping("/getall")
     public ResponseEntity<?> getAllRoles(
             @RequestBody RoleGetAllRequest roleGetAllRequest
     ) {

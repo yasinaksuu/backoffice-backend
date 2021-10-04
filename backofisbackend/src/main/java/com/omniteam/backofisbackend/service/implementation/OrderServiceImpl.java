@@ -8,6 +8,7 @@ import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.repository.customspecification.OrderSpec;
 import com.omniteam.backofisbackend.requests.order.*;
 import com.omniteam.backofisbackend.service.OrderService;
+import com.omniteam.backofisbackend.service.SecurityVerificationService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
 import com.omniteam.backofisbackend.shared.mapper.OrderMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
@@ -49,8 +50,10 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    private final SecurityVerificationService securityVerificationService;
+
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, ProductPriceRepository productPriceRepository, OrderDetailRepository orderDetailRepository, CustomerRepository customerRepository, UserRepository userRepository, ProductRepository productRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, ProductPriceRepository productPriceRepository, OrderDetailRepository orderDetailRepository, CustomerRepository customerRepository, UserRepository userRepository, ProductRepository productRepository, SecurityVerificationService securityVerificationService) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.orderDetailMapper = orderDetailMapper;
@@ -59,6 +62,7 @@ public class OrderServiceImpl implements OrderService {
         this.customerRepository = customerRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
+        this.securityVerificationService = securityVerificationService;
     }
 
     @Override
@@ -177,8 +181,9 @@ public class OrderServiceImpl implements OrderService {
             Customer customer = this.customerRepository.getById(addProductToCartRequest.getCustomerId());
             order.setCustomer(customer);
             //TODO inquire user from database by email in the jwttoken
-            User user = this.userRepository.getById(1);
+            User user = this.userRepository.getById(securityVerificationService.inquireLoggedInUser().getUserId());
             order.setUser(user);
+            this.orderRepository.save(order);
         }
         List<OrderDetail> orderDetails = new ArrayList<>();
         Product product = this.productRepository.getById(addProductToCartRequest.getProductId());
@@ -190,14 +195,15 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setOrder(order);
             orderDetail.setProduct(product);
             orderDetail.setProductPrice(currentPrice);
-            order.getOrderDetails().add(orderDetail);
+
             orderDetails.add(orderDetail);
         }
 
 
-        this.orderRepository.save(order);
-        this.orderDetailRepository.saveAll(orderDetails);
+
+       this.orderDetailRepository.saveAll(orderDetails);
         DataResult<OrderDto> orderDtoDataResult = this.getById(order.getOrderId());
-        return new SuccessDataResult<OrderDto>("Ürün sepete eklendi",orderDtoDataResult.getData());
+        order=this.orderRepository.getById(order.getOrderId());
+        return new SuccessDataResult<OrderDto>("Ürün sepete eklendi",this.orderMapper.toOrderDto(order));
     }
 }
