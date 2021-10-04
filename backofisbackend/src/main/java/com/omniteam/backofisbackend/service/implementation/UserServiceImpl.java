@@ -59,6 +59,8 @@ public class UserServiceImpl implements UserService {
         try {
             userAddRequest.setPassword(bcryptEncoder.encode(userAddRequest.getPassword()));
             User user = this.userMapper.toUserFromUserAddRequest(userAddRequest);
+            if(userRepository.findUserByEmailAndIsActive(user.getEmail(),true)!=null)
+                return new ErrorResult("Kullanıcı zaten mevcut.");
             if (userAddRequest.getCountryId() == null)
                 user.setCountry(null);
             if (userAddRequest.getCityId() == null)
