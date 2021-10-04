@@ -4,6 +4,7 @@ import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.*;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.repository.customspecification.OrderSpec;
 import com.omniteam.backofisbackend.requests.order.*;
@@ -35,6 +36,7 @@ import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
@@ -42,6 +44,9 @@ public class OrderServiceImpl implements OrderService {
     JobLauncher jobLauncher;
     @Autowired
     Job orderExporterJob;
+
+    @Autowired
+    private  LogServiceImpl logService;
 
     private final OrderDetailMapper orderDetailMapper;
     private final ProductPriceRepository productPriceRepository;
@@ -69,6 +74,8 @@ public class OrderServiceImpl implements OrderService {
     public DataResult<OrderDto> getById(int orderId) {
         Optional<Order> optionalOrder = this.orderRepository.findById(orderId);
         OrderDto orderDto = this.orderMapper.toOrderDto(optionalOrder.orElse(null));
+        logService.loglama(EnumLogIslemTipi.OrdersGetById,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult<>(orderDto);
     }
 
@@ -93,6 +100,7 @@ public class OrderServiceImpl implements OrderService {
                 orderPage.getTotalPages(),
                 orderPage.isLast()
         );
+        logService.loglama(EnumLogIslemTipi.OrdersGetAll,securityVerificationService.inquireLoggedInUser());
 
         return new SuccessDataResult<>(pagedDataWrapper);
     }
@@ -121,6 +129,8 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository.save(order);
         this.orderDetailRepository.saveAll(order.getOrderDetails());
         OrderDto orderDto = this.orderMapper.toOrderDto(order);
+        logService.loglama(EnumLogIslemTipi.OrdersAdd,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult<>("ürün sepete eklendi", orderDto);
     }
 

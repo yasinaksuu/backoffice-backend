@@ -8,6 +8,7 @@ import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.Order;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
 import com.omniteam.backofisbackend.repository.OrderRepository;
 import com.omniteam.backofisbackend.repository.UserRepository;
@@ -42,6 +43,8 @@ public class CustomerServiceImpl implements CustomerService {
     private final UserRepository userRepository;
 
     private final SecurityVerificationService securityVerificationService;
+
+    private  LogServiceImpl logService;
    /* @Autowired
     public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, OrderMapper orderMapper, CustomerMapper customerMapper) {
         this.customerRepository = customerRepository;
@@ -75,6 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
                 customers.getTotalPages(),
                 customers.isLast()
         );
+        logService.loglama(EnumLogIslemTipi.CustomersGetAll,securityVerificationService.inquireLoggedInUser());
 
         return new SuccessDataResult<>(pagedDataWrapper);
     }
@@ -100,6 +104,8 @@ public class CustomerServiceImpl implements CustomerService {
             }
         });
         this.customerRepository.save(customer);
+        logService.loglama(EnumLogIslemTipi.CustomerAdd,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessResult(ResultMessage.CUSTOMER_ADDED);
     }
 
@@ -108,6 +114,8 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customerToUpdate = this.customerRepository.getById(customerUpdateDto.getCustomerId());
         this.customerMapper.update(customerToUpdate, customerUpdateDto);
         this.customerRepository.save(customerToUpdate);
+        logService.loglama(EnumLogIslemTipi.CustomerUpdate,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessResult(ResultMessage.CUSTOMER_UPDATED);
     }
 
@@ -115,6 +123,8 @@ public class CustomerServiceImpl implements CustomerService {
     public DataResult<CustomerDto> getById(int customerId) {
         Customer customer = this.customerRepository.getById(customerId);
         CustomerDto customerDto = this.customerMapper.toCustomerDto(customer);
+        logService.loglama(EnumLogIslemTipi.CustomerGetById,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult<>(customerDto);
     }
 
@@ -132,6 +142,7 @@ public class CustomerServiceImpl implements CustomerService {
             );
         }
         OrderDto orderDto = this.orderMapper.toOrderDto(order);
+
         return new SuccessDataResult<OrderDto>(orderDto);
     }
 

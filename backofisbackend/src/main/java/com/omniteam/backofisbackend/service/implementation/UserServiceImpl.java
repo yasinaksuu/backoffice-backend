@@ -6,6 +6,7 @@ import com.omniteam.backofisbackend.dto.user.UserDto;
 import com.omniteam.backofisbackend.entity.Role;
 import com.omniteam.backofisbackend.entity.User;
 import com.omniteam.backofisbackend.entity.UserRole;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.RoleRepository;
 import com.omniteam.backofisbackend.repository.UserRepository;
 import com.omniteam.backofisbackend.repository.UserRoleRepository;
@@ -37,6 +38,8 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder bcryptEncoder;
+    private  SecurityVerificationServiceImpl securityVerificationService;
+    private  LogServiceImpl logService;
 
     @Override
     public DataResult<UserDto> getByEmail(String email) {
@@ -73,12 +76,18 @@ public class UserServiceImpl implements UserService {
             {
                 this.setUserRoles(user, userAddRequest.getRoleIdList().toArray(new Integer[userAddRequest.getRoleIdList().size()]));
             }
+            logService.loglama(EnumLogIslemTipi.UserAdd,securityVerificationService.inquireLoggedInUser());
+
             return new SuccessResult(user.getUserId(), "Kullanıcı başarıyla eklendi.");
         } catch (Exception ex) {
+            logService.loglama(EnumLogIslemTipi.UserAdd,securityVerificationService.inquireLoggedInUser());
+
             return new ErrorResult(ex.getMessage());
         } finally {
             //anythink
+
         }
+
     }
 
     @Transactional
@@ -106,6 +115,8 @@ public class UserServiceImpl implements UserService {
             }).collect(Collectors.toSet());
             this.userRoleRepository.saveAll(userRoles);
         }
+        logService.loglama(EnumLogIslemTipi.UserUpdate,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessResult(existingUser.getUserId(), "Kullanıcı başarıyla güncellendi.");
     }
 
@@ -114,6 +125,8 @@ public class UserServiceImpl implements UserService {
         Page<User> userPage = this.userRepository.findAll(pageable);
         List<UserDto> userDtoList = this.userMapper.toUserDtoList(userPage.getContent());
         PagedDataWrapper<UserDto> userPagedWrapper = new PagedDataWrapper(userDtoList, userPage);
+        logService.loglama(EnumLogIslemTipi.UsersGetAll,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult(userPagedWrapper);
     }
 

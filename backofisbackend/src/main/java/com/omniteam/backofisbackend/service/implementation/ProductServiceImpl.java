@@ -10,6 +10,7 @@ import com.omniteam.backofisbackend.dto.product.ProductGetAllDto;
 import com.omniteam.backofisbackend.dto.product.ProductSaveRequestDTO;
 import com.omniteam.backofisbackend.dto.product.ProductUpdateDTO;
 import com.omniteam.backofisbackend.entity.*;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.repository.productspecification.ProductSpec;
 import com.omniteam.backofisbackend.requests.ProductGetAllRequest;
@@ -61,7 +62,11 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductPriceRepository productPriceRepository;
 
+    @Autowired
+    private SecurityVerificationServiceImpl securityVerificationService;
 
+    @Autowired
+    private  LogServiceImpl logService;
 
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
     public Result saveProductImageDB(MultipartFile file,Integer productId) throws IOException {
@@ -88,6 +93,7 @@ public class ProductServiceImpl implements ProductService {
         productImage.setFilePath(url);
         productImage.setProduct(product);
         productImageRepository.save(productImage);
+        logService.loglama(EnumLogIslemTipi.ProductImageAdd,securityVerificationService.inquireLoggedInUser());
 
         return new SuccessResult(ResultMessage.PRODUCT_IMAGE_SAVE);
 
@@ -115,7 +121,9 @@ public class ProductServiceImpl implements ProductService {
 
 
         productAttributeTermRepository.saveAll(productAttributeTerms);
-         return product.getProductId();
+        logService.loglama(EnumLogIslemTipi.ProductAdd,securityVerificationService.inquireLoggedInUser());
+
+        return product.getProductId();
 
 
     }
@@ -154,6 +162,7 @@ public class ProductServiceImpl implements ProductService {
                 productPage.isLast()
         );
 
+        logService.loglama(EnumLogIslemTipi.ProductGetAll,securityVerificationService.inquireLoggedInUser());
 
         return new SuccessDataResult<>(pagedDataWrapper);
 
@@ -162,6 +171,8 @@ public class ProductServiceImpl implements ProductService {
     public DataResult<ProductDto> getById(Integer productId){
         Product product = productRepository.getById(productId);
         ProductDto productDto = productMapper.mapToDTO(product);
+        logService.loglama(EnumLogIslemTipi.ProductGetById,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult<>(productDto);
     }
 
@@ -227,7 +238,9 @@ public class ProductServiceImpl implements ProductService {
 
 
         }
-        productRepository.save(productToUpdate);
+    logService.loglama(EnumLogIslemTipi.ProductUpdate,securityVerificationService.inquireLoggedInUser());
+
+    productRepository.save(productToUpdate);
         return new SuccessResult(ResultMessage.PRODUCT_UPDATED);
     }
     }

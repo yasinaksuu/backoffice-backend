@@ -6,6 +6,7 @@ import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
 import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.CustomerContact;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.CustomerContactRepository;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
 import com.omniteam.backofisbackend.service.CustomerContactService;
@@ -24,6 +25,12 @@ import java.util.Optional;
 
 @Service
 public class CustomerContactServiceImpl implements CustomerContactService {
+    @Autowired
+    private SecurityVerificationServiceImpl securityVerificationService;
+
+    @Autowired
+    private  LogServiceImpl logService;
+
     private final CustomerContactRepository customerContactRepository;
     private final CustomerContactMapper customerContactMapper;
     private final CustomerRepository customerRepository;
@@ -40,6 +47,8 @@ public class CustomerContactServiceImpl implements CustomerContactService {
         customer.setCustomerId(customerId);
         List<CustomerContact> customerContacts = this.customerContactRepository.findCustomerContactsByCustomer(customer);
         List<CustomerContactDto> customerContactDtoList = this.customerContactMapper.customerContactDtoList(customerContacts);
+        logService.loglama(EnumLogIslemTipi.CustomerGetContacts,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult<>(customerContactDtoList);
     }
 
@@ -62,6 +71,8 @@ public class CustomerContactServiceImpl implements CustomerContactService {
         }
 
         this.customerContactRepository.saveAll(customerContactList);
+        logService.loglama(EnumLogIslemTipi.CustomerAddContacts,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessResult("contacts added");
     }
 
@@ -83,6 +94,8 @@ public class CustomerContactServiceImpl implements CustomerContactService {
             }
             this.customerContactRepository.save(customerContactToUpdate);
         });
+        logService.loglama(EnumLogIslemTipi.CustomerUpdateContacts,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessResult(ResultMessage.CUSTOMER_CONTACT_UPDATED);
     }
 }

@@ -3,6 +3,7 @@ package com.omniteam.backofisbackend.service.implementation;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.role.RoleDto;
 import com.omniteam.backofisbackend.entity.Role;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.RoleRepository;
 import com.omniteam.backofisbackend.requests.RoleGetAllRequest;
 import com.omniteam.backofisbackend.service.RoleService;
@@ -25,13 +26,20 @@ public class RoleServiceImpl implements RoleService {
     RoleRepository roleRepository;
     @Autowired
     RoleMapper roleMapper;
+    @Autowired
+    private SecurityVerificationServiceImpl securityVerificationService;
 
+    @Autowired
+    private  LogServiceImpl logService;
 
 
     @Override
     public DataResult<List<RoleDto>> getRolesByUserId(Integer userId) {
+        logService.loglama(EnumLogIslemTipi.GetRoleByUser,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult<>(
                 this.roleMapper.toRoleDtoList(this.roleRepository.findRolesByUserId(userId))
+
         );
     }
 
@@ -42,6 +50,8 @@ public class RoleServiceImpl implements RoleService {
         Page<Role> rolePage = this.roleRepository.findAllByFilter(searchText,pageable);
        List<RoleDto> roleDtoList = this.roleMapper.toRoleDtoList(rolePage.getContent());
         PagedDataWrapper<RoleDto> rolePagedWrapper = new PagedDataWrapper(roleDtoList,rolePage);
+        logService.loglama(EnumLogIslemTipi.GetAllRoles,securityVerificationService.inquireLoggedInUser());
+
         return new SuccessDataResult(rolePagedWrapper);
     }
 }

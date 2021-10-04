@@ -3,6 +3,7 @@ package com.omniteam.backofisbackend.service.implementation;
 import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.entity.OrderDetail;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.OrderDetailRepository;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
@@ -16,6 +17,13 @@ import java.util.List;
 
 @Service
 public class OrderDetailServiceImpl implements OrderDetailService {
+
+    @Autowired
+    private SecurityVerificationServiceImpl securityVerificationService;
+
+    @Autowired
+    private  LogServiceImpl logService;
+
     private final OrderDetailRepository orderDetailRepository;
     private final OrderDetailMapper orderDetailMapper;
 
@@ -34,6 +42,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         order.setOrderId(orderId);
         List<OrderDetail> orderDetails = this.orderDetailRepository.getOrderDetailsByOrder(order);
         List<OrderDetailDto> orderDetailDtoList = this.orderDetailMapper.toOrderDetailDtoList(orderDetails);
+        logService.loglama(EnumLogIslemTipi.GetOrderDetails,securityVerificationService.inquireLoggedInUser());
 
         return new SuccessDataResult<>(orderDetailDtoList);
     }

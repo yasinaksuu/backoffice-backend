@@ -5,6 +5,7 @@ import com.omniteam.backofisbackend.dto.attibute.AttributeDTO;
 import com.omniteam.backofisbackend.dto.attibute.AttributeTermDTO;
 import com.omniteam.backofisbackend.entity.Attribute;
 import com.omniteam.backofisbackend.entity.AttributeTerm;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.AttributeTermRepository;
 import com.omniteam.backofisbackend.service.AttributeTermService;
 import com.omniteam.backofisbackend.shared.mapper.AttributeTermMapper;
@@ -18,6 +19,13 @@ import java.util.List;
 @Service
 public class AttributeTermServiceImpl implements AttributeTermService {
 
+    @Autowired
+    private SecurityVerificationServiceImpl securityVerificationService;
+
+    @Autowired
+    private  LogServiceImpl logService;
+
+
     private final AttributeTermRepository attributeTermRepository;
     private final AttributeTermMapper attributeTermMapper;
     @Autowired
@@ -28,6 +36,7 @@ public class AttributeTermServiceImpl implements AttributeTermService {
     public DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId) {
         List<AttributeTerm> attributeTerm = attributeTermRepository.findAllByAttribute_AttributeId(attributeId);
         List<AttributeTermDTO> attributeTermDTOS = attributeTermMapper.mapToDTOs(attributeTerm);
+        logService.loglama(EnumLogIslemTipi.AttributeTermsGet,securityVerificationService.inquireLoggedInUser());
         return new SuccessDataResult<>(attributeTermDTOS);
     }
 }

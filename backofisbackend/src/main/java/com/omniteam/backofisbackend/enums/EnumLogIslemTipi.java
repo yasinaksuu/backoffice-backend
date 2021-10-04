@@ -17,6 +17,7 @@ public enum EnumLogIslemTipi {
    CustomerUpdate("Customer Updated"),
    CustomerGetById("Customer Displayed by Id"),
    CustomerUpdateContacts("Customer Concats Updated"),
+   CustomerAddContacts("Customer Concats Added"),
    OrdersGetById("Orders Displayed by Id"),
    OrdersGetAll("All Customers Viewed"),
    GetOrderDetails("Order Details Viewed"),
@@ -26,10 +27,13 @@ public enum EnumLogIslemTipi {
    ProductAdd("Product Added"),
    ProductImageAdd("Product Image Added"),
    ProductGetById("Product Displayed By Id"),
+   ProductUpdate("Product Updated"),
    ProductGetAll("All Products viewed"),
    UsersGetAll("All User Viewed"),
    UserAdd("User Added"),
-   UserUpdate("User Updated");
+   UserUpdate("User Updated"),
+   GetAllRoles("All Roles Viewed"),
+   GetRoleByUser("Roles By User  Displayed");
 
 
    private String value;
