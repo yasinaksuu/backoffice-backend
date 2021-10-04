@@ -19,11 +19,14 @@ public interface ProductService {
 
     public Integer saveProductToDB(ProductSaveRequestDTO productSaveRequestDTO);
 
-    public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) ;
+    public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) throws InterruptedException;
 
 
     public DataResult<ProductDto> getById(Integer productId);
 
     public Result productUpdate(ProductUpdateDTO productUpdateDTO);
+
+    public void clearProductGetAllCache();
+
 
 }

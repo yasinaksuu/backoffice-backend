@@ -27,6 +27,7 @@ import java.util.List;
 @RequestMapping(path = "/api/v1/products")
 public class ProductsController {
 
+    private  int sayac=0;
     private final ProductService productService;
 
     @Autowired
@@ -69,7 +70,13 @@ public class ProductsController {
 
     @ApiOperation("Tüm Productları getiren servis")
     @PostMapping(path = "/getall")
-    public ResponseEntity<DataResult<PagedDataWrapper<ProductDto>>> getAll(@RequestBody ProductGetAllRequest productGetAllRequest) {
+    public ResponseEntity<DataResult<PagedDataWrapper<ProductDto>>> getAll(@RequestBody ProductGetAllRequest productGetAllRequest) throws InterruptedException {
+
+        if(sayac==5){
+            productService.clearProductGetAllCache();
+            sayac=0;
+        }
+        sayac++;
         return ResponseEntity.ok(productService.getAll(productGetAllRequest));
     }
 

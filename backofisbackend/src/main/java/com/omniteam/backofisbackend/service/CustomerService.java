@@ -10,11 +10,13 @@ import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.Result;
 
 public interface CustomerService {
-    DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey);
+    DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) throws InterruptedException;
     Result add(CustomerAddDto customerAddDto);
     Result update(CustomerUpdateDto customerUpdateDto);
 
     DataResult<CustomerDto> getById(int customerId);
 
     DataResult<OrderDto> getOrderByCustomerIdAndStatus(Integer customerId, String status);
+
+    public void clearCustomerGetAllCache();
 }

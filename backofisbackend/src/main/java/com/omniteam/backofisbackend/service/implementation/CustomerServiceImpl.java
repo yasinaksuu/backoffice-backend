@@ -21,6 +21,8 @@ import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,8 +50,10 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerMapper = customerMapper;
     }*/
 
+    @Cacheable(cacheNames = "CustomerGetAll")
     @Override
-    public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) {
+    public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) throws InterruptedException {
+        Thread.sleep(4000L);
         Pageable pageable = PageRequest.of(page, size);
         /*Page<Customer> customers = this.customerRepository.findAll(pageable);*/
         Page<Customer> customers =
@@ -74,6 +78,13 @@ public class CustomerServiceImpl implements CustomerService {
 
         return new SuccessDataResult<>(pagedDataWrapper);
     }
+
+
+    @CacheEvict(cacheNames = "CustomerGetAll" ,allEntries = true)
+    public void clearCustomerGetAllCache(){
+        System.out.println("cache temizlendi");
+    }
+
 
     @Override
     @Transactional

@@ -21,6 +21,8 @@ import com.omniteam.backofisbackend.shared.result.Result;
 import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -119,9 +121,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-
+    @Cacheable(cacheNames = "ProductGetAll")
     @Override
-    public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) {
+    public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) throws InterruptedException {
+
+       Thread.sleep(4000L);
         Pageable pageable = PageRequest.of(productGetAllRequest.getPage(),productGetAllRequest.getSize());
 
 
@@ -160,6 +164,13 @@ public class ProductServiceImpl implements ProductService {
         ProductDto productDto = productMapper.mapToDTO(product);
         return new SuccessDataResult<>(productDto);
     }
+
+
+    @CacheEvict(cacheNames = "ProductGetAll" ,allEntries = true)
+    public void clearProductGetAllCache(){
+        System.out.println("cache temizlendi");
+    }
+
 
 @Transactional
     public Result productUpdate(ProductUpdateDTO productUpdateDTO) {
