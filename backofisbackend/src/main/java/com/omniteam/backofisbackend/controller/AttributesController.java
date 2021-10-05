@@ -33,7 +33,7 @@ public class AttributesController {
             path = "/{attributeid}/getattributeterms"
     )
     public ResponseEntity<DataResult<List<AttributeTermDTO>>> getAttributeTermsByAttributeId(
-            @PathVariable(name = "attributeid") int attributeId){
+            @PathVariable(name = "attributeid") int attributeId) throws NoSuchMethodException {
 
         return ResponseEntity.ok(this.attributeTermService.getByAttributeTermByAttribute(attributeId));
     }

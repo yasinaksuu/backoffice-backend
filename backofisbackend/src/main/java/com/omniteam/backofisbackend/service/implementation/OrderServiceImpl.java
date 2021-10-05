@@ -1,9 +1,11 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.omniteam.backofisbackend.base.annotions.LogMethodCall;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.*;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.repository.customspecification.OrderSpec;
 import com.omniteam.backofisbackend.requests.order.*;
@@ -25,8 +27,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,7 @@ import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
@@ -42,6 +47,9 @@ public class OrderServiceImpl implements OrderService {
     JobLauncher jobLauncher;
     @Autowired
     Job orderExporterJob;
+
+    @Autowired
+    private  LogServiceImpl logService;
 
     private final OrderDetailMapper orderDetailMapper;
     private final ProductPriceRepository productPriceRepository;
@@ -65,13 +73,21 @@ public class OrderServiceImpl implements OrderService {
         this.securityVerificationService = securityVerificationService;
     }
 
+    @LogMethodCall(value = "OrderGetById is started")
     @Override
     public DataResult<OrderDto> getById(int orderId) {
         Optional<Order> optionalOrder = this.orderRepository.findById(orderId);
         OrderDto orderDto = this.orderMapper.toOrderDto(optionalOrder.orElse(null));
+        logService.loglama(EnumLogIslemTipi.OrdersGetById,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
+
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(orderDto);
     }
 
+    @LogMethodCall(value = "OrderGetAll is started")
     @Override
     public DataResult<PagedDataWrapper<OrderDto>> getAll(OrderGetAllRequest orderGetAllRequest) {
         Pageable pageable = PageRequest.of(orderGetAllRequest.getPage(), orderGetAllRequest.getSize());
@@ -93,7 +109,12 @@ public class OrderServiceImpl implements OrderService {
                 orderPage.getTotalPages(),
                 orderPage.isLast()
         );
+        logService.loglama(EnumLogIslemTipi.OrdersGetAll,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(pagedDataWrapper);
     }
 
@@ -107,8 +128,9 @@ public class OrderServiceImpl implements OrderService {
         return DataResult.builder().build();
     }
 
+    @LogMethodCall(value = "OrderAdd is started")
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
     public DataResult<OrderDto> add(OrderAddRequest orderAddRequest) {
         Order order = this.orderMapper.toOrderFromOrderAddRequest(orderAddRequest);
         order.getOrderDetails().forEach(orderDetail -> {
@@ -121,11 +143,18 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository.save(order);
         this.orderDetailRepository.saveAll(order.getOrderDetails());
         OrderDto orderDto = this.orderMapper.toOrderDto(order);
+        logService.loglama(EnumLogIslemTipi.OrdersAdd,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
+
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>("ürün sepete eklendi", orderDto);
     }
 
+    @LogMethodCall(value = "OrderUpdate is started")
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class ,timeout = 800 )
     public DataResult<OrderDto> update(OrderUpdateRequest orderUpdateRequest) {
         Order orderToUpdate = this.orderRepository.getById(orderUpdateRequest.getOrderId());
         this.orderMapper.update(orderToUpdate, orderUpdateRequest);
@@ -146,11 +175,17 @@ public class OrderServiceImpl implements OrderService {
         this.orderDetailRepository.saveAll(orderToUpdate.getOrderDetails());
 
         OrderDto orderDto = this.orderMapper.toOrderDto(orderToUpdate);
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
+
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>("Sipariş güncellendi", orderDto);
     }
 
+    @LogMethodCall(value = "OrderDelete is started")
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
     public Result delete(OrderDeleteRequest orderDeleteRequest) {
         Order orderToDelete = this.orderRepository.getById(orderDeleteRequest.getOrderId());
         orderToDelete.setStatus("DELETED");
@@ -165,12 +200,17 @@ public class OrderServiceImpl implements OrderService {
 
         this.orderRepository.save(orderToDelete);
         this.orderDetailRepository.saveAll(orderToDelete.getOrderDetails());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessResult("Sipariş silindi");
     }
 
+    @LogMethodCall(value = "addProductToCart is started")
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class )
     public DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest) {
         Order order =
                 this.orderRepository
@@ -199,7 +239,11 @@ public class OrderServiceImpl implements OrderService {
             orderDetails.add(orderDetail);
         }
 
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
 
        this.orderDetailRepository.saveAll(orderDetails);
         DataResult<OrderDto> orderDtoDataResult = this.getById(order.getOrderId());

@@ -11,6 +11,7 @@ import com.omniteam.backofisbackend.service.CustomerService;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,8 @@ import java.util.List;
 @RequestMapping(path = "/api/v1/customers")
 public class CustomersController {
 
+   private int sayac=0;
+
     private final CustomerService customerService;
     private final CustomerContactService customerContactService;
     @Autowired
@@ -29,11 +32,17 @@ public class CustomersController {
         this.customerContactService = customerContactService;
     }
 
+
     @GetMapping(path = "/getall")
     public ResponseEntity<DataResult<PagedDataWrapper<CustomerGetAllDto>>> getAll(
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "30") int size,
-            @RequestParam(name = "searchKey",required = false) String searchKey){
+            @RequestParam(name = "searchKey",required = false) String searchKey) throws InterruptedException {
+        if(sayac==5){
+            customerService.clearCustomerGetAllCache();
+            sayac=0;
+        }
+        sayac++;
         return new ResponseEntity<>(this.customerService.getAll(page,size,searchKey), HttpStatus.OK);
     }
 

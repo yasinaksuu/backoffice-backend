@@ -34,6 +34,4 @@ public class Log implements Serializable {
     private LocalDateTime createdDate;
 
 
-
-
 }

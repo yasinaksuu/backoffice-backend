@@ -5,18 +5,17 @@ import com.omniteam.backofisbackend.swagger.Swagger2Configuration;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@CrossOrigin("http://localhost:4200")
+@EnableCaching
 @EnableBatchProcessing
 @EnableSwagger2
 @SpringBootApplication
 @Import( { WebSecurityConfig.class, Swagger2Configuration.class } )
+
 public class BackofisbackendApplication {
 
 	public static void main(String[] args) {

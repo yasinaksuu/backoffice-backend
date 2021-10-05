@@ -1,11 +1,13 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.omniteam.backofisbackend.base.annotions.LogMethodCall;
 import com.omniteam.backofisbackend.dto.customer.CustomerAddContactsDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerUpdateContactsDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
 import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.CustomerContact;
+import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.CustomerContactRepository;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
 import com.omniteam.backofisbackend.service.CustomerContactService;
@@ -17,13 +19,21 @@ import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CustomerContactServiceImpl implements CustomerContactService {
+    @Autowired
+    private SecurityVerificationServiceImpl securityVerificationService;
+
+    @Autowired
+    private  LogServiceImpl logService;
+
     private final CustomerContactRepository customerContactRepository;
     private final CustomerContactMapper customerContactMapper;
     private final CustomerRepository customerRepository;
@@ -34,15 +44,23 @@ public class CustomerContactServiceImpl implements CustomerContactService {
         this.customerRepository = customerRepository;
     }
 
+    @LogMethodCall(value = "getByCustomerId is started")
     @Override
     public DataResult<List<CustomerContactDto>> getByCustomerId(int customerId) {
         Customer customer = new Customer();
         customer.setCustomerId(customerId);
         List<CustomerContact> customerContacts = this.customerContactRepository.findCustomerContactsByCustomer(customer);
         List<CustomerContactDto> customerContactDtoList = this.customerContactMapper.customerContactDtoList(customerContacts);
+        logService.loglama(EnumLogIslemTipi.CustomerGetContacts,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
+
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(customerContactDtoList);
     }
 
+    @LogMethodCall(value = "CustomerContactAdd is started")
     @Override
     public Result add(CustomerAddContactsDto customerAddContactsDto) {
         List<CustomerContact> customerContactList =
@@ -62,11 +80,18 @@ public class CustomerContactServiceImpl implements CustomerContactService {
         }
 
         this.customerContactRepository.saveAll(customerContactList);
+        logService.loglama(EnumLogIslemTipi.CustomerAddContacts,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
+
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessResult("contacts added");
     }
 
+    @LogMethodCall(value = "CustomerContactUpdated is started")
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
     public Result update(CustomerUpdateContactsDto customerUpdateContactsDto) {
         List<CustomerContactUpdateDto> customerContactUpdateDtoList= customerUpdateContactsDto.getCustomerContactUpdateDtoList();
         customerContactUpdateDtoList.forEach(customerContactUpdateDto -> {
@@ -83,6 +108,12 @@ public class CustomerContactServiceImpl implements CustomerContactService {
             }
             this.customerContactRepository.save(customerContactToUpdate);
         });
+        logService.loglama(EnumLogIslemTipi.CustomerUpdateContacts,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
+
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessResult(ResultMessage.CUSTOMER_CONTACT_UPDATED);
     }
 }
