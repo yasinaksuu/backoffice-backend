@@ -1,5 +1,6 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.omniteam.backofisbackend.base.annotions.LogMethodCall;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.role.RoleDto;
 import com.omniteam.backofisbackend.dto.user.UserDto;
@@ -21,8 +22,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private  SecurityVerificationServiceImpl securityVerificationService;
     private  LogServiceImpl logService;
 
+    @LogMethodCall
     @Override
     public DataResult<UserDto> getByEmail(String email) {
         User user = this.userRepository.findUserByEmailAndIsActive(email, true);
@@ -56,6 +60,7 @@ public class UserServiceImpl implements UserService {
         return new SuccessDataResult<>(userDto);
     }
 
+    @LogMethodCall(value = "UserAdd is started")
     @Transactional
     @Override
     public Result add(UserAddRequest userAddRequest) {
@@ -81,7 +86,11 @@ public class UserServiceImpl implements UserService {
             return new SuccessResult(user.getUserId(), "Kullanıcı başarıyla eklendi.");
         } catch (Exception ex) {
             logService.loglama(EnumLogIslemTipi.UserAdd,securityVerificationService.inquireLoggedInUser());
+            Method m = new Object() {}
+                    .getClass()
+                    .getEnclosingMethod();
 
+            LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
             return new ErrorResult(ex.getMessage());
         } finally {
             //anythink
@@ -90,7 +99,8 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Transactional
+    @LogMethodCall(value = "UserUpdate is stated")
+    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class,timeout = 800)
     @Override
     public Result update(Integer userId, UserUpdateRequest userUpdateRequest) {
         User existingUser = this.userRepository.getById(userId);
@@ -116,17 +126,26 @@ public class UserServiceImpl implements UserService {
             this.userRoleRepository.saveAll(userRoles);
         }
         logService.loglama(EnumLogIslemTipi.UserUpdate,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessResult(existingUser.getUserId(), "Kullanıcı başarıyla güncellendi.");
     }
 
+    @LogMethodCall(value = "UserGetaAll is started")
     @Override
     public Result getAll(Pageable pageable) {
         Page<User> userPage = this.userRepository.findAll(pageable);
         List<UserDto> userDtoList = this.userMapper.toUserDtoList(userPage.getContent());
         PagedDataWrapper<UserDto> userPagedWrapper = new PagedDataWrapper(userDtoList, userPage);
         logService.loglama(EnumLogIslemTipi.UsersGetAll,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult(userPagedWrapper);
     }
 
@@ -159,6 +178,7 @@ public class UserServiceImpl implements UserService {
         List<Role> roleList = roleRepository.findAllByRoleIdIn(new HashSet(Arrays.asList(roleIds)));
         return this.setUserRoles(user, roleList);
     }
+
 
 
 }

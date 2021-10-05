@@ -1,5 +1,6 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.omniteam.backofisbackend.base.annotions.LogMethodCall;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.role.RoleDto;
 import com.omniteam.backofisbackend.entity.Role;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @Service
@@ -33,16 +35,22 @@ public class RoleServiceImpl implements RoleService {
     private  LogServiceImpl logService;
 
 
+    @LogMethodCall(value = "getRolesByUserId is started")
     @Override
     public DataResult<List<RoleDto>> getRolesByUserId(Integer userId) {
         logService.loglama(EnumLogIslemTipi.GetRoleByUser,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(
                 this.roleMapper.toRoleDtoList(this.roleRepository.findRolesByUserId(userId))
 
         );
     }
 
+    @LogMethodCall(value = "getAllRoles is stated")
     @Override
     public DataResult<PagedDataWrapper<RoleDto>> getAllRoles(RoleGetAllRequest request) {
         Pageable pageable = PageRequest.of(request.getPage(),request.getSize());
@@ -51,7 +59,11 @@ public class RoleServiceImpl implements RoleService {
        List<RoleDto> roleDtoList = this.roleMapper.toRoleDtoList(rolePage.getContent());
         PagedDataWrapper<RoleDto> rolePagedWrapper = new PagedDataWrapper(roleDtoList,rolePage);
         logService.loglama(EnumLogIslemTipi.GetAllRoles,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult(rolePagedWrapper);
     }
 }

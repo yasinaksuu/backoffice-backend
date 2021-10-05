@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 
+import com.omniteam.backofisbackend.base.annotions.LogMethodCall;
 import com.omniteam.backofisbackend.dto.attibute.AttributeDTO;
 import com.omniteam.backofisbackend.dto.attibute.AttributeTermDTO;
 import com.omniteam.backofisbackend.entity.Attribute;
@@ -14,6 +15,7 @@ import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @Service
@@ -33,10 +35,20 @@ public class AttributeTermServiceImpl implements AttributeTermService {
         this.attributeTermRepository = attributeTermRepository;
         this.attributeTermMapper = attributeTermMapper;
     }
-    public DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId) {
+    @LogMethodCall(value = "getByAttributeTermByAttribute is started")
+    public DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId) throws NoSuchMethodException {
         List<AttributeTerm> attributeTerm = attributeTermRepository.findAllByAttribute_AttributeId(attributeId);
         List<AttributeTermDTO> attributeTermDTOS = attributeTermMapper.mapToDTOs(attributeTerm);
         logService.loglama(EnumLogIslemTipi.AttributeTermsGet,securityVerificationService.inquireLoggedInUser());
+
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
+
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        System.out.println(logMethodCall.value());
         return new SuccessDataResult<>(attributeTermDTOS);
     }
+
+
 }

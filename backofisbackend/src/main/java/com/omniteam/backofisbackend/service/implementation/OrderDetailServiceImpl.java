@@ -1,5 +1,6 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.omniteam.backofisbackend.base.annotions.LogMethodCall;
 import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.entity.OrderDetail;
@@ -13,6 +14,7 @@ import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 @Service
@@ -33,6 +35,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         this.orderDetailMapper = orderDetailMapper;
     }
 
+    @LogMethodCall(value = "getByOrderId is started")
     @Override
     public DataResult<List<OrderDetailDto>> getByOrderId(int orderId) {
         if (orderId == 0) {
@@ -43,7 +46,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         List<OrderDetail> orderDetails = this.orderDetailRepository.getOrderDetailsByOrder(order);
         List<OrderDetailDto> orderDetailDtoList = this.orderDetailMapper.toOrderDetailDtoList(orderDetails);
         logService.loglama(EnumLogIslemTipi.GetOrderDetails,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}
+                .getClass()
+                .getEnclosingMethod();
 
+        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(orderDetailDtoList);
     }
 }
