@@ -29,8 +29,4 @@ public class OrderDetail extends BaseEntity {
     @Column(name="status")
     private String status;
 
-    @JoinColumn(name = "order_id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Order order;
-
 }
