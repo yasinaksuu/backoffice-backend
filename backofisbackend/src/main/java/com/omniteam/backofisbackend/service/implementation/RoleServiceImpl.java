@@ -53,8 +53,12 @@ public class RoleServiceImpl implements RoleService {
     @LogMethodCall(value = "getAllRoles is stated")
     @Override
     public DataResult<PagedDataWrapper<RoleDto>> getAllRoles(RoleGetAllRequest request) {
+        if(request.getPage()==null)
+            request.setPage(0);
+        if(request.getSize()==null)
+            request.setSize(20);
         Pageable pageable = PageRequest.of(request.getPage(),request.getSize());
-        String searchText = request.getSearch().replace(" ","%");
+        String searchText = (request.getSearch()==null) ? null : request.getSearch().replace(" ","%");
         Page<Role> rolePage = this.roleRepository.findAllByFilter(searchText,pageable);
        List<RoleDto> roleDtoList = this.roleMapper.toRoleDtoList(rolePage.getContent());
         PagedDataWrapper<RoleDto> rolePagedWrapper = new PagedDataWrapper(roleDtoList,rolePage);

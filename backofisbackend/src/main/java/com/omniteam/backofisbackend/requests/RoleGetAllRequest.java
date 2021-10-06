@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RoleGetAllRequest {
 
-    private String search = "";
-    private int page;
-    private int size;
+    private String search;
+    private Integer page;
+    private Integer size;
 }

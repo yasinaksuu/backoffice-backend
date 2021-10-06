@@ -18,6 +18,7 @@ import com.omniteam.backofisbackend.service.UserService;
 import com.omniteam.backofisbackend.shared.mapper.UserMapper;
 import com.omniteam.backofisbackend.shared.result.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +42,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final PasswordEncoder bcryptEncoder;
+    @Autowired
     private  SecurityVerificationServiceImpl securityVerificationService;
+    @Autowired
     private  LogServiceImpl logService;
 
     @LogMethodCall
