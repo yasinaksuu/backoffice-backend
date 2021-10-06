@@ -72,6 +72,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
     private List<UserRole> userRoles;
 
+    public User(Integer userId) {
+        this.userId = userId;
+    }
 }
 
 

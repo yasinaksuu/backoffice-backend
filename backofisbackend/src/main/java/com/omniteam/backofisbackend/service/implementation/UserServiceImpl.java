@@ -17,6 +17,7 @@ import com.omniteam.backofisbackend.service.RoleService;
 import com.omniteam.backofisbackend.service.UserService;
 import com.omniteam.backofisbackend.shared.mapper.UserMapper;
 import com.omniteam.backofisbackend.shared.result.*;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,14 +35,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final UserRoleRepository userRoleRepository;
-    private final UserMapper userMapper;
-    private final RoleService roleService;
-    private final PasswordEncoder bcryptEncoder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private UserRoleRepository userRoleRepository;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private RoleService roleService;
+    @Autowired
+    private PasswordEncoder bcryptEncoder;
+
     @Autowired
     private  SecurityVerificationServiceImpl securityVerificationService;
     @Autowired
@@ -139,7 +147,7 @@ public class UserServiceImpl implements UserService {
 
     @LogMethodCall(value = "UserGetaAll is started")
     @Override
-    public Result getAll(Pageable pageable) {
+    public DataResult<PagedDataWrapper<User>> getAll(Pageable pageable) {
         Page<User> userPage = this.userRepository.findAll(pageable);
         List<UserDto> userDtoList = this.userMapper.toUserDtoList(userPage.getContent());
         PagedDataWrapper<UserDto> userPagedWrapper = new PagedDataWrapper(userDtoList, userPage);
