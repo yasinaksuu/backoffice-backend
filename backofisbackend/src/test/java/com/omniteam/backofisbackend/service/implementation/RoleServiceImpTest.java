@@ -96,6 +96,9 @@ public class RoleServiceImpTest {
         Mockito.when(roleRepository.findAllByFilter("2", PageRequest.of(0, 20)))
                 .thenReturn(new PageImpl<>(mockedRoles.stream().filter(role -> role.getRoleName().equals("role 2")).collect(Collectors.toList())));
 
+        Mockito.when(roleRepository.findAllByFilter("e%2%", PageRequest.of(0, 20)))
+                .thenReturn(new PageImpl<>(mockedRoles.stream().filter(role -> role.getRoleName().equals("role 21") || role.getRoleName().equals("role 2")).collect(Collectors.toList())));
+
         Mockito.when(roleRepository.findAllByFilter("e%21", PageRequest.of(0, 20)))
                 .thenReturn(new PageImpl<>(mockedRoles.stream().filter(role -> role.getRoleName().equals("role 21")).collect(Collectors.toList())));
 
@@ -106,10 +109,19 @@ public class RoleServiceImpTest {
         assertNotNull(returnedDataWithPagingAndFilter0.getData().getContent().get(0));
         assertEquals("role 2",returnedDataWithPagingAndFilter0.getData().getContent().get(0).getRoleName());
         roleGetAllRequest.setSearch("e 21");
+
         DataResult<PagedDataWrapper<RoleDto>> returnedDataWithPagingAndFilter1 = roleService.getAllRoles(roleGetAllRequest);
         assertEquals(1, returnedDataWithPagingAndFilter1.getData().getSize());
         assertNotNull(returnedDataWithPagingAndFilter1.getData().getContent().get(0));
         assertEquals("role 21",returnedDataWithPagingAndFilter1.getData().getContent().get(0).getRoleName());
+
+        roleGetAllRequest.setSearch("e 2 ");
+        DataResult<PagedDataWrapper<RoleDto>> returnedDataWithPagingAndFilter2 = roleService.getAllRoles(roleGetAllRequest);
+        assertEquals(2, returnedDataWithPagingAndFilter2.getData().getSize());
+        assertNotNull(returnedDataWithPagingAndFilter2.getData().getContent().get(0));
+        assertNotNull(returnedDataWithPagingAndFilter2.getData().getContent().get(1));
+        assertEquals("role 2",returnedDataWithPagingAndFilter2.getData().getContent().get(0).getRoleName());
+        assertEquals("role 21",returnedDataWithPagingAndFilter2.getData().getContent().get(1).getRoleName());
     }
 
 
