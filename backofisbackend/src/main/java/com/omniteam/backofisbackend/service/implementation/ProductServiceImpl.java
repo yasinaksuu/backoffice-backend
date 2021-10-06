@@ -181,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
     public DataResult<ProductDto> getById(Integer productId){
         Product product = productRepository.getById(productId);
         ProductDto productDto = productMapper.mapToDTO(product);
-        logService.loglama(EnumLogIslemTipi.ProductGetById,securityVerificationService.inquireLoggedInUser());
+   //     logService.loglama(EnumLogIslemTipi.ProductGetById,securityVerificationService.inquireLoggedInUser());
         Method m = new Object() {}
                 .getClass()
                 .getEnclosingMethod();

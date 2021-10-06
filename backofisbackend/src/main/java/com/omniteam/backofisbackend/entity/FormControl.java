@@ -42,6 +42,9 @@ public class FormControl implements Serializable {
     @Column(name = "width")
     private String width;
 
+    @Column(name = "sorter")
+    private String sorter;
+
     @JoinColumn(name="form_id")
     @ManyToOne(fetch = FetchType.EAGER)
     private Form form;

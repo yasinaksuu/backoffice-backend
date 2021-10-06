@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface FormControlRepository extends JpaRepository<FormControl, Integer> {
-    List<FormControl> getFormControlsByForm_FormId(Integer formId);
+    List<FormControl> getFormControlsByForm_FormIdOrderBySorterAsc(Integer formId);
 }
