@@ -45,8 +45,10 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerMapper customerMapper;
     private final UserRepository userRepository;
 
+    @Autowired
     private final SecurityVerificationService securityVerificationService;
 
+    @Autowired
     private  LogServiceImpl logService;
    /* @Autowired
     public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, OrderMapper orderMapper, CustomerMapper customerMapper) {
@@ -62,6 +64,9 @@ public class CustomerServiceImpl implements CustomerService {
     public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) throws InterruptedException {
         Thread.sleep(4000L);
         Pageable pageable = PageRequest.of(page, size);
+        if (searchKey==null){
+            searchKey="";
+        }
         /*Page<Customer> customers = this.customerRepository.findAll(pageable);*/
         Page<Customer> customers =
                 this.customerRepository.findCustomersByFirstNameContainsOrLastNameContainsOrNationNumberContains(
