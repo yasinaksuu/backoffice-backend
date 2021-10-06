@@ -19,7 +19,7 @@ public class FormControlServiceImpl implements FormControlService {
     private final FormControlMapper formControlMapper;
 
     public DataResult<List<FormControlDto>> getFormControlsByFormId (Integer formId){
-        List<FormControlDto> formControlDtos =this.formControlMapper.toFormControlDtoList(this.formControlRepository.getFormControlsByForm_FormId(formId));
+        List<FormControlDto> formControlDtos =this.formControlMapper.toFormControlDtoList(this.formControlRepository.getFormControlsByForm_FormIdOrderBySorterAsc(formId));
         return new SuccessDataResult<>(formControlDtos);
     }
 }
