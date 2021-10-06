@@ -1,12 +1,15 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.omniteam.backofisbackend.dto.category.CategoryDTO;
 import com.omniteam.backofisbackend.dto.category.CategoryGetAllDto;
 import com.omniteam.backofisbackend.entity.Category;
 import com.omniteam.backofisbackend.repository.CategoryRepository;
 import com.omniteam.backofisbackend.service.CategoryService;
 import com.omniteam.backofisbackend.shared.mapper.CategoryMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -52,8 +55,27 @@ public class CategoryServiceImplTest {
         Mockito.when(categoryMapper.toCategoryDtoList(Mockito.anyList())).thenReturn(categoryGetAllDtos);
 
         DataResult<List<CategoryGetAllDto>> result = categoryService.getAll();
+        Assertions.assertThat(result.getData()).isEqualTo(categoryGetAllDtos);
+    }
 
-        assertEquals(1, result.getData().size());
+    @Test
+    @DisplayName(value = "Should Find Category By CategoryId")
+    public void getById_ReturnsCategoryDto_IfGivenExist(){
+        //Arrange
+        Category category = new Category();
+        category.setCategoryId(1);
+        category.setCategoryName("Bilgisayar");
+        Mockito.when(this.categoryRepository.getById(Mockito.any())).thenReturn(category);
+
+        CategoryDTO expectedCategoryDTO = new CategoryDTO();
+        expectedCategoryDTO.setCategoryId(1);
+        expectedCategoryDTO.setCategoryName("Bilgisayar");
+
+        Mockito.when(categoryMapper.mapToDTO(Mockito.any(Category.class))).thenReturn(expectedCategoryDTO);
+
+        DataResult<CategoryDTO> result = this.categoryService.getById(1);
+
+        Assertions.assertThat(result.getData()).isEqualTo(expectedCategoryDTO);
     }
 
 }
