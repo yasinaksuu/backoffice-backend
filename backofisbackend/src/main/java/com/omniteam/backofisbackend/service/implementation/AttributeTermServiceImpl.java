@@ -23,18 +23,13 @@ public class AttributeTermServiceImpl implements AttributeTermService {
 
     @Autowired
     private SecurityVerificationServiceImpl securityVerificationService;
-
     @Autowired
     private  LogServiceImpl logService;
 
-
-    private final AttributeTermRepository attributeTermRepository;
-    private final AttributeTermMapper attributeTermMapper;
     @Autowired
-    public AttributeTermServiceImpl(AttributeTermRepository attributeTermRepository, AttributeTermMapper attributeTermMapper) {
-        this.attributeTermRepository = attributeTermRepository;
-        this.attributeTermMapper = attributeTermMapper;
-    }
+    private AttributeTermRepository attributeTermRepository;
+    @Autowired
+    private AttributeTermMapper attributeTermMapper;
     @LogMethodCall(value = "getByAttributeTermByAttribute is started")
     public DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId) throws NoSuchMethodException {
         List<AttributeTerm> attributeTerm = attributeTermRepository.findAllByAttribute_AttributeId(attributeId);
