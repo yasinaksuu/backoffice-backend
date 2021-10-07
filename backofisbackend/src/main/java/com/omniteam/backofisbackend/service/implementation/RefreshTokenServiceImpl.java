@@ -9,6 +9,7 @@ import com.omniteam.backofisbackend.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -30,7 +31,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         return refreshToken;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = {Exception.class})
     public RefreshToken createRefreshToken(String email) {
         RefreshToken refreshToken = new RefreshToken();
         User user = userRepository.findUserByEmailAndIsActive(email,true);
