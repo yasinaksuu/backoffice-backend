@@ -9,8 +9,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 @Mapper(
-        componentModel = "spring",
-        uses = {AttributeMapper.class }
+        componentModel = "spring"
 )
 public interface AttributeTermMapper {
     List<AttributeTermDTO> mapToDTOs(List<AttributeTerm> attributeTerm);

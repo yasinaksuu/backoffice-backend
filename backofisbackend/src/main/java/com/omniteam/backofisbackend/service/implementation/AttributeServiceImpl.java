@@ -19,27 +19,14 @@ import java.util.List;
 @Service
 public class AttributeServiceImpl  implements AttributeService {
 
-    private final AttributeRepository attributeRepository;
-
-    private final AttributeMapper attributeMapper;
-
     @Autowired
-    public AttributeServiceImpl(AttributeRepository attributeRepository, AttributeMapper attributeMapper) {
-        this.attributeRepository = attributeRepository;
-        this.attributeMapper = attributeMapper;
-    }
-
-    @LogMethodCall(value = "getAttributesByCategoryId is started")
+    private AttributeRepository attributeRepository;
+    @Autowired
+    private AttributeMapper attributeMapper;
     @Override
     public DataResult<List<AttributeDTO>> getAttributesByCategoryId(int categoryId) {
         List<Attribute> attributeList = this.attributeRepository.findAttributesByCategoryId(categoryId);
         List<AttributeDTO> attributeDTOList = this.attributeMapper.toAttributeDTOList(attributeList);
-
-        Method m = new Object() {}
-                .getClass()
-                .getEnclosingMethod();
-
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(attributeDTOList);
     }
 }
