@@ -23,13 +23,10 @@ public class DistrictServiceImpl implements DistrictService {
     @Autowired
     private  LogServiceImpl logService;
 
-    private final DistrictRepository districtRepository;
-    private final DistrictMapper districtMapper;
-
-    public DistrictServiceImpl(DistrictRepository districtRepository, DistrictMapper districtMapper) {
-        this.districtRepository = districtRepository;
-        this.districtMapper = districtMapper;
-    }
+    @Autowired
+    private DistrictRepository districtRepository;
+    @Autowired
+    private DistrictMapper districtMapper;
 
     @LogMethodCall(value = "getDistrictsByCity is started")
     @Override
