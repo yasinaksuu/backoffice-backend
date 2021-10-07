@@ -24,9 +24,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.RequestScope;
 
 @Service
 public class OrderOperationsBatch {
@@ -60,11 +58,15 @@ public class OrderOperationsBatch {
                 .queryString("from orders").build();
     }
 
-
     @Bean
     FlatFileItemWriter writer() {
         BeanWrapperFieldExtractor<Order> extractor = new BeanWrapperFieldExtractor<>();
-        extractor.setNames(new String[]{"OrderId", "Status", "modifiedDate"});
+        extractor.setNames(new String[]{
+                "OrderId", "status",
+                "customer.firstName", "customer.lastName",
+                "User.firstName", "User.lastName",
+                "modifiedDate", "createdDate"
+        });
         extractor.afterPropertiesSet();
 
         DelimitedLineAggregator<Order> lineAggregator = new DelimitedLineAggregator<>();
