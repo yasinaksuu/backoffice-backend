@@ -20,17 +20,12 @@ public class CityServiceImpl implements CityService {
 
     @Autowired
     private SecurityVerificationServiceImpl securityVerificationService;
-
     @Autowired
     private  LogServiceImpl logService;
-
-    private final CityRepository cityRepository;
-    private final CityMapper cityMapper;
     @Autowired
-    public CityServiceImpl(CityRepository cityRepository, CityMapper cityMapper) {
-        this.cityRepository = cityRepository;
-        this.cityMapper = cityMapper;
-    }
+    private CityRepository cityRepository;
+    @Autowired
+    private CityMapper cityMapper;
 
     @LogMethodCall(value = "getCitiesByCountry is started")
     @Override
