@@ -22,18 +22,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
     @Autowired
     private SecurityVerificationServiceImpl securityVerificationService;
-
     @Autowired
     private  LogServiceImpl logService;
-
-    private final OrderDetailRepository orderDetailRepository;
-    private final OrderDetailMapper orderDetailMapper;
-
     @Autowired
-    public OrderDetailServiceImpl(OrderDetailRepository orderDetailRepository, OrderDetailMapper orderDetailMapper) {
-        this.orderDetailRepository = orderDetailRepository;
-        this.orderDetailMapper = orderDetailMapper;
-    }
+    private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private OrderDetailMapper orderDetailMapper;
+
 
     @LogMethodCall(value = "getByOrderId is started")
     @Override
