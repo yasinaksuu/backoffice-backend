@@ -12,8 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -26,16 +29,16 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CategoryServiceImplTest {
 
 
-    private CategoryService categoryService;
+    @InjectMocks
+    private CategoryServiceImpl categoryService;
     @Mock
     private CategoryRepository categoryRepository;
+    @Spy
+    private CategoryMapper categoryMapper = Mappers.getMapper(CategoryMapper.class);
     @Mock
-    private CategoryMapper categoryMapper;
-
-    @BeforeEach
-    public void setUp() {
-      categoryService = new CategoryServiceImpl(categoryRepository, categoryMapper);
-    }
+    private LogServiceImpl logService;
+    @Mock
+    private SecurityVerificationServiceImpl securityVerificationService;
 
     @Test
     public void when_getAll_called_it_should_returns_all_categories_as_list_of_categoryDto() {
@@ -47,15 +50,8 @@ public class CategoryServiceImplTest {
         List<Category> categories = Stream.of(category).collect(Collectors.toList());
         Mockito.when(categoryRepository.findAll()).thenReturn(categories);
 
-        CategoryGetAllDto categoryGetAllDto = new CategoryGetAllDto();
-        categoryGetAllDto.setCategoryId(1);
-        categoryGetAllDto.setCategoryName("Bilgisayar");
-
-        List<CategoryGetAllDto> categoryGetAllDtos = Stream.of(categoryGetAllDto).collect(Collectors.toList());
-        Mockito.when(categoryMapper.toCategoryDtoList(Mockito.anyList())).thenReturn(categoryGetAllDtos);
-
         DataResult<List<CategoryGetAllDto>> result = categoryService.getAll();
-        Assertions.assertThat(result.getData()).isEqualTo(categoryGetAllDtos);
+        Assertions.assertThat(result.getData()).hasSize(1);
     }
 
     @Test
@@ -67,15 +63,9 @@ public class CategoryServiceImplTest {
         category.setCategoryName("Bilgisayar");
         Mockito.when(this.categoryRepository.getById(Mockito.any())).thenReturn(category);
 
-        CategoryDTO expectedCategoryDTO = new CategoryDTO();
-        expectedCategoryDTO.setCategoryId(1);
-        expectedCategoryDTO.setCategoryName("Bilgisayar");
-
-        Mockito.when(categoryMapper.mapToDTO(Mockito.any(Category.class))).thenReturn(expectedCategoryDTO);
-
         DataResult<CategoryDTO> result = this.categoryService.getById(1);
 
-        Assertions.assertThat(result.getData()).isEqualTo(expectedCategoryDTO);
+        Assertions.assertThat(result.getData()).isNotNull();
     }
 
 }

@@ -27,14 +27,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private  LogServiceImpl logService;
 
-    private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
-
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
-        this.categoryRepository = categoryRepository;
-        this.categoryMapper = categoryMapper;
-    }
+    private CategoryRepository categoryRepository;
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+
 
     @LogMethodCall(value = "getAll is started")
     @Override
