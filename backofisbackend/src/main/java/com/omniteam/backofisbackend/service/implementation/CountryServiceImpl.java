@@ -23,13 +23,10 @@ public class CountryServiceImpl implements CountryService {
     @Autowired
     private  LogServiceImpl logService;
 
-    private final CountryRepository countryRepository;
-    private final CountryMapper countryMapper;
     @Autowired
-    public CountryServiceImpl(CountryRepository countryRepository, CountryMapper countryMapper) {
-        this.countryRepository = countryRepository;
-        this.countryMapper = countryMapper;
-    }
+    private CountryRepository countryRepository;
+    @Autowired
+    private CountryMapper countryMapper;
 
     @LogMethodCall(value = "Country getAll is started")
     @Override
