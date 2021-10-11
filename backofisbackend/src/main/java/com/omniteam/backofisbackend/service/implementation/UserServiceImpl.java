@@ -57,9 +57,10 @@ public class UserServiceImpl implements UserService {
 
     @LogMethodCall
     @Override
-    public DataResult<UserDto> getByEmail(String email) {
+    public DataResult<UserDto> getByEmail(String email) throws Exception {
         User user = this.userRepository.findUserByEmailAndIsActive(email, true);
         if (user == null) {
+            throw new Exception("User not found");
             //throw exception //kullanıcı bulunamadı belki hata fırlatılabilir
         }
         UserDto userDto = this.userMapper.toUserDto(user);
@@ -74,8 +75,7 @@ public class UserServiceImpl implements UserService {
     @LogMethodCall(value = "UserAdd is started")
     @Transactional
     @Override
-    public Result add(UserAddRequest userAddRequest) {
-        try {
+    public Result add(UserAddRequest userAddRequest) throws Exception {
             userAddRequest.setPassword(bcryptEncoder.encode(userAddRequest.getPassword()));
             User user = this.userMapper.toUserFromUserAddRequest(userAddRequest);
             if(userRepository.findUserByEmailAndIsActive(user.getEmail(),true)!=null)
@@ -87,26 +87,15 @@ public class UserServiceImpl implements UserService {
             if (userAddRequest.getDistrictId() == null)
                 user.setDistrict(null);
             //to do kullanıcı parola hashleme işlemleri...
-            this.userRepository.save(user);
+            user = this.userRepository.save(user);
             if (userAddRequest.getRoleIdList() != null) // TODO:  Role atama işlemleri
             {
                 this.setUserRoles(user, userAddRequest.getRoleIdList().toArray(new Integer[userAddRequest.getRoleIdList().size()]));
             }
             logService.loglama(EnumLogIslemTipi.UserAdd,securityVerificationService.inquireLoggedInUser());
-
-            return new SuccessResult(user.getUserId(), "Kullanıcı başarıyla eklendi.");
-        } catch (Exception ex) {
-            logService.loglama(EnumLogIslemTipi.UserAdd,securityVerificationService.inquireLoggedInUser());
-            Method m = new Object() {}
-                    .getClass()
-                    .getEnclosingMethod();
-
-            LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
-            return new ErrorResult(ex.getMessage());
-        } finally {
-            //anythink
-
-        }
+        //TODO return response'lar origin instance'lara çevirilmeli.
+            return new SuccessResult(user.getUserId());
+            //return user;
 
     }
 
@@ -147,7 +136,7 @@ public class UserServiceImpl implements UserService {
 
     @LogMethodCall(value = "UserGetaAll is started")
     @Override
-    public DataResult<PagedDataWrapper<User>> getAll(Pageable pageable) {
+    public DataResult<PagedDataWrapper<UserDto>> getAll(Pageable pageable) {
         Page<User> userPage = this.userRepository.findAll(pageable);
         List<UserDto> userDtoList = this.userMapper.toUserDtoList(userPage.getContent());
         PagedDataWrapper<UserDto> userPagedWrapper = new PagedDataWrapper(userDtoList, userPage);

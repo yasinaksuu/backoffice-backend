@@ -25,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(path = "/api/v1/auth")
 public class AuthController {
@@ -56,19 +58,20 @@ public class AuthController {
     }
 
     @PostMapping(path = "/refreshtoken")
-    public ResponseEntity<JwtRefreshResponse> refreshtoken(@RequestBody JwtRefreshRequest request) {
+    public ResponseEntity<JwtRefreshResponse> refreshtoken(@RequestBody JwtRefreshRequest request) throws Exception {
         String requestRefreshToken = request.getRefreshToken();
-
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    UserDto userDto = this.userService.getByEmail(user.getEmail()).getData();
-                    String token = jwtTokenUtil.generateTokenFromUserDto(userDto);
-                    return ResponseEntity.ok(new JwtRefreshResponse(token, requestRefreshToken));
-                })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                        "Refresh token is not in database!"));
+        Optional<User> willFindUser = refreshTokenService.findByToken(requestRefreshToken).map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser);
+        if(willFindUser.isPresent()) {
+            UserDto foundUser = this.userService.getByEmail(willFindUser.get().getEmail()).getData();
+            return willFindUser.map(user -> {
+                        String token = jwtTokenUtil.generateTokenFromUserDto(foundUser);
+                        return ResponseEntity.ok(new JwtRefreshResponse(token, requestRefreshToken));
+                    })
+                    .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                            "Refresh token is not in database!"));
+        }
+        else throw new Exception("User not found");
     }
 
     private void authenticate(String username, String password) throws Exception {

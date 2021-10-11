@@ -40,6 +40,8 @@ import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
@@ -72,6 +74,23 @@ public class ProductServiceImplTest {
 
     @Mock
     private ProductImageRepository productImageRepository;
+
+    @Mock
+    private LogServiceImpl logService;
+    @Mock
+    private SecurityVerificationServiceImpl securityVerificationService;
+
+    private MockHttpServletRequest mockRequest;
+    @BeforeEach
+    void setupEach()
+    {
+        mockRequest = new MockHttpServletRequest();
+        mockRequest.setContextPath("/");
+
+        ServletRequestAttributes attrs = new ServletRequestAttributes(mockRequest);
+
+        RequestContextHolder.setRequestAttributes(attrs);
+    }
 
     @Test
     @DisplayName(value = "Must Find Product by Product ID")
@@ -164,6 +183,7 @@ public class ProductServiceImplTest {
                  "Hello, World!".getBytes()
          );
 
+
          String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
          ProductImage productImage = new ProductImage();
@@ -172,8 +192,8 @@ public class ProductServiceImplTest {
 
          productImage.setProductImageName(fileName);
 
-        // String url ="//downloadhello.txt";
-         String url =new MockHttpServletRequestBuilder(HttpMethod.POST,"//downloadhello.txt").contextPath().pathInfo("//download").pathInfo(fileName).toString();
+         String url ="//downloadhello.txt";
+//         String url =new MockHttpServletRequestBuilder(HttpMethod.POST,"//downloadhello.txt").contextPath().pathInfo("//download").pathInfo(fileName).toString();
 
          productImage.setFilePath(url);
          productImage.setProduct(product);
