@@ -7,12 +7,14 @@ import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
 @Mapper(
         componentModel = "spring",
-        uses = {RoleMapper.class}
+        uses = {RoleMapper.class},
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 )
 public interface UserMapper {
     @Mapping(target = "countryId", source = "country.countryId")
@@ -39,6 +41,6 @@ public interface UserMapper {
     @Mapping(target = "country.countryId", source = "countryId")
     @Mapping(target = "city.cityId", source = "cityId")
     @Mapping(target = "district.districtId", source = "districtId")
-    void update(UserUpdateRequest userUpdateRequest,@MappingTarget User user);
+    void update(UserUpdateRequest userUpdateRequest, @MappingTarget User user);
 
 }

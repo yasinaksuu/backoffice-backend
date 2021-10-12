@@ -353,6 +353,17 @@ public class UserServiceImplTest {
         assertEquals(updateRequest.getCityId(),updatedUser.getCity().getCityId());
         assertEquals(updateRequest.getCountryId(),updatedUser.getCountry().getCountryId());
 
+        UserUpdateRequest updateRequestWithOnlyCity = new UserUpdateRequest();
+        User willUpdateUserWithOnlyCity = new User(2);
+        willUpdateUserWithOnlyCity.setFirstName("TestWithCity");
+        willUpdateUserWithOnlyCity.setLastName("BugTest");
+        updateRequestWithOnlyCity.setCityId(2);
+        userMapper.update(updateRequestWithOnlyCity,willUpdateUserWithOnlyCity);
+        assertEquals(2,willUpdateUserWithOnlyCity.getUserId());
+        assertEquals("TestWithCity",willUpdateUserWithOnlyCity.getFirstName());
+        assertEquals("BugTest",willUpdateUserWithOnlyCity.getLastName());
+
+
 
 
 
