@@ -170,6 +170,9 @@ public class UserServiceImplTest {
         User user2 = new User(2);
         user2.setEmail("test2@email.com");
 
+        Mockito.when(userRepository.findUserByEmailAndIsActive("no@mail.com",true))
+                        .thenReturn(null);
+
         Mockito.when(userRepository.findUserByEmailAndIsActive("test1@email.com", true))
                 .thenReturn(user1);
         Mockito.when(userRepository.findUserByEmailAndIsActive("test2@email.com", true))
@@ -186,8 +189,9 @@ public class UserServiceImplTest {
                 )));
 
 
+
         Exception exception = assertThrows(Exception.class, () -> {
-            userService.getByEmail("test@email.com");
+            userService.getByEmail("no@mail.com");
         });
         assertNotNull(exception);
 
@@ -235,6 +239,8 @@ public class UserServiceImplTest {
 
         assertNotNull(exception);
 
+        assertThrows(Exception.class,()->userService.setUserRoles(new User(1), (Role) null));
+
         Result result = userService.setUserRoles(user, new Role("test1"));
         assertNotNull(result);
         assertNotNull(result.getMessage());
@@ -268,20 +274,18 @@ public class UserServiceImplTest {
         assertEquals(user.getUserId(),result.getId());
 
 
-
     }
 
 
 
     @Test
     void addUserTest() throws Exception {
-
+        HashSet roleIdHash = new HashSet<>(Arrays.asList(1,2));
         Mockito.when(userRepository.findUserByEmailAndIsActive("test1@email.com",true))
                 .thenReturn(new User(1));
         Mockito.when(userRepository.findUserByEmailAndIsActive("test2@email.com",true))
                 .thenReturn(null);
-
-
+        Mockito.when(roleRepository.findAllByRoleIdIn(roleIdHash)).thenReturn(Arrays.asList(new Role(1),new Role(2)));
 
         UserAddRequest userAddRequest = new UserAddRequest();
 
@@ -291,13 +295,15 @@ public class UserServiceImplTest {
         userAddRequest.setLastName("tester");
         userAddRequest.setEmail("test1@email.com");
         userAddRequest.setPassword(" ");
+        userAddRequest.setRoleIdList(roleIdHash);
         Result result = userService.add(userAddRequest);
         assertNotNull(result);
         assertTrue(result instanceof ErrorResult);
 
         userAddRequest.setEmail("test2@email.com");
 
-        User willSaveUser = userMapper.toUserFromUserAddRequest(userAddRequest);
+
+//        User willSaveUser = userMapper.toUserFromUserAddRequest(userAddRequest);
 
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenAnswer(ans->{
             User user = ans.getArgument(0);
@@ -310,6 +316,7 @@ public class UserServiceImplTest {
         assertNotNull(result.getId());
         assertNotNull(result.getMessage());
         assertEquals(1,result.getId());
+
 
     }
 
@@ -364,11 +371,57 @@ public class UserServiceImplTest {
         assertEquals("BugTest",willUpdateUserWithOnlyCity.getLastName());
 
 
+    }
 
+
+
+    @Test
+    void updateUserWithoutGeoInformationTest() throws Exception {
+        assertThrows(Exception.class,()->{
+            userService.update(null,new UserUpdateRequest());
+        });
+        HashSet roleIdHash = new HashSet<>(Arrays.asList(1,2));
+
+        User mockUser = new User(1);
+        Mockito.when(userRepository.getById(1))
+                .thenReturn(mockUser);
+        Mockito.when(roleRepository.findAllByRoleIdIn(roleIdHash)).thenReturn(Arrays.asList(new Role(1),new Role(2)));
+
+        UserUpdateRequest updateRequest = new UserUpdateRequest();
+        updateRequest.setFirstName("Non-Test");
+        updateRequest.setLastName("Non-User");
+        updateRequest.setRoleIdList(roleIdHash);
+
+
+        Result updateResult = userService.update(1, updateRequest);
+
+        assertNotNull(updateResult);
+        assertNotNull(updateResult.getId());
+        assertNotNull(updateResult.getMessage());
+        assertEquals(1,updateResult.getId());
+
+        //User update mapping test - Bug üzerine eklendi
+        User updatedUser = new User();
+        userMapper.update(updateRequest,updatedUser);
+        assertNotNull(updatedUser);
+        assertEquals(updateRequest.getFirstName(),updatedUser.getFirstName());
+        assertEquals(updateRequest.getLastName(),updatedUser.getLastName());
+        assertEquals(null,updatedUser.getDistrict().getDistrictId());
+        assertEquals(null,updatedUser.getCity().getCityId());
+        assertEquals(null,updatedUser.getCountry().getCountryId());
+
+        UserUpdateRequest updateRequestWithOnlyCity = new UserUpdateRequest();
+        User willUpdateUserWithOnlyCity = new User(2);
+        willUpdateUserWithOnlyCity.setFirstName("TestWithoutCity");
+        willUpdateUserWithOnlyCity.setLastName("BugTest");
+        updateRequestWithOnlyCity.setCityId(2);
+        userMapper.update(updateRequestWithOnlyCity,willUpdateUserWithOnlyCity);
+        assertEquals(2,willUpdateUserWithOnlyCity.getUserId());
+        assertEquals("TestWithoutCity",willUpdateUserWithOnlyCity.getFirstName());
+        assertEquals("BugTest",willUpdateUserWithOnlyCity.getLastName());
 
 
     }
-
 
 
 

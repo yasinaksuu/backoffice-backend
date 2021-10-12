@@ -65,9 +65,10 @@ public class UserServiceImpl implements UserService {
         }
         UserDto userDto = this.userMapper.toUserDto(user);
         DataResult<List<RoleDto>> roleResult = this.roleService.getRolesByUserId(user.getUserId());
-        if (!roleResult.isSuccess()) {
-            //rolleri bulunamadı belki hata fırlatılabilir
-        }
+//        if (!roleResult.isSuccess()) {
+//            //rolleri bulunamadı belki hata fırlatılabilir
+//
+//        }
         userDto.setRoles(roleResult.getData());
         return new SuccessDataResult<>(userDto);
     }
