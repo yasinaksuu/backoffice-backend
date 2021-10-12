@@ -15,7 +15,7 @@ import java.util.List;
 public interface UserService {
     DataResult<UserDto> getByEmail(String email) throws Exception;
     Result add(UserAddRequest userAddRequest) throws Exception;
-    Result update(Integer userId,UserUpdateRequest userUpdateRequest);
+    Result update(Integer userId,UserUpdateRequest userUpdateRequest) throws Exception;
     Result getAll(Pageable pageable);
     Result setUserRoles(User user,Role role) throws Exception;
     Result setUserRoles(User user,List<Role> roles) throws Exception;

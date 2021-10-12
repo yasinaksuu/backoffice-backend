@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
             }
             logService.loglama(EnumLogIslemTipi.UserAdd,securityVerificationService.inquireLoggedInUser());
         //TODO return response'lar origin instance'lara çevirilmeli.
-            return new SuccessResult(user.getUserId());
+            return new SuccessResult(user.getUserId(),"Kullanıcı ekleme başarılı.");
             //return user;
 
     }
@@ -102,9 +102,11 @@ public class UserServiceImpl implements UserService {
     @LogMethodCall(value = "UserUpdate is stated")
     @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class,timeout = 800)
     @Override
-    public Result update(Integer userId, UserUpdateRequest userUpdateRequest) {
+    public Result update(Integer userId, UserUpdateRequest userUpdateRequest) throws Exception {
+        if(userId==null)
+            throw new Exception("UserId bilgisi boş bırakılamaz.");
         User existingUser = this.userRepository.getById(userId);
-        this.userMapper.update(existingUser, userUpdateRequest);
+        this.userMapper.update(userUpdateRequest,existingUser);
         if (userUpdateRequest.getCountryId() == null)
             existingUser.setCountry(null);
         if (userUpdateRequest.getCityId() == null)

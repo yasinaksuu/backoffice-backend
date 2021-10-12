@@ -9,6 +9,7 @@ import com.omniteam.backofisbackend.repository.RoleRepository;
 import com.omniteam.backofisbackend.repository.UserRepository;
 import com.omniteam.backofisbackend.repository.UserRoleRepository;
 import com.omniteam.backofisbackend.requests.user.UserAddRequest;
+import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
 import com.omniteam.backofisbackend.shared.mapper.UserMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.ErrorResult;
@@ -19,20 +20,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -288,7 +283,6 @@ public class UserServiceImplTest {
 
 
 
-
         UserAddRequest userAddRequest = new UserAddRequest();
 
         assertThrows(Exception.class,()->userService.add(userAddRequest));
@@ -304,16 +298,63 @@ public class UserServiceImplTest {
         userAddRequest.setEmail("test2@email.com");
 
         User willSaveUser = userMapper.toUserFromUserAddRequest(userAddRequest);
-        User savedUser = willSaveUser;
-        savedUser.setUserId(2);
-        Mockito.when(userRepository.save(willSaveUser)).thenAnswer(ans->ans.getArguments());
 
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenAnswer(ans->{
+            User user = ans.getArgument(0);
+            user.setUserId(1);
+            return user;
+        });
         result = userService.add(userAddRequest);
         assertNotNull(result);
         assertTrue(result instanceof SuccessResult);
         assertNotNull(result.getId());
         assertNotNull(result.getMessage());
-        assertEquals(2,result.getId());
+        assertEquals(1,result.getId());
+
+    }
+
+
+
+    @Test
+    void updateUserTest() throws Exception {
+        assertThrows(Exception.class,()->{
+           userService.update(null,new UserUpdateRequest());
+        });
+        HashSet roleIdHash = new HashSet<>(Arrays.asList(1,2));
+
+        User mockUser = new User(1);
+        Mockito.when(userRepository.getById(1))
+                .thenReturn(mockUser);
+        Mockito.when(roleRepository.findAllByRoleIdIn(roleIdHash)).thenReturn(Arrays.asList(new Role(1),new Role(2)));
+
+        UserUpdateRequest updateRequest = new UserUpdateRequest();
+        updateRequest.setFirstName("Non-Test");
+        updateRequest.setLastName("Non-User");
+        updateRequest.setRoleIdList(roleIdHash);
+        updateRequest.setCityId(1);
+        updateRequest.setCountryId(1);
+        updateRequest.setDistrictId(1);
+
+
+        Result updateResult = userService.update(1, updateRequest);
+
+        assertNotNull(updateResult);
+        assertNotNull(updateResult.getId());
+        assertNotNull(updateResult.getMessage());
+        assertEquals(1,updateResult.getId());
+
+        //User update mapping test - Bug üzerine eklendi
+        User updatedUser = new User();
+        userMapper.update(updateRequest,updatedUser);
+        assertNotNull(updatedUser);
+        assertEquals(updateRequest.getFirstName(),updatedUser.getFirstName());
+        assertEquals(updateRequest.getLastName(),updatedUser.getLastName());
+        assertEquals(updateRequest.getDistrictId(),updatedUser.getDistrict().getDistrictId());
+        assertEquals(updateRequest.getCityId(),updatedUser.getCity().getCityId());
+        assertEquals(updateRequest.getCountryId(),updatedUser.getCountry().getCountryId());
+
+
+
 
     }
 

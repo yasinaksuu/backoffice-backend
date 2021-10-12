@@ -33,5 +33,7 @@ public class Role extends BaseEntity {
         this.roleName=roleName;
     }
 
-
+    public Role(Integer roleId) {
+        this.roleId = roleId;
+    }
 }

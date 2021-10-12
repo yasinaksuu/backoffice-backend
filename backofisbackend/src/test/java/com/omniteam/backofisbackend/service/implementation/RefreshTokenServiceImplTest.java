@@ -5,10 +5,7 @@ import com.omniteam.backofisbackend.entity.User;
 import com.omniteam.backofisbackend.repository.RefreshTokenRepository;
 import com.omniteam.backofisbackend.repository.UserRepository;
 import com.omniteam.backofisbackend.security.jwt.exception.TokenRefreshException;
-import com.sun.xml.internal.ws.spi.db.FieldSetter;
-import net.bytebuddy.implementation.MethodCall;
 import org.assertj.core.api.Assertions;
-import org.hibernate.id.GUIDGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +18,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 public class RefreshTokenServiceImplTest {
@@ -102,9 +97,9 @@ public class RefreshTokenServiceImplTest {
         Mockito.doNothing().when(this.refreshTokenRepository).delete(refreshToken);
         Assertions.assertThatThrownBy(() -> {
                     this.refreshTokenService.verifyExpiration(refreshToken);
-        })
-        .isInstanceOf(TokenRefreshException.class)
-        .hasMessageContaining("Refresh token was expired. Please make a new signin request");
+                })
+                .isInstanceOf(TokenRefreshException.class)
+                .hasMessageContaining("Refresh token was expired. Please make a new signin request");
     }
 
     @Test

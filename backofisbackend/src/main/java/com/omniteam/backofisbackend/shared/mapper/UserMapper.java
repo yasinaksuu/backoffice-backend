@@ -36,6 +36,9 @@ public interface UserMapper {
     @Mapping(source = "district.districtId", target = "districtId")
     List<UserDto> toUserDtoList(List<User> userList);
 
-    void update(@MappingTarget User user, UserUpdateRequest userUpdateRequest);
+    @Mapping(target = "country.countryId", source = "countryId")
+    @Mapping(target = "city.cityId", source = "cityId")
+    @Mapping(target = "district.districtId", source = "districtId")
+    void update(UserUpdateRequest userUpdateRequest,@MappingTarget User user);
 
 }

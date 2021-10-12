@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity updateUser(@PathVariable("id") Integer userId, @RequestBody UserUpdateRequest updateRequest) {
+    public ResponseEntity updateUser(@PathVariable("id") Integer userId, @RequestBody UserUpdateRequest updateRequest) throws Exception {
         return ResponseEntity.ok(userService.update(userId, updateRequest));
     }
 
