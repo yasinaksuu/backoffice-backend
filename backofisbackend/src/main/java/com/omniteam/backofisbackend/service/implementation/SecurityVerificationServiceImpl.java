@@ -27,8 +27,9 @@ public class SecurityVerificationServiceImpl implements SecurityVerificationServ
     public com.omniteam.backofisbackend.entity.User inquireLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = authentication != null ? obtainTokenizedUser(authentication.getPrincipal()) : null;
-       com.omniteam.backofisbackend.entity.User user = userRepository.findUserByEmailAndIsActive(userDetails.getUsername(),true);
-        return user;
+        if (userDetails != null)
+            return userRepository.findUserByEmailAndIsActive(userDetails.getUsername(), true);
+        else return null;
     }
 
 }

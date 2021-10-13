@@ -106,13 +106,17 @@ public class UserServiceImpl implements UserService {
     public Result update(Integer userId, UserUpdateRequest userUpdateRequest) throws Exception {
         if(userId==null)
             throw new Exception("UserId bilgisi boş bırakılamaz.");
-        User existingUser = this.userRepository.getById(userId);
+        User existingUser = this.userRepository.findUserByUserId(userId);
+        if(existingUser==null)
+            throw new Exception("User bulunamadı!");
+
         this.userMapper.update(userUpdateRequest,existingUser);
-        if (userUpdateRequest.getCountryId() == null)
+        // Mapper'ın boş instance atamasının çözümü olarak;
+        if (existingUser.getCountry().getCountryId() == null)
             existingUser.setCountry(null);
-        if (userUpdateRequest.getCityId() == null)
+        if (existingUser.getCity().getCityId() == null)
             existingUser.setCity(null);
-        if (userUpdateRequest.getDistrictId() == null)
+        if (existingUser.getDistrict().getDistrictId() == null)
             existingUser.setDistrict(null);
 
         this.userRepository.save(existingUser);

@@ -4,17 +4,15 @@ import com.omniteam.backofisbackend.dto.user.UserDto;
 import com.omniteam.backofisbackend.entity.User;
 import com.omniteam.backofisbackend.requests.user.UserAddRequest;
 import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 import java.util.List;
 
 @Mapper(
         componentModel = "spring",
-        uses = {RoleMapper.class},
+        uses = {RoleMapper.class,DistrictMapper.class,CityMapper.class,CountryMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+
 )
 public interface UserMapper {
     @Mapping(target = "countryId", source = "country.countryId")
@@ -37,6 +35,7 @@ public interface UserMapper {
     @Mapping(source = "city.cityId", target = "cityId")
     @Mapping(source = "district.districtId", target = "districtId")
     List<UserDto> toUserDtoList(List<User> userList);
+
 
     @Mapping(target = "country.countryId", source = "countryId")
     @Mapping(target = "city.cityId", source = "cityId")
