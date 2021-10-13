@@ -6,13 +6,13 @@ import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.entity.OrderDetail;
 import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.OrderDetailRepository;
+import com.omniteam.backofisbackend.requests.order.RemoveProductFromCartRequest;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
-import com.omniteam.backofisbackend.shared.result.DataResult;
-import com.omniteam.backofisbackend.shared.result.ErrorDataResult;
-import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
+import com.omniteam.backofisbackend.shared.result.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -23,7 +23,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Autowired
     private SecurityVerificationServiceImpl securityVerificationService;
     @Autowired
-    private  LogServiceImpl logService;
+    private LogServiceImpl logService;
     @Autowired
     private OrderDetailRepository orderDetailRepository;
     @Autowired
@@ -40,12 +40,21 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         order.setOrderId(orderId);
         List<OrderDetail> orderDetails = this.orderDetailRepository.getOrderDetailsByOrder(order);
         List<OrderDetailDto> orderDetailDtoList = this.orderDetailMapper.toOrderDetailDtoList(orderDetails);
-        logService.loglama(EnumLogIslemTipi.GetOrderDetails,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.GetOrderDetails, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(orderDetailDtoList);
+    }
+
+
+    @Override
+    @Transactional
+    public Result deleteOrderDetail(RemoveProductFromCartRequest removeProductFromCartRequest) {
+        this.orderDetailRepository.deleteOrderDetailByOrderDetailId(removeProductFromCartRequest.getOrderDetailId());
+        return new SuccessResult(0, "Sepetten Silme Başarılı");
     }
 }

@@ -62,7 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Cacheable(cacheNames = "CustomerGetAll")
     @Override
     public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) throws InterruptedException {
-        Thread.sleep(4000L);
+        Thread.sleep(500L);
         Pageable pageable = PageRequest.of(page, size);
         if (searchKey==null){
             searchKey="";
