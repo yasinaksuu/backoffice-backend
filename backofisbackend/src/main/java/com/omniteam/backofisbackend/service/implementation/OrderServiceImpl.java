@@ -40,8 +40,10 @@ import java.util.UUID;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private final OrderRepository orderRepository;
-    private final OrderMapper orderMapper;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Autowired
     JobLauncher jobLauncher;
@@ -49,29 +51,22 @@ public class OrderServiceImpl implements OrderService {
     Job orderExporterJob;
 
     @Autowired
-    private  LogServiceImpl logService;
-
-    private final OrderDetailMapper orderDetailMapper;
-    private final ProductPriceRepository productPriceRepository;
-    private final OrderDetailRepository orderDetailRepository;
-    private final CustomerRepository customerRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
-
-    private final SecurityVerificationService securityVerificationService;
+    private LogServiceImpl logService;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, OrderMapper orderMapper, OrderDetailMapper orderDetailMapper, ProductPriceRepository productPriceRepository, OrderDetailRepository orderDetailRepository, CustomerRepository customerRepository, UserRepository userRepository, ProductRepository productRepository, SecurityVerificationService securityVerificationService) {
-        this.orderRepository = orderRepository;
-        this.orderMapper = orderMapper;
-        this.orderDetailMapper = orderDetailMapper;
-        this.productPriceRepository = productPriceRepository;
-        this.orderDetailRepository = orderDetailRepository;
-        this.customerRepository = customerRepository;
-        this.userRepository = userRepository;
-        this.productRepository = productRepository;
-        this.securityVerificationService = securityVerificationService;
-    }
+    private OrderDetailMapper orderDetailMapper;
+    @Autowired
+    private ProductPriceRepository productPriceRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private SecurityVerificationService securityVerificationService;
 
     @LogMethodCall(value = "OrderGetById is started")
     @Override
