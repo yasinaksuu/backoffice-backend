@@ -324,13 +324,12 @@ public class UserServiceImplTest {
 
     @Test
     void updateUserTest() throws Exception {
-        assertThrows(Exception.class,()->{
-           userService.update(null,new UserUpdateRequest());
-        });
+        assertThrows(Exception.class,()-> userService.update(null,new UserUpdateRequest()));
+        assertThrows(Exception.class,()-> userService.update(15,new UserUpdateRequest()));
         HashSet roleIdHash = new HashSet<>(Arrays.asList(1,2));
 
         User mockUser = new User(1);
-        Mockito.when(userRepository.getById(1))
+        Mockito.when(userRepository.findUserByUserId(1))
                 .thenReturn(mockUser);
         Mockito.when(roleRepository.findAllByRoleIdIn(roleIdHash)).thenReturn(Arrays.asList(new Role(1),new Role(2)));
 
@@ -383,7 +382,7 @@ public class UserServiceImplTest {
         HashSet roleIdHash = new HashSet<>(Arrays.asList(1,2));
 
         User mockUser = new User(1);
-        Mockito.when(userRepository.getById(1))
+        Mockito.when(userRepository.findUserByUserId(1))
                 .thenReturn(mockUser);
         Mockito.when(roleRepository.findAllByRoleIdIn(roleIdHash)).thenReturn(Arrays.asList(new Role(1),new Role(2)));
 
