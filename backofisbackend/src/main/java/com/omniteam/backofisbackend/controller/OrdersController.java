@@ -4,10 +4,7 @@ import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
-import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
-import com.omniteam.backofisbackend.requests.order.OrderDeleteRequest;
-import com.omniteam.backofisbackend.requests.order.OrderGetAllRequest;
-import com.omniteam.backofisbackend.requests.order.OrderUpdateRequest;
+import com.omniteam.backofisbackend.requests.order.*;
 import com.omniteam.backofisbackend.security.jwt.JwtTokenUtil;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.service.OrderService;
@@ -99,6 +96,12 @@ public class OrdersController {
         return ResponseEntity.ok(this.orderService.addProductToCart(addProductToCartRequest));
     }
 
+    @PostMapping(
+            path = "/removeProductFromCart"
+    )
+    public ResponseEntity<Result> addProductToCart(@RequestBody RemoveProductFromCartRequest removeProductFromCartRequest) {
+        return ResponseEntity.ok(this.orderDetailService.deleteOrderDetail(removeProductFromCartRequest));
+    }
     //TODO sepete ürün ekleyen endpoint
     //TODO sepetteki ürünü güncelleme ve silme
 }

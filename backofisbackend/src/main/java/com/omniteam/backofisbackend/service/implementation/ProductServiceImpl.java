@@ -140,7 +140,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) throws InterruptedException {
 
-       Thread.sleep(4000L);
+       Thread.sleep(500L);
         Pageable pageable = PageRequest.of(productGetAllRequest.getPage(),productGetAllRequest.getSize());
         Page<Product> productPage =
                 productRepository.findAll(
