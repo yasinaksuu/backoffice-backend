@@ -70,8 +70,10 @@ public class OrderServiceImpl implements OrderService {
 
     @LogMethodCall(value = "OrderGetById is started")
     @Override
-    public DataResult<OrderDto> getById(int orderId) {
+    public DataResult<OrderDto> getById(int orderId) throws Exception {
         Optional<Order> optionalOrder = this.orderRepository.findById(orderId);
+        if(!optionalOrder.isPresent())
+            throw new Exception("Order bulunamadı!");
         OrderDto orderDto = this.orderMapper.toOrderDto(optionalOrder.orElse(null));
         logService.loglama(EnumLogIslemTipi.OrdersGetById,securityVerificationService.inquireLoggedInUser());
         Method m = new Object() {}
@@ -79,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
                 .getEnclosingMethod();
 
         LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
-        return new SuccessDataResult<>(orderDto);
+        return new SuccessDataResult<>(orderDto.getOrderId(),orderDto);
     }
 
     @LogMethodCall(value = "OrderGetAll is started")
@@ -206,7 +208,7 @@ public class OrderServiceImpl implements OrderService {
     @LogMethodCall(value = "addProductToCart is started")
     @Override
     @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class )
-    public DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest) {
+    public DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest) throws Exception {
         Order order =
                 this.orderRepository
                         .findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc("Waiting",true,addProductToCartRequest.getCustomerId());

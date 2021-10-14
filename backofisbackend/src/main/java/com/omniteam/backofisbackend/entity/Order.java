@@ -36,5 +36,10 @@ public class Order extends  BaseEntity {
 
 
     @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderDetails ;
+    private List<OrderDetail> orderDetails;
+
+
+    public Order(Integer orderId) {
+        this.orderId = orderId;
+    }
 }

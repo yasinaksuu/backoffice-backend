@@ -2,7 +2,9 @@ package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
+import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.Order;
+import com.omniteam.backofisbackend.entity.User;
 import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.requests.order.OrderGetAllRequest;
 import com.omniteam.backofisbackend.service.SecurityVerificationService;
@@ -19,7 +21,11 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -61,9 +67,46 @@ public class OrderServiceImplTest {
     private OrderDetailMapper orderDetailMapper= Mappers.getMapper(OrderDetailMapper.class);
 
     @InjectMocks
-    private OrderServiceImpl orderService;
+    OrderServiceImpl orderService;
+
+
     @Test
-    void getById() {
+    void textContextLoadTest() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        assertNotNull(orderService);
+        assertNotNull(orderMapper);
+    }
+
+
+    @Test
+    void orderGetByIdTest() throws Exception {
+        Integer orderId = 1;
+        Order mockedOrder = new Order(orderId);
+        mockedOrder.setStatus("COMPLETED");
+        mockedOrder.setCustomer(new Customer());
+        mockedOrder.setUser(new User());
+        //securityVerificationService.inquireLoggedInUser()
+        Mockito.when(orderRepository.findById(orderId)).thenReturn(Optional.of(mockedOrder));
+        Mockito.when(orderRepository.findById(orderId + 1)).thenReturn(Optional.ofNullable(null));
+
+        assertThrows(Exception.class,()->orderService.getById(orderId + 1));
+        DataResult<OrderDto> orderGetById = orderService.getById(orderId);
+        assertNotNull(orderGetById);
+        assertNotNull(orderGetById.getData());
+        assertNotNull(orderGetById.getId());
+        assertEquals(mockedOrder.getOrderId(),orderGetById.getId());
+        assertEquals(mockedOrder.getOrderId(),orderGetById.getData().getOrderId());
+        assertEquals(mockedOrder.getStatus(),orderGetById.getData().getStatus());
+    }
+
+
+
+    @Test
+    void orderAddTest() {
+
+    }
+
+    @Test
+    void getById() throws Exception {
         Optional<Order> optionalOrder = Optional.of(new Order());
         Mockito.when(
                 this.orderRepository.findById(Mockito.anyInt())

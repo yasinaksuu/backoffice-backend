@@ -27,7 +27,6 @@ public interface OrderMapper {
     List<OrderDto> toOrderDtoList(List<Order> orders);
 
     @Mapping(target = "user.userId", source = "userId")
-    @Mapping(target = "customer.customerId", source = "customerId")
     Order toOrderFromOrderAddRequest(OrderAddRequest orderAddRequest);
 
     @Mapping(target = "orderDetails", ignore = true)

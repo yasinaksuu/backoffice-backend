@@ -15,7 +15,7 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 
 public interface OrderService {
-    DataResult<OrderDto> getById(int orderId);
+    DataResult<OrderDto> getById(int orderId) throws Exception;
 
     DataResult<PagedDataWrapper<OrderDto>> getAll(OrderGetAllRequest orderGetAllRequest);
 
@@ -28,5 +28,5 @@ public interface OrderService {
 
     Result delete(OrderDeleteRequest orderDeleteRequest);
 
-    DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest);
+    DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest) throws Exception;
 }

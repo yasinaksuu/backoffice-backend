@@ -18,6 +18,12 @@ public class DataResult<T> extends Result {
         this.data = data;
     }
 
+    public DataResult(boolean success, Integer id, T data) {
+        super(success,id);
+        this.data = data;
+
+    }
+
     public T getData() {
         return this.data;
     }

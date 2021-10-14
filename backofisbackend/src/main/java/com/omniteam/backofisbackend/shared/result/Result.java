@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class Result {
     private boolean success;
     @Getter
-    private Integer id;
+    protected Integer id;
     private String message;
 
     public Result(boolean success) {

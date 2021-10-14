@@ -41,7 +41,7 @@ public class OrdersController {
     @GetMapping(
             path = "/getbyid/{orderid}"
     )
-    public ResponseEntity<DataResult<OrderDto>> getById(@PathVariable(name = "orderid") int orderId) {
+    public ResponseEntity<DataResult<OrderDto>> getById(@PathVariable(name = "orderid") int orderId) throws Exception {
         return ResponseEntity.ok(this.orderService.getById(orderId));
     }
 
@@ -92,7 +92,7 @@ public class OrdersController {
     @PostMapping(
             path = "/addProductToCart"
     )
-    public ResponseEntity<Result> addProductToCart(@RequestBody AddProductToCartRequest addProductToCartRequest) {
+    public ResponseEntity<Result> addProductToCart(@RequestBody AddProductToCartRequest addProductToCartRequest) throws Exception {
         return ResponseEntity.ok(this.orderService.addProductToCart(addProductToCartRequest));
     }
 

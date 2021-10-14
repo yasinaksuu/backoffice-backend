@@ -9,4 +9,7 @@ public class SuccessDataResult<T> extends DataResult<T>{
     public SuccessDataResult(T data){
         super(true,data);
     }
+    public SuccessDataResult(Integer id,T data){
+        super(true,id,data);
+    }
 }
