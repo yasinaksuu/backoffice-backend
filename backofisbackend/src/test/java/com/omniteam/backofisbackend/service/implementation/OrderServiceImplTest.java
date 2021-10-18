@@ -4,9 +4,7 @@ import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.*;
 import com.omniteam.backofisbackend.repository.*;
-import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
-import com.omniteam.backofisbackend.requests.order.OrderDetailAddRequest;
-import com.omniteam.backofisbackend.requests.order.OrderGetAllRequest;
+import com.omniteam.backofisbackend.requests.order.*;
 import com.omniteam.backofisbackend.service.SecurityVerificationService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
 import com.omniteam.backofisbackend.shared.mapper.OrderMapper;
@@ -169,6 +167,46 @@ public class OrderServiceImplTest {
         ).thenReturn(Arrays.asList(new OrderDetail()));
 
         DataResult<OrderDto> result = this.orderService.add(orderAddRequest);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isSuccess()).isTrue();
+    }
+
+    @Test
+    void update(){
+        Order order = new Order();
+        order.setOrderId(1);
+        List<OrderDetail> orderDetailList = new ArrayList<>();
+        for (int i =1; i<4; i++){
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrderDetailId(i);
+            orderDetail.setStatus("güncelleme "+i);
+        }
+        order.setOrderDetails(orderDetailList);
+        Mockito.when(
+                this.orderRepository.getById(Mockito.anyInt())
+        ).thenReturn(order);
+
+        Mockito.when(
+                this.orderRepository.save(Mockito.any(Order.class))
+        ).thenReturn(order);
+
+        Mockito.when(
+        this.orderDetailRepository.saveAll(Mockito.anyList())
+        ).thenReturn(order.getOrderDetails());
+
+
+        OrderUpdateRequest orderUpdateRequest = new OrderUpdateRequest();
+        orderUpdateRequest.setOrderId(1);
+        orderUpdateRequest.setStatus("güncellendi");
+        List<OrderDetailUpdateRequest> orderDetailUpdateRequestList = new ArrayList<>();
+        for (int i =1; i<4; i++){
+            OrderDetailUpdateRequest orderDetailUpdateRequest = new OrderDetailUpdateRequest();
+            orderDetailUpdateRequest.setOrderDetailId(i);
+            orderDetailUpdateRequest.setStatus("güncelleme "+i);
+        }
+        orderUpdateRequest.setOrderDetails(orderDetailUpdateRequestList);
+        DataResult<OrderDto> result = this.orderService.update(orderUpdateRequest);
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.isSuccess()).isTrue();
