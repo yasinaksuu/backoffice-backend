@@ -130,13 +130,14 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
     public DataResult<OrderDto> add(OrderAddRequest orderAddRequest) {
         Order order = this.orderMapper.toOrderFromOrderAddRequest(orderAddRequest);
-        order.getOrderDetails().forEach(orderDetail -> {
+
+        for (OrderDetail orderDetail:order.getOrderDetails()){
             ProductPrice productPrice =
                     this.productPriceRepository.findFirstByProductAndIsActiveOrderByCreatedDateDesc(
                             orderDetail.getProduct(), true);
             orderDetail.setOrder(order);
             orderDetail.setProductPrice(productPrice);
-        });
+        }
         this.orderRepository.save(order);
         this.orderDetailRepository.saveAll(order.getOrderDetails());
         OrderDto orderDto = this.orderMapper.toOrderDto(order);

@@ -2,10 +2,10 @@ package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
-import com.omniteam.backofisbackend.entity.Customer;
-import com.omniteam.backofisbackend.entity.Order;
-import com.omniteam.backofisbackend.entity.User;
+import com.omniteam.backofisbackend.entity.*;
 import com.omniteam.backofisbackend.repository.*;
+import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
+import com.omniteam.backofisbackend.requests.order.OrderDetailAddRequest;
 import com.omniteam.backofisbackend.requests.order.OrderGetAllRequest;
 import com.omniteam.backofisbackend.service.SecurityVerificationService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
@@ -32,9 +32,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -98,13 +96,6 @@ public class OrderServiceImplTest {
         assertEquals(mockedOrder.getStatus(),orderGetById.getData().getStatus());
     }
 
-
-
-    @Test
-    void orderAddTest() {
-
-    }
-
     @Test
     void getById() throws Exception {
         Optional<Order> optionalOrder = Optional.of(new Order());
@@ -145,5 +136,41 @@ public class OrderServiceImplTest {
         Assertions.assertThat(result.getData().isLast()).isFalse();
         Assertions.assertThat(result.getData().getTotalPages()).isEqualTo(2);
         Assertions.assertThat(result.getData().getTotalElements()).isEqualTo(10);
+    }
+
+
+    @Test
+    void add(){
+        OrderAddRequest orderAddRequest = new OrderAddRequest();
+        orderAddRequest.setCustomerId(1);
+        orderAddRequest.setStatus("status");
+        orderAddRequest.setUserId(1);
+        List<OrderDetailAddRequest> orderDetailAddRequests = new ArrayList<>();
+        for (int i = 0; i<3; i++){
+            OrderDetailAddRequest orderDetailAddRequest = new OrderDetailAddRequest();
+            orderDetailAddRequest.setStatus("status "+i);
+            orderDetailAddRequest.setProductId(i+1);
+            orderDetailAddRequests.add(orderDetailAddRequest);
+        }
+        orderAddRequest.setOrderDetails(orderDetailAddRequests);
+        Mockito.when(
+                this.productPriceRepository.findFirstByProductAndIsActiveOrderByCreatedDateDesc(
+                        Mockito.any(Product.class),
+                        Mockito.anyBoolean()
+                )
+        ).thenReturn(new ProductPrice());
+
+        Mockito.when(
+                this.orderRepository.save(Mockito.any(Order.class))
+        ).thenReturn(new Order());
+
+        Mockito.when(
+                this.orderDetailRepository.saveAll(Mockito.anyList())
+        ).thenReturn(Arrays.asList(new OrderDetail()));
+
+        DataResult<OrderDto> result = this.orderService.add(orderAddRequest);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isSuccess()).isTrue();
     }
 }

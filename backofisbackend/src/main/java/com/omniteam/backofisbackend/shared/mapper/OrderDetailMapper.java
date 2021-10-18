@@ -26,5 +26,8 @@ public interface OrderDetailMapper {
 
     @Mapping(target = "product.productId", source = "productId")
     OrderDetail toOrderDetailFromOrderDetailAddRequest(OrderDetailAddRequest orderDetailAddRequest);
+    List<OrderDetail> toOrderDetailFromOrderDetailAddRequestList(List<OrderDetailAddRequest> orderDetailAddRequestList);
     void update(@MappingTarget OrderDetail orderDetail, OrderDetailUpdateRequest orderDetailUpdateRequest);
+
+
 }

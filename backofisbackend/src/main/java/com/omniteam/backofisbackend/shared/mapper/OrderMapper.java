@@ -9,6 +9,7 @@ import com.omniteam.backofisbackend.entity.Customer;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.entity.OrderDetail;
 import com.omniteam.backofisbackend.requests.order.OrderAddRequest;
+import com.omniteam.backofisbackend.requests.order.OrderDetailAddRequest;
 import com.omniteam.backofisbackend.requests.order.OrderUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -27,6 +28,7 @@ public interface OrderMapper {
     List<OrderDto> toOrderDtoList(List<Order> orders);
 
     @Mapping(target = "user.userId", source = "userId")
+    @Mapping(target = "customer.customerId", source = "customerId")
     Order toOrderFromOrderAddRequest(OrderAddRequest orderAddRequest);
 
     @Mapping(target = "orderDetails", ignore = true)
@@ -45,4 +47,8 @@ public interface OrderMapper {
     @Mapping(target = "orderId",source = "order.orderId")
     OrderDetailDto toOrderDetailDto(OrderDetail orderDetail);
     List<OrderDetailDto> toOrderDetailDtoList(List<OrderDetail> orderDetailList);
+
+    @Mapping(target = "product.productId", source = "productId")
+    OrderDetail toOrderDetailFromOrderDetailAddRequest(OrderDetailAddRequest orderDetailAddRequest);
+    List<OrderDetail> toOrderDetailFromOrderDetailAddRequestList(List<OrderDetailAddRequest> orderDetailAddRequestList);
 }
