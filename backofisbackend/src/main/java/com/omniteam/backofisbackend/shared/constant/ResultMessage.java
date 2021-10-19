@@ -7,6 +7,8 @@ public class ResultMessage {
     public static final String PRODUCT_SAVE = "Product Eklendi";
     public static final String PRODUCT_UPDATED = "Product Güncellendi";
     public static final String PRODUCT_IMAGE_SAVE  = "Product Image Eklendi";
+    public static final String LOG_SAVE  = "Log Kaydedildi.";
+
 
 
 }

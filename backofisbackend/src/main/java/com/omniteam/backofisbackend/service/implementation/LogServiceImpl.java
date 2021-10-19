@@ -6,6 +6,9 @@ import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.LogRepository;
 import com.omniteam.backofisbackend.repository.UserRepository;
 import com.omniteam.backofisbackend.service.LogService;
+import com.omniteam.backofisbackend.shared.constant.ResultMessage;
+import com.omniteam.backofisbackend.shared.result.Result;
+import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +25,7 @@ public class LogServiceImpl implements LogService {
     private UserRepository userRepository;
 
     @Transactional
-    public void loglama(EnumLogIslemTipi islemTip, User user){
+    public Result loglama(EnumLogIslemTipi islemTip, User user){
         Log log=new Log();
      //   User user =userRepository.getById(userId);
         log.setUser(user);
@@ -31,7 +34,7 @@ public class LogServiceImpl implements LogService {
 
         logRepository.save(log);
 
-
+        return new SuccessResult(ResultMessage.LOG_SAVE);
 
     }
 }

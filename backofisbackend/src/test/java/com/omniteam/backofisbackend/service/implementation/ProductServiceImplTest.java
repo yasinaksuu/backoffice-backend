@@ -1,24 +1,17 @@
 package com.omniteam.backofisbackend.service.implementation;
 
-import com.omniteam.backofisbackend.dto.category.CategoryDTO;
-import com.omniteam.backofisbackend.dto.product.ProductAttributeTermDTO;
-import com.omniteam.backofisbackend.dto.product.ProductDto;
-import com.omniteam.backofisbackend.dto.product.ProductPriceDTO;
-import com.omniteam.backofisbackend.dto.product.ProductSaveRequestDTO;
+import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.product.*;
 import com.omniteam.backofisbackend.entity.*;
 import com.omniteam.backofisbackend.repository.ProductAttributeTermRepository;
 import com.omniteam.backofisbackend.repository.ProductImageRepository;
 import com.omniteam.backofisbackend.repository.ProductPriceRepository;
 import com.omniteam.backofisbackend.repository.ProductRepository;
-import com.omniteam.backofisbackend.service.ProductService;
+import com.omniteam.backofisbackend.requests.ProductGetAllRequest;
 import com.omniteam.backofisbackend.shared.constant.ResultMessage;
-import com.omniteam.backofisbackend.shared.mapper.CategoryMapper;
 import com.omniteam.backofisbackend.shared.mapper.ProductMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
-import com.omniteam.backofisbackend.shared.result.Result;
-import com.omniteam.backofisbackend.shared.result.SuccessResult;
-import org.checkerframework.checker.units.qual.A;
-import org.junit.jupiter.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,30 +22,28 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockReset;
-import org.springframework.http.HttpMethod;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.mock.web.MockMultipartHttpServletRequest;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceImplTest {
@@ -107,7 +98,7 @@ public class ProductServiceImplTest {
 
         DataResult<ProductDto> serviceResult = productService.getById(11);
 
-        Assertions.assertEquals(serviceResult.getData(),productDto);
+        assertEquals(serviceResult.getData(),productDto);
     }
 
     @Test
@@ -158,7 +149,7 @@ public class ProductServiceImplTest {
 
         Integer servisResult = productService.saveProductToDB(productSaveRequestDTO);
 
-       Assertions.assertEquals(servisResult,product.getProductId());
+       assertEquals(servisResult,product.getProductId());
 
     }
 
@@ -200,10 +191,77 @@ public class ProductServiceImplTest {
 
          Mockito.when(productImageRepository.save(Mockito.any(ProductImage.class))).thenReturn(productImage);
 
-         String message = ResultMessage.PRODUCT_IMAGE_SAVE;
+        // String message = ResultMessage.PRODUCT_IMAGE_SAVE;
          String serviceResult = productService.saveProductImageDB(file,product.getProductId()).getMessage();
 
-         Assertions.assertEquals(serviceResult,message);
+         assertEquals(serviceResult,ResultMessage.PRODUCT_IMAGE_SAVE);
      }
+
+    @Test
+    public void update(){
+
+        ProductUpdateDTO productUpdateDTO =new ProductUpdateDTO();
+
+        productUpdateDTO.setProductId(84);
+        productUpdateDTO.setProductName("test");
+
+        Product productUpdate = new Product();
+
+        Mockito.when(productRepository.getById(Mockito.eq(84))).thenReturn(productUpdate);
+           assertNotNull(productUpdate);
+            assertNotNull(productUpdateDTO.getProductName());
+
+            productUpdate.setProductName(productUpdateDTO.getProductName());
+
+        Mockito.when(productRepository.save(Mockito.any(Product.class))).thenReturn(productUpdate);
+
+        String serviceResult = productService.productUpdate(productUpdateDTO).getMessage();
+
+        assertEquals(serviceResult,ResultMessage.PRODUCT_UPDATED);
+
+
+    }
+
+    @Test
+    public void getAll() throws InterruptedException {
+         List<Product> products = new ArrayList<>();
+
+         for (int i =0; i<10;i++){
+           //   products.add(new Product());
+             Product product =new Product();
+             product.setProductPrices(Arrays.asList(new ProductPrice()));
+             product.setProductAttributeTerms(Arrays.asList(new ProductAttributeTerm()));
+             product.setProductImages(Arrays.asList(new ProductImage()));
+             products.add(product);
+         }
+
+
+        Page<Product> productPage = new PageImpl<Product>(products,PageRequest.of(0,5),10);
+        //Mockito.when(userRepository.findAll(PageRequest.of(0, 20))).thenReturn(new PageImpl<>(mockedUsers));
+
+        Mockito.when(
+                   this.productRepository.findAll(
+                            Mockito.any(Specification.class),
+                           Mockito.any(Pageable.class)
+                            )
+           ).thenReturn(productPage);
+
+       ProductGetAllRequest productGetAllRequest =new ProductGetAllRequest();
+       productGetAllRequest.setPage(0);
+       productGetAllRequest.setSize(5);
+
+        DataResult<PagedDataWrapper<ProductDto>> result = this.productService.getAll(productGetAllRequest);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isSuccess()).isTrue();
+        Assertions.assertThat(result.getData().getContent()).isNotNull();
+        Assertions.assertThat(result.getData().getContent()).hasSize(10);
+        Assertions.assertThat(result.getData().getSize()).isEqualTo(5);
+        Assertions.assertThat(result.getData().getPage()).isEqualTo(0);
+        Assertions.assertThat(result.getData().isLast()).isFalse();
+        Assertions.assertThat(result.getData().getTotalPages()).isEqualTo(2);
+        Assertions.assertThat(result.getData().getTotalElements()).isEqualTo(10);
+    }
+
 
 }
