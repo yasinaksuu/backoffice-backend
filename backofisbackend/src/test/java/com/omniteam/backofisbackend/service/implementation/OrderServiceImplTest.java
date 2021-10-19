@@ -1,6 +1,7 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
+import com.omniteam.backofisbackend.dto.order.AddProductToCartRequest;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.*;
 import com.omniteam.backofisbackend.repository.*;
@@ -8,10 +9,7 @@ import com.omniteam.backofisbackend.requests.order.*;
 import com.omniteam.backofisbackend.service.SecurityVerificationService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
 import com.omniteam.backofisbackend.shared.mapper.OrderMapper;
-import com.omniteam.backofisbackend.shared.result.DataResult;
-import com.omniteam.backofisbackend.shared.result.ErrorResult;
-import com.omniteam.backofisbackend.shared.result.Result;
-import com.omniteam.backofisbackend.shared.result.SuccessResult;
+import com.omniteam.backofisbackend.shared.result.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -252,5 +250,112 @@ public class OrderServiceImplTest {
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.isSuccess()).isFalse();
         Assertions.assertThat(result).isInstanceOf(ErrorResult.class);
+    }
+
+    @Test
+    void addProductToCart_CreatesNewOrder_IfOrderExist() throws Exception{
+        Order order = new Order();
+        Mockito.when(
+                this.orderRepository
+                        .findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc(
+                                Mockito.any(String.class),
+                                Mockito.any(Boolean.class),
+                                Mockito.any(Integer.class)
+                        )
+        ).thenReturn(order);
+        Mockito.when(
+                this.productRepository.getById(Mockito.any())
+        ).thenReturn(new Product());
+
+        Mockito.when(
+                this.productPriceRepository
+                        .findFirstByProductAndIsActiveOrderByCreatedDateDesc(
+                                Mockito.any(Product.class),
+                                Mockito.anyBoolean()
+                        )
+        ).thenReturn(new ProductPrice());
+
+        Mockito.when(
+                this.orderDetailRepository.saveAll(Mockito.anyList())
+        ).thenReturn(Collections.singletonList(new OrderDetail()));
+
+        Mockito.when(
+                this.orderRepository.getById(Mockito.any())
+        ).thenReturn(order);
+
+        AddProductToCartRequest addProductToCartRequest = new AddProductToCartRequest(
+                1,
+                1,
+                10
+        );
+
+        DataResult<OrderDto> result = this.orderService.addProductToCart(addProductToCartRequest);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isSuccess()).isTrue();
+    }
+
+    @Test
+    void addProductToCart_CreatesNewOrder_IfOrderNotExist() throws Exception{
+        Mockito.when(
+                this.orderRepository
+                        .findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc(
+                                Mockito.any(String.class),
+                                Mockito.any(Boolean.class),
+                                Mockito.any(Integer.class)
+                        )
+        ).thenReturn(null);
+
+        Customer customer = new Customer();
+        customer.setCustomerId(1);
+        Mockito.when(
+                this.customerRepository.getById(Mockito.any())
+        ).thenReturn(customer);
+
+        User user = new User();
+        user.setUserId(1);
+        Mockito.when(
+                securityVerificationService.inquireLoggedInUser()
+        ).thenReturn(user);
+        Mockito.when(
+                this.userRepository.getById(Mockito.any())
+        ).thenReturn(user);
+
+        Order order = new Order();
+        order.setOrderId(1);
+        Mockito.when(
+                this.orderRepository.save(Mockito.any(Order.class))
+        ).thenReturn(order);
+
+        Mockito.when(
+                this.productRepository.getById(Mockito.any())
+        ).thenReturn(new Product());
+
+        Mockito.when(
+                this.productPriceRepository
+                        .findFirstByProductAndIsActiveOrderByCreatedDateDesc(
+                                Mockito.any(Product.class),
+                                Mockito.anyBoolean()
+                        )
+        ).thenReturn(new ProductPrice());
+
+        Mockito.when(
+                this.orderDetailRepository.saveAll(Mockito.anyList())
+        ).thenReturn(Collections.singletonList(new OrderDetail()));
+
+        Mockito.when(
+                this.orderRepository.getById(Mockito.any())
+        ).thenReturn(order);
+
+        AddProductToCartRequest addProductToCartRequest = new AddProductToCartRequest(
+                1,
+                1,
+                10
+        );
+
+        DataResult<OrderDto> result = this.orderService.addProductToCart(addProductToCartRequest);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isSuccess()).isTrue();
     }
 }

@@ -69,16 +69,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public DataResult<OrderDto> getById(int orderId) throws Exception {
         Optional<Order> optionalOrder = this.orderRepository.findById(orderId);
-        if(!optionalOrder.isPresent())
+        if (!optionalOrder.isPresent())
             throw new Exception("Order bulunamadı!");
         OrderDto orderDto = this.orderMapper.toOrderDto(optionalOrder.orElse(null));
-        logService.loglama(EnumLogIslemTipi.OrdersGetById,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.OrdersGetById, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
-        return new SuccessDataResult<>(orderDto.getOrderId(),orderDto);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
+        return new SuccessDataResult<>(orderDto.getOrderId(), orderDto);
     }
 
     @LogMethodCall(value = "OrderGetAll is started")
@@ -103,12 +104,13 @@ public class OrderServiceImpl implements OrderService {
                 orderPage.getTotalPages(),
                 orderPage.isLast()
         );
-        logService.loglama(EnumLogIslemTipi.OrdersGetAll,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.OrdersGetAll, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(pagedDataWrapper);
     }
 
@@ -116,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
     public DataResult<?> startOrderReportExport(String username) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobParameters parameters = new JobParametersBuilder()
                 .addParameter("proccess-key", new JobParameter(UUID.randomUUID().toString()))
-                .addParameter("user-email",new JobParameter(username))
+                .addParameter("user-email", new JobParameter(username))
                 .toJobParameters();
         this.jobLauncher.run(orderExporterJob, parameters);
         return DataResult.builder().build();
@@ -124,11 +126,11 @@ public class OrderServiceImpl implements OrderService {
 
     @LogMethodCall(value = "OrderAdd is started")
     @Override
-    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public DataResult<OrderDto> add(OrderAddRequest orderAddRequest) {
         Order order = this.orderMapper.toOrderFromOrderAddRequest(orderAddRequest);
 
-        for (OrderDetail orderDetail:order.getOrderDetails()){
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
             ProductPrice productPrice =
                     this.productPriceRepository.findFirstByProductAndIsActiveOrderByCreatedDateDesc(
                             orderDetail.getProduct(), true);
@@ -138,18 +140,19 @@ public class OrderServiceImpl implements OrderService {
         this.orderRepository.save(order);
         this.orderDetailRepository.saveAll(order.getOrderDetails());
         OrderDto orderDto = this.orderMapper.toOrderDto(order);
-        logService.loglama(EnumLogIslemTipi.OrdersAdd,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.OrdersAdd, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>("ürün sepete eklendi", orderDto);
     }
 
     @LogMethodCall(value = "OrderUpdate is started")
     @Override
-    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class ,timeout = 800 )
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class, timeout = 800)
     public DataResult<OrderDto> update(OrderUpdateRequest orderUpdateRequest) {
         Order orderToUpdate = this.orderRepository.getById(orderUpdateRequest.getOrderId());
         this.orderMapper.update(orderToUpdate, orderUpdateRequest);
@@ -170,20 +173,21 @@ public class OrderServiceImpl implements OrderService {
         this.orderDetailRepository.saveAll(orderToUpdate.getOrderDetails());
 
         OrderDto orderDto = this.orderMapper.toOrderDto(orderToUpdate);
-        Method m = new Object() {}
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>("Sipariş güncellendi", orderDto);
     }
 
     @LogMethodCall(value = "OrderDelete is started")
     @Override
-    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Result delete(OrderDeleteRequest orderDeleteRequest) {
         Optional<Order> optionalOrder = this.orderRepository.findById(orderDeleteRequest.getOrderId());
-        if(!optionalOrder.isPresent()){
+        if (!optionalOrder.isPresent()) {
             return new ErrorResult("Order not found");
         }
         Order orderToDelete = optionalOrder.get();
@@ -199,22 +203,23 @@ public class OrderServiceImpl implements OrderService {
 
         this.orderRepository.save(orderToDelete);
         this.orderDetailRepository.saveAll(orderToDelete.getOrderDetails());
-        Method m = new Object() {}
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessResult("Sipariş silindi");
     }
 
     @LogMethodCall(value = "addProductToCart is started")
     @Override
-    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class )
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public DataResult<OrderDto> addProductToCart(AddProductToCartRequest addProductToCartRequest) throws Exception {
         Order order =
                 this.orderRepository
-                        .findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc("Waiting",true,addProductToCartRequest.getCustomerId());
-        if(order == null){
+                        .findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc("Waiting", true, addProductToCartRequest.getCustomerId());
+        if (order == null) {
             order = new Order();
             order.setStatus("Waiting");
             Customer customer = this.customerRepository.getById(addProductToCartRequest.getCustomerId());
@@ -227,8 +232,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDetail> orderDetails = new ArrayList<>();
         Product product = this.productRepository.getById(addProductToCartRequest.getProductId());
         ProductPrice currentPrice =
-                this.productPriceRepository.findFirstByProductAndIsActiveOrderByCreatedDateDesc(product,true);
-        for (int i=0; i<addProductToCartRequest.getCount();i++){
+                this.productPriceRepository.findFirstByProductAndIsActiveOrderByCreatedDateDesc(product, true);
+        for (int i = 0; i < addProductToCartRequest.getCount(); i++) {
             OrderDetail orderDetail = new OrderDetail();
             orderDetail.setStatus("Confirmed");
             orderDetail.setOrder(order);
@@ -238,15 +243,16 @@ public class OrderServiceImpl implements OrderService {
             orderDetails.add(orderDetail);
         }
 
-        Method m = new Object() {}
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
 
-       this.orderDetailRepository.saveAll(orderDetails);
-        DataResult<OrderDto> orderDtoDataResult = this.getById(order.getOrderId());
-        order=this.orderRepository.getById(order.getOrderId());
-        return new SuccessDataResult<OrderDto>("Ürün sepete eklendi",this.orderMapper.toOrderDto(order));
+        this.orderDetailRepository.saveAll(orderDetails);
+        //DataResult<OrderDto> orderDtoDataResult = this.getById(order.getOrderId());
+        order = this.orderRepository.getById(order.getOrderId());
+        return new SuccessDataResult<OrderDto>("Ürün sepete eklendi", this.orderMapper.toOrderDto(order));
     }
 }
