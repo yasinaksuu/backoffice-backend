@@ -13,10 +13,7 @@ import com.omniteam.backofisbackend.service.OrderService;
 import com.omniteam.backofisbackend.service.SecurityVerificationService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
 import com.omniteam.backofisbackend.shared.mapper.OrderMapper;
-import com.omniteam.backofisbackend.shared.result.DataResult;
-import com.omniteam.backofisbackend.shared.result.Result;
-import com.omniteam.backofisbackend.shared.result.SuccessDataResult;
-import com.omniteam.backofisbackend.shared.result.SuccessResult;
+import com.omniteam.backofisbackend.shared.result.*;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -185,7 +182,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
     public Result delete(OrderDeleteRequest orderDeleteRequest) {
-        Order orderToDelete = this.orderRepository.getById(orderDeleteRequest.getOrderId());
+        Optional<Order> optionalOrder = this.orderRepository.findById(orderDeleteRequest.getOrderId());
+        if(!optionalOrder.isPresent()){
+            return new ErrorResult("Order not found");
+        }
+        Order orderToDelete = optionalOrder.get();
         orderToDelete.setStatus("DELETED");
         orderToDelete.setIsActive(false);
         orderToDelete.setModifiedDate(LocalDateTime.now());

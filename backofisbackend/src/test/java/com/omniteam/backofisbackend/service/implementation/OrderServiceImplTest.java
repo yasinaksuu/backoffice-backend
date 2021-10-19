@@ -9,6 +9,9 @@ import com.omniteam.backofisbackend.service.SecurityVerificationService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
 import com.omniteam.backofisbackend.shared.mapper.OrderMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
+import com.omniteam.backofisbackend.shared.result.ErrorResult;
+import com.omniteam.backofisbackend.shared.result.Result;
+import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -210,5 +213,44 @@ public class OrderServiceImplTest {
 
         Assertions.assertThat(result).isNotNull();
         Assertions.assertThat(result.isSuccess()).isTrue();
+    }
+
+    @Test
+    void delete_ReturnsSuccessResult_WhenOrderFound(){
+        Optional<Order> optionalOrder = Optional.of(new Order());
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        for (int i=1;i<=5;i++){
+            OrderDetail orderDetail = new OrderDetail();
+            orderDetail.setOrderDetailId(i);
+        }
+        optionalOrder.get().setOrderDetails(orderDetails);
+
+        Mockito.when(
+                this.orderRepository.findById(Mockito.any())
+        ).thenReturn(optionalOrder);
+
+        Mockito.when(
+                this.orderRepository.save(Mockito.any(Order.class))
+        ).thenReturn(optionalOrder.get());
+
+        Mockito.when(
+                this.orderDetailRepository.saveAll(Mockito.anyList())
+        ).thenReturn(orderDetails);
+
+        Result result = this.orderService.delete(new OrderDeleteRequest());
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isSuccess()).isTrue();
+        Assertions.assertThat(result).isInstanceOf(SuccessResult.class);
+    }
+
+    @Test
+    void delete_ReturnsErrorResult_WhenOrderNotFound(){
+        Optional<Order> optionalOrder = Optional.empty();
+        Result result = this.orderService.delete(new OrderDeleteRequest());
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result.isSuccess()).isFalse();
+        Assertions.assertThat(result).isInstanceOf(ErrorResult.class);
     }
 }
