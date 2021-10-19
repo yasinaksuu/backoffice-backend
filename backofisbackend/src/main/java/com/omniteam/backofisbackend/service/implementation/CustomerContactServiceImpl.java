@@ -30,19 +30,15 @@ import java.util.Optional;
 public class CustomerContactServiceImpl implements CustomerContactService {
     @Autowired
     private SecurityVerificationServiceImpl securityVerificationService;
+    @Autowired
+    private LogServiceImpl logService;
 
     @Autowired
-    private  LogServiceImpl logService;
-
-    private final CustomerContactRepository customerContactRepository;
-    private final CustomerContactMapper customerContactMapper;
-    private final CustomerRepository customerRepository;
+    private CustomerContactRepository customerContactRepository;
     @Autowired
-    public CustomerContactServiceImpl(CustomerContactRepository customerContactRepository, CustomerContactMapper customerContactMapper, CustomerRepository customerRepository) {
-        this.customerContactRepository = customerContactRepository;
-        this.customerContactMapper = customerContactMapper;
-        this.customerRepository = customerRepository;
-    }
+    private CustomerContactMapper customerContactMapper;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @LogMethodCall(value = "getByCustomerId is started")
     @Override
@@ -51,12 +47,13 @@ public class CustomerContactServiceImpl implements CustomerContactService {
         customer.setCustomerId(customerId);
         List<CustomerContact> customerContacts = this.customerContactRepository.findCustomerContactsByCustomer(customer);
         List<CustomerContactDto> customerContactDtoList = this.customerContactMapper.customerContactDtoList(customerContacts);
-        logService.loglama(EnumLogIslemTipi.CustomerGetContacts,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.CustomerGetContacts, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(customerContactDtoList);
     }
 
@@ -67,53 +64,49 @@ public class CustomerContactServiceImpl implements CustomerContactService {
                 this.customerContactMapper.toCustomerContactList(customerAddContactsDto.getCustomerContactAddDtoList());
         Optional<Customer> customerOptional = this.customerRepository.findById(customerAddContactsDto.getCustomerId());
 
-        if (customerOptional.isPresent()){
+        if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
-            customerContactList.forEach(customerContact -> {
+            for (CustomerContact customerContact : customerContactList) {
                 customerContact.setCustomer(customer);
-                if(customerContact.getCity().getCityId() == null){
+                if (customerContact.getCity() == null || customerContact.getCity().getCityId() == null) {
                     customerContact.setCity(null);
                     customerContact.setCountry(null);
                     customerContact.setDistrict(null);
                 }
-            });
+            }
         }
 
         this.customerContactRepository.saveAll(customerContactList);
-        logService.loglama(EnumLogIslemTipi.CustomerAddContacts,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
-                .getClass()
-                .getEnclosingMethod();
-
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        logService.loglama(EnumLogIslemTipi.CustomerAddContacts, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }.getClass().getEnclosingMethod();
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessResult("contacts added");
     }
 
     @LogMethodCall(value = "CustomerContactUpdated is started")
     @Override
-    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Result update(CustomerUpdateContactsDto customerUpdateContactsDto) {
-        List<CustomerContactUpdateDto> customerContactUpdateDtoList= customerUpdateContactsDto.getCustomerContactUpdateDtoList();
-        customerContactUpdateDtoList.forEach(customerContactUpdateDto -> {
+        List<CustomerContactUpdateDto> customerContactUpdateDtoList = customerUpdateContactsDto.getCustomerContactUpdateDtoList();
+        for (CustomerContactUpdateDto customerContactUpdateDto : customerContactUpdateDtoList){
             CustomerContact customerContactToUpdate = this.customerContactRepository.getById(customerContactUpdateDto.getCustomerContactId());
-            this.customerContactMapper.update(customerContactToUpdate,customerContactUpdateDto);
-            if(customerContactUpdateDto.getCityId()==null || customerContactUpdateDto.getCityId()==0){
+            this.customerContactMapper.update(customerContactToUpdate, customerContactUpdateDto);
+            if (customerContactUpdateDto.getCityId() == null || customerContactUpdateDto.getCityId() == 0) {
                 customerContactToUpdate.setCity(null);
             }
-            if (customerContactUpdateDto.getCountryId()==null || customerContactUpdateDto.getCountryId()==0){
+            if (customerContactUpdateDto.getCountryId() == null || customerContactUpdateDto.getCountryId() == 0) {
                 customerContactToUpdate.setCountry(null);
             }
-            if (customerContactUpdateDto.getDistrictId()==null || customerContactUpdateDto.getDistrictId()==0){
+            if (customerContactUpdateDto.getDistrictId() == null || customerContactUpdateDto.getDistrictId() == 0) {
                 customerContactToUpdate.setDistrict(null);
             }
             this.customerContactRepository.save(customerContactToUpdate);
-        });
-        logService.loglama(EnumLogIslemTipi.CustomerUpdateContacts,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
-                .getClass()
-                .getEnclosingMethod();
+        }
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        logService.loglama(EnumLogIslemTipi.CustomerUpdateContacts, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}.getClass().getEnclosingMethod();
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessResult(ResultMessage.CUSTOMER_CONTACT_UPDATED);
     }
 }

@@ -11,7 +11,6 @@ import java.util.List;
 
 @Mapper(
         componentModel = "spring",
-        uses = {CustomerMapper.class},
         nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL
 )
 public interface CustomerContactMapper {

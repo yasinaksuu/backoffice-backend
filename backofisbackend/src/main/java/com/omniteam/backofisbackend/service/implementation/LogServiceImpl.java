@@ -21,9 +21,6 @@ public class LogServiceImpl implements LogService {
     @Autowired
     private LogRepository logRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Transactional
     public Result loglama(EnumLogIslemTipi islemTip, User user){
         Log log=new Log();

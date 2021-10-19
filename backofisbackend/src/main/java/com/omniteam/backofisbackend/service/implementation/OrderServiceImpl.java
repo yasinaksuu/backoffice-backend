@@ -224,7 +224,6 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus("Waiting");
             Customer customer = this.customerRepository.getById(addProductToCartRequest.getCustomerId());
             order.setCustomer(customer);
-            //TODO inquire user from database by email in the jwttoken
             User user = this.userRepository.getById(securityVerificationService.inquireLoggedInUser().getUserId());
             order.setUser(user);
             this.orderRepository.save(order);
