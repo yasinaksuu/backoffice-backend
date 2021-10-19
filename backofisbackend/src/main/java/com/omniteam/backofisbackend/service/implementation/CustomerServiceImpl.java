@@ -8,6 +8,7 @@ import com.omniteam.backofisbackend.dto.customer.CustomerGetAllDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerUpdateDto;
 import com.omniteam.backofisbackend.dto.order.OrderDto;
 import com.omniteam.backofisbackend.entity.Customer;
+import com.omniteam.backofisbackend.entity.CustomerContact;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.CustomerRepository;
@@ -37,26 +38,22 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
-    private final CustomerRepository customerRepository;
-    private final OrderRepository orderRepository;
-    private final OrderMapper orderMapper;
-    private final CustomerMapper customerMapper;
-    private final UserRepository userRepository;
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
+    private OrderMapper orderMapper;
+    @Autowired
+    private CustomerMapper customerMapper;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private SecurityVerificationService securityVerificationService;
 
     @Autowired
-    private final SecurityVerificationService securityVerificationService;
-
-    @Autowired
-    private  LogServiceImpl logService;
-   /* @Autowired
-    public CustomerServiceImpl(CustomerRepository customerRepository, OrderRepository orderRepository, OrderMapper orderMapper, CustomerMapper customerMapper) {
-        this.customerRepository = customerRepository;
-        this.orderRepository = orderRepository;
-        this.orderMapper = orderMapper;
-        this.customerMapper = customerMapper;
-    }*/
+    private LogServiceImpl logService;
 
     @LogMethodCall(value = "customerGetAll is started")
     @Cacheable(cacheNames = "CustomerGetAll")
@@ -64,8 +61,8 @@ public class CustomerServiceImpl implements CustomerService {
     public DataResult<PagedDataWrapper<CustomerGetAllDto>> getAll(int page, int size, String searchKey) throws InterruptedException {
         Thread.sleep(500L);
         Pageable pageable = PageRequest.of(page, size);
-        if (searchKey==null){
-            searchKey="";
+        if (searchKey == null) {
+            searchKey = "";
         }
         /*Page<Customer> customers = this.customerRepository.findAll(pageable);*/
         Page<Customer> customers =
@@ -87,42 +84,45 @@ public class CustomerServiceImpl implements CustomerService {
                 customers.getTotalPages(),
                 customers.isLast()
         );
-        logService.loglama(EnumLogIslemTipi.CustomersGetAll,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
-                .getClass()
-                .getEnclosingMethod();
+        logService.loglama(EnumLogIslemTipi.CustomersGetAll, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }.getClass().getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(pagedDataWrapper);
     }
 
 
-    @CacheEvict(cacheNames = "CustomerGetAll" ,allEntries = true)
-    public void clearCustomerGetAllCache(){
+    @CacheEvict(cacheNames = "CustomerGetAll", allEntries = true)
+    public void clearCustomerGetAllCache() {
         System.out.println("cache temizlendi");
     }
 
     @LogMethodCall(value = "CustomerAdd is started")
     @Override
-    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public Result add(CustomerAddDto customerAddDto) {
         Customer customer = this.customerMapper.toCustomer(customerAddDto);
-        customer.getCustomerContacts().forEach(customerContact -> {
+        for (CustomerContact customerContact : customer.getCustomerContacts()) {
             customerContact.setCustomer(customer);
-            //nice to have : might be solved in mapstruct
-            if (customerContact.getCity().getCityId() == null || customerContact.getCity().getCityId() == 0) {
+            if (
+                    customerContact.getCity() == null ||
+                    customerContact.getCity().getCityId() == null ||
+                    customerContact.getCity().getCityId() == 0
+            ) {
                 customerContact.setCity(null);
                 customerContact.setCountry(null);
                 customerContact.setDistrict(null);
             }
-        });
+        }
         this.customerRepository.save(customer);
-        logService.loglama(EnumLogIslemTipi.CustomerAdd,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.CustomerAdd, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessResult(ResultMessage.CUSTOMER_ADDED);
     }
 
@@ -132,12 +132,10 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customerToUpdate = this.customerRepository.getById(customerUpdateDto.getCustomerId());
         this.customerMapper.update(customerToUpdate, customerUpdateDto);
         this.customerRepository.save(customerToUpdate);
-        logService.loglama(EnumLogIslemTipi.CustomerUpdate,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
-                .getClass()
-                .getEnclosingMethod();
+        logService.loglama(EnumLogIslemTipi.CustomerUpdate, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}.getClass().getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessResult(ResultMessage.CUSTOMER_UPDATED);
     }
 
@@ -146,16 +144,14 @@ public class CustomerServiceImpl implements CustomerService {
     public DataResult<CustomerDto> getById(int customerId) {
         Customer customer = this.customerRepository.getById(customerId);
         CustomerDto customerDto = this.customerMapper.toCustomerDto(customer);
-        logService.loglama(EnumLogIslemTipi.CustomerGetById,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
-                .getClass()
-                .getEnclosingMethod();
+        logService.loglama(EnumLogIslemTipi.CustomerGetById, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {}.getClass().getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(customerDto);
     }
 
-    @LogMethodCall
+    @LogMethodCall(value = "getOrderByCustomerIdAndStatus is started")
     @Override
     public DataResult<OrderDto> getOrderByCustomerIdAndStatus(Integer customerId, String status) {
         Order order = this.orderRepository.findFirstByStatusAndIsActiveAndCustomer_CustomerIdOrderByCreatedDateDesc(status, true, customerId);
@@ -164,17 +160,14 @@ public class CustomerServiceImpl implements CustomerService {
             order.setStatus(status);
             order.setCustomer(customerRepository.getById(customerId));
             order.setUser(userRepository.getById(securityVerificationService.inquireLoggedInUser().getUserId()));
-            orderRepository.save(order);
+            this.orderRepository.save(order);
             return new SuccessDataResult<>(
                     this.orderMapper.toOrderDto(orderRepository.getById(order.getOrderId()))
             );
         }
         OrderDto orderDto = this.orderMapper.toOrderDto(order);
-        Method m = new Object() {}
-                .getClass()
-                .getEnclosingMethod();
-
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        Method m = new Object() {}.getClass().getEnclosingMethod();
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<OrderDto>(orderDto);
     }
 
