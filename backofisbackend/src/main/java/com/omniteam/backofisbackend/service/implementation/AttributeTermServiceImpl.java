@@ -31,7 +31,7 @@ public class AttributeTermServiceImpl implements AttributeTermService {
     @Autowired
     private AttributeTermMapper attributeTermMapper;
     @LogMethodCall(value = "getByAttributeTermByAttribute is started")
-    public DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId) throws NoSuchMethodException {
+    public DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId)  {
         List<AttributeTerm> attributeTerm = attributeTermRepository.findAllByAttribute_AttributeId(attributeId);
         List<AttributeTermDTO> attributeTermDTOS = attributeTermMapper.mapToDTOs(attributeTerm);
         logService.loglama(EnumLogIslemTipi.AttributeTermsGet,securityVerificationService.inquireLoggedInUser());

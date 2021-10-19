@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface AttributeTermService {
 
-    DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId) throws NoSuchMethodException;
+    DataResult<List<AttributeTermDTO>> getByAttributeTermByAttribute(Integer attributeId) ;
 
 }
