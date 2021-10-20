@@ -6,6 +6,7 @@ import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.entity.OrderDetail;
 import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
 import com.omniteam.backofisbackend.repository.OrderDetailRepository;
+import com.omniteam.backofisbackend.repository.OrderRepository;
 import com.omniteam.backofisbackend.requests.order.RemoveProductFromCartRequest;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
@@ -27,6 +28,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Autowired
     private OrderDetailRepository orderDetailRepository;
     @Autowired
+    private OrderRepository orderRepository;
+    @Autowired
     private OrderDetailMapper orderDetailMapper;
 
 
@@ -36,8 +39,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         if (orderId == 0) {
             return new ErrorDataResult<>("Lütfen detaylarını görmek istediğiniz siparişi belirtiniz", null);
         }
-        Order order = new Order();
-        order.setOrderId(orderId);
+        Order order = this.orderRepository.getById(orderId);
         List<OrderDetail> orderDetails = this.orderDetailRepository.getOrderDetailsByOrder(order);
         List<OrderDetailDto> orderDetailDtoList = this.orderDetailMapper.toOrderDetailDtoList(orderDetails);
         logService.loglama(EnumLogIslemTipi.GetOrderDetails, securityVerificationService.inquireLoggedInUser());

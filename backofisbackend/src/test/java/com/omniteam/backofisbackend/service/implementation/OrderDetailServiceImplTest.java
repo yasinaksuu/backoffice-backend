@@ -4,9 +4,13 @@ import com.omniteam.backofisbackend.dto.order.OrderDetailDto;
 import com.omniteam.backofisbackend.entity.Order;
 import com.omniteam.backofisbackend.entity.OrderDetail;
 import com.omniteam.backofisbackend.repository.OrderDetailRepository;
+import com.omniteam.backofisbackend.repository.OrderRepository;
+import com.omniteam.backofisbackend.requests.order.RemoveProductFromCartRequest;
 import com.omniteam.backofisbackend.service.OrderDetailService;
 import com.omniteam.backofisbackend.shared.mapper.OrderDetailMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
+import com.omniteam.backofisbackend.shared.result.Result;
+import com.omniteam.backofisbackend.shared.result.SuccessResult;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,8 @@ public class OrderDetailServiceImplTest {
     private  LogServiceImpl logService;
     @Mock
     private OrderDetailRepository orderDetailRepository;
+    @Mock
+    private OrderRepository orderRepository;
     @Spy
     private OrderDetailMapper orderDetailMapper = Mappers.getMapper(OrderDetailMapper.class);
     @InjectMocks
@@ -45,6 +51,11 @@ public class OrderDetailServiceImplTest {
 
     @Test
     public void getByOrderId() {
+        Order order = new Order();
+        order.setOrderId(1);
+        Mockito.when(
+                this.orderRepository.getById(Mockito.anyInt())
+        ).thenReturn(order);
         List<OrderDetail> orderDetails = Arrays.asList(new OrderDetail(),new OrderDetail());
         Mockito.when(
                 this.orderDetailRepository.getOrderDetailsByOrder(
@@ -56,5 +67,19 @@ public class OrderDetailServiceImplTest {
         Assertions.assertThat(dataResult).isNotNull();
         Assertions.assertThat(dataResult.isSuccess()).isTrue();
         Assertions.assertThat(dataResult.getData()).hasSize(2);
+    }
+
+    @Test
+    void deleteOrderDetail(){
+        Mockito.doNothing().when(
+                this.orderDetailRepository
+        ).deleteOrderDetailByOrderDetailId(Mockito.anyInt());
+
+        RemoveProductFromCartRequest removeProductFromCartRequest = new RemoveProductFromCartRequest();
+        removeProductFromCartRequest.setOrderDetailId(1);
+        Result result = this.orderDetailService.deleteOrderDetail(removeProductFromCartRequest);
+
+        Assertions.assertThat(result).isNotNull();
+        Assertions.assertThat(result).isInstanceOf(SuccessResult.class);
     }
 }
