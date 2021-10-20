@@ -33,8 +33,8 @@ public class SetupEnvironment {
         if (this.roleRepository.countAllBy() <= 0)
             setupStandartRoles();
 
-        if (userRepository.findUserByEmailAndIsActive("admin@etiya.com", true) == null)
-            setupAdminAccount();
+//        if (userRepository.findUserByEmailAndIsActive("admin@etiya.com", true) == null)
+//            setupAdminAccount();
 
     }
 

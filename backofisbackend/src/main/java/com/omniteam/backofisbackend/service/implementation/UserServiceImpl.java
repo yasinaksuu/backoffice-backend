@@ -8,9 +8,8 @@ import com.omniteam.backofisbackend.entity.Role;
 import com.omniteam.backofisbackend.entity.User;
 import com.omniteam.backofisbackend.entity.UserRole;
 import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
-import com.omniteam.backofisbackend.repository.RoleRepository;
-import com.omniteam.backofisbackend.repository.UserRepository;
-import com.omniteam.backofisbackend.repository.UserRoleRepository;
+import com.omniteam.backofisbackend.repository.*;
+import com.omniteam.backofisbackend.repository.userspecification.UserSpec;
 import com.omniteam.backofisbackend.requests.user.UserAddRequest;
 import com.omniteam.backofisbackend.requests.user.UserUpdateRequest;
 import com.omniteam.backofisbackend.service.RoleService;
@@ -186,6 +185,11 @@ public class UserServiceImpl implements UserService {
         return this.setUserRoles(user, roleList);
     }
 
-
+    @Override
+    public DataResult<List<UserDto>> search(String searchKey) {
+        List<User> users = this.userRepository.findAll(UserSpec.searchUsersBySearchKey(searchKey));
+        List<UserDto> userDtoList = this.userMapper.toUserDtoList(users);
+        return new SuccessDataResult<>(0,userDtoList);
+    }
 
 }

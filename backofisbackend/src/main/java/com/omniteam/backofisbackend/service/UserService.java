@@ -20,4 +20,5 @@ public interface UserService {
     Result setUserRoles(User user,Role role) throws Exception;
     Result setUserRoles(User user,List<Role> roles) throws Exception;
     Result setUserRoles(User user,Integer[] roleIds) throws Exception;
+    DataResult<List<UserDto>> search(String searchKey);
 }
