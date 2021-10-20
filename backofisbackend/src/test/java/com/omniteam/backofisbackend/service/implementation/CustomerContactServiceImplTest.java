@@ -5,11 +5,8 @@ import com.omniteam.backofisbackend.dto.customer.CustomerUpdateContactsDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactAddDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
-import com.omniteam.backofisbackend.entity.Customer;
-import com.omniteam.backofisbackend.entity.CustomerContact;
-import com.omniteam.backofisbackend.entity.User;
-import com.omniteam.backofisbackend.repository.CustomerContactRepository;
-import com.omniteam.backofisbackend.repository.CustomerRepository;
+import com.omniteam.backofisbackend.entity.*;
+import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.shared.mapper.CustomerContactMapper;
 import com.omniteam.backofisbackend.shared.result.DataResult;
 import com.omniteam.backofisbackend.shared.result.Result;
@@ -46,6 +43,12 @@ public class CustomerContactServiceImplTest {
     private CustomerContactMapper customerContactMapper = Mappers.getMapper(CustomerContactMapper.class);
     @Mock
     private CustomerRepository customerRepository;
+    @Mock
+    private CountryRepository countryRepository;
+    @Mock
+    private CityRepository cityRepository;
+    @Mock
+    private DistrictRepository districtRepository;
     @InjectMocks
     private CustomerContactServiceImpl customerContactService;
 
@@ -122,7 +125,49 @@ public class CustomerContactServiceImplTest {
     }
 
     @Test
-    void update() {
+    void update_Address() {
+        CustomerContact customerContact = new CustomerContact();
+        customerContact.setCustomerContactId(1);
+        Mockito.when(
+                this.customerContactRepository.getById(Mockito.any())
+        ).thenReturn(customerContact);
+        Country country = new Country();
+        country.setCountryId(1);
+        Mockito.when(
+                this.countryRepository.getById(Mockito.any())
+        ).thenReturn(country);
+
+        City city = new City();
+        city.setCityId(1);
+        Mockito.when(
+                this.cityRepository.getById(Mockito.any())
+        ).thenReturn(city);
+
+        District district =new District();
+        district.setDistrictId(1);
+        Mockito.when(
+                this.districtRepository.getById(Mockito.any())
+        ).thenReturn(district);
+
+        Mockito.when(
+                this.customerContactRepository.save(Mockito.any(CustomerContact.class))
+        ).thenReturn(customerContact);
+
+        CustomerUpdateContactsDto customerUpdateContactsDto = new CustomerUpdateContactsDto();
+        List<CustomerContactUpdateDto> customerContactUpdateDtoList = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            CustomerContactUpdateDto customerContactUpdateDto = new CustomerContactUpdateDto();
+            customerContactUpdateDto.setCountryId(i);
+            customerContactUpdateDto.setCityId(i);
+            customerContactUpdateDto.setDistrictId(i);
+            customerContactUpdateDtoList.add(customerContactUpdateDto);
+        }
+        customerUpdateContactsDto.setCustomerContactUpdateDtoList(customerContactUpdateDtoList);
+        Result result = this.customerContactService.update(customerUpdateContactsDto);
+    }
+
+    @Test
+    void update_PhoneOrEmail() {
         CustomerContact customerContact = new CustomerContact();
         customerContact.setCustomerContactId(1);
         Mockito.when(

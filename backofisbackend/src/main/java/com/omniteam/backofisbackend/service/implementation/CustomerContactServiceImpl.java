@@ -5,11 +5,9 @@ import com.omniteam.backofisbackend.dto.customer.CustomerAddContactsDto;
 import com.omniteam.backofisbackend.dto.customer.CustomerUpdateContactsDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactDto;
 import com.omniteam.backofisbackend.dto.customercontact.CustomerContactUpdateDto;
-import com.omniteam.backofisbackend.entity.Customer;
-import com.omniteam.backofisbackend.entity.CustomerContact;
+import com.omniteam.backofisbackend.entity.*;
 import com.omniteam.backofisbackend.enums.EnumLogIslemTipi;
-import com.omniteam.backofisbackend.repository.CustomerContactRepository;
-import com.omniteam.backofisbackend.repository.CustomerRepository;
+import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.service.CustomerContactService;
 import com.omniteam.backofisbackend.shared.constant.ResultMessage;
 import com.omniteam.backofisbackend.shared.mapper.CustomerContactMapper;
@@ -39,6 +37,12 @@ public class CustomerContactServiceImpl implements CustomerContactService {
     private CustomerContactMapper customerContactMapper;
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private CityRepository cityRepository;
+    @Autowired
+    private DistrictRepository districtRepository;
+    @Autowired
+    private CountryRepository countryRepository;
 
     @LogMethodCall(value = "getByCustomerId is started")
     @Override
@@ -92,14 +96,17 @@ public class CustomerContactServiceImpl implements CustomerContactService {
         for (CustomerContactUpdateDto customerContactUpdateDto : customerContactUpdateDtoList){
             CustomerContact customerContactToUpdate = this.customerContactRepository.getById(customerContactUpdateDto.getCustomerContactId());
             this.customerContactMapper.update(customerContactToUpdate, customerContactUpdateDto);
-            if (customerContactUpdateDto.getCityId() == null || customerContactUpdateDto.getCityId() == 0) {
-                customerContactToUpdate.setCity(null);
+            if (customerContactUpdateDto.getCityId() != null && customerContactUpdateDto.getCityId() != 0) {
+                City city = this.cityRepository.getById(customerContactUpdateDto.getCityId());
+                customerContactToUpdate.setCity(city);
             }
-            if (customerContactUpdateDto.getCountryId() == null || customerContactUpdateDto.getCountryId() == 0) {
-                customerContactToUpdate.setCountry(null);
+            if (customerContactUpdateDto.getCountryId() != null && customerContactUpdateDto.getCountryId() != 0) {
+                Country country = this.countryRepository.getById(customerContactUpdateDto.getCountryId());
+                customerContactToUpdate.setCountry(country);
             }
-            if (customerContactUpdateDto.getDistrictId() == null || customerContactUpdateDto.getDistrictId() == 0) {
-                customerContactToUpdate.setDistrict(null);
+            if (customerContactUpdateDto.getDistrictId() != null && customerContactUpdateDto.getDistrictId() != 0) {
+                District district = this.districtRepository.getById(customerContactUpdateDto.getDistrictId());
+                customerContactToUpdate.setDistrict(district);
             }
             this.customerContactRepository.save(customerContactToUpdate);
         }

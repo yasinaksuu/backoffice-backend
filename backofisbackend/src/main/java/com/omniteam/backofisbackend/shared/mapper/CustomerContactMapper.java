@@ -10,8 +10,7 @@ import org.mapstruct.*;
 import java.util.List;
 
 @Mapper(
-        componentModel = "spring",
-        nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL
+        componentModel = "spring"
 )
 public interface CustomerContactMapper {
     List<CustomerContact> toCustomerContactList(List<CustomerContactAddDto> customerContactAddDtoList);
@@ -32,9 +31,10 @@ public interface CustomerContactMapper {
     @Mapping(target = "isActive", expression = "java(customerContact.getIsActive())")
     CustomerContactDto toCustomerContactDto(CustomerContact customerContact);
 
-    @Mapping(target = "country.countryId",source = "countryId")
-    @Mapping(target = "city.cityId",source = "cityId") //expression ile dene
-    @Mapping(target = "district.districtId",source = "districtId")
+//    @Mapping(target = "country.countryId",source = "countryId")
+//    @Mapping(target = "city.cityId",source = "cityId") //expression ile dene
+//    @Mapping(target = "district.districtId",source = "districtId")
+//    @Mapping(target = "customerContactId", ignore = true)
     void update(@MappingTarget CustomerContact customerContact, CustomerContactUpdateDto customerContactUpdateDto);
 }
 
