@@ -286,4 +286,9 @@ public class CustomerServiceImplTest {
         Assertions.assertThat(result.isSuccess()).isTrue();
         Assertions.assertThat(result).isInstanceOf(SuccessDataResult.class);
     }
+
+    @Test
+    void clearCustomerGetAllCache(){
+        this.customerService.clearCustomerGetAllCache();
+    }
 }
