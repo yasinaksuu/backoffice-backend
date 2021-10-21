@@ -53,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private AttributeTermRepository  attributeTermRepository;
+    private AttributeTermRepository attributeTermRepository;
 
     @Autowired
     private ProductImageRepository productImageRepository;
@@ -68,22 +68,22 @@ public class ProductServiceImpl implements ProductService {
     private SecurityVerificationServiceImpl securityVerificationService;
 
     @Autowired
-    private  LogServiceImpl logService;
+    private LogServiceImpl logService;
 
     @LogMethodCall(value = "saveProductImageDB is started")
-    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
-    public Result saveProductImageDB(MultipartFile file,Integer productId) throws IOException {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Result saveProductImageDB(MultipartFile file, Integer productId) throws IOException {
 
-        Product product =productRepository.getById(productId);
+        Product product = productRepository.getById(productId);
         List<ProductImage> productImages = productImageRepository.findAllByProduct_ProductId(productId);
-        if(productImages!=null){
+        if (productImages != null) {
             productImageRepository.deleteAllByProduct_ProductId(productId);
 
         }
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         ProductImage productImage = new ProductImage();
-      //  productImage.setImage(file.getBytes());
+        //  productImage.setImage(file.getBytes());
         productImage.setImage(Base64.getEncoder().encodeToString(file.getBytes()));
 
         productImage.setProductImageName(fileName);
@@ -96,40 +96,42 @@ public class ProductServiceImpl implements ProductService {
         productImage.setFilePath(url);
         productImage.setProduct(product);
         productImageRepository.save(productImage);
-        logService.loglama(EnumLogIslemTipi.ProductImageAdd,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.ProductImageAdd, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessResult(ResultMessage.PRODUCT_IMAGE_SAVE);
 
 
     }
 
     @LogMethodCall(value = "saveProductDB is stated")
-    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = Exception.class)
-    public Integer saveProductToDB(ProductSaveRequestDTO productSaveRequestDTO){
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Integer saveProductToDB(ProductSaveRequestDTO productSaveRequestDTO) {
         Product product = productMapper.mapToEntity(productSaveRequestDTO);
         List<ProductPrice> productPrice = productMapper.mapToEntities(productSaveRequestDTO.getProductPriceDTOS());
 
         productRepository.save(product);
-        for(int i=0;i<productPrice.size();i++){
+        for (int i = 0; i < productPrice.size(); i++) {
             productPrice.get(i).setProduct(product);
         }
         productPriceRepository.saveAll(productPrice);
 
-        List<ProductAttributeTerm> productAttributeTerms =productMapper.mapToProductAttributeTerm(productSaveRequestDTO.getProductAttributeTermDTOS());
-        productAttributeTerms.stream().forEach(item->item.setProduct(product));
+        List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productSaveRequestDTO.getProductAttributeTermDTOS());
+        productAttributeTerms.stream().forEach(item -> item.setProduct(product));
 
 
         productAttributeTermRepository.saveAll(productAttributeTerms);
-        logService.loglama(EnumLogIslemTipi.ProductAdd,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.ProductAdd, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return product.getProductId();
 
 
@@ -140,8 +142,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public DataResult<PagedDataWrapper<ProductDto>> getAll(ProductGetAllRequest productGetAllRequest) throws InterruptedException {
 
-       Thread.sleep(500L);
-        Pageable pageable = PageRequest.of(productGetAllRequest.getPage(),productGetAllRequest.getSize());
+        Thread.sleep(500L);
+        Pageable pageable = PageRequest.of(productGetAllRequest.getPage(), productGetAllRequest.getSize());
         Page<Product> productPage =
                 productRepository.findAll(
                         ProductSpec.getAllByFilter(
@@ -152,11 +154,10 @@ public class ProductServiceImpl implements ProductService {
                                 productGetAllRequest.getStartDate(),
                                 productGetAllRequest.getEndDate(),
                                 productGetAllRequest.getAttributeIdsCollections()
-                        ),pageable);
+                        ), pageable);
 
 
-
-        List<ProductDto> productDtoList  = productMapper.mapToDTOs(productPage.getContent());
+        List<ProductDto> productDtoList = productMapper.mapToDTOs(productPage.getContent());
 
         PagedDataWrapper<ProductDto> pagedDataWrapper = new PagedDataWrapper<>(
                 productDtoList,
@@ -167,44 +168,47 @@ public class ProductServiceImpl implements ProductService {
                 productPage.isLast()
         );
 
-        logService.loglama(EnumLogIslemTipi.ProductGetAll,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        logService.loglama(EnumLogIslemTipi.ProductGetAll, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(pagedDataWrapper);
 
     }
+
     @Transactional(readOnly = true)
     @LogMethodCall(value = "ProductGetById is started")
-    public DataResult<ProductDto> getById(Integer productId){
+    public DataResult<ProductDto> getById(Integer productId) {
         Product product = productRepository.getById(productId);
         ProductDto productDto = productMapper.mapToDTO(product);
-   //     logService.loglama(EnumLogIslemTipi.ProductGetById,securityVerificationService.inquireLoggedInUser());
-        Method m = new Object() {}
+        //     logService.loglama(EnumLogIslemTipi.ProductGetById,securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
                 .getClass()
                 .getEnclosingMethod();
 
-        LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
         return new SuccessDataResult<>(productDto);
     }
 
 
-    @CacheEvict(cacheNames = "ProductGetAll" ,allEntries = true)
-    public void clearProductGetAllCache(){
+    @CacheEvict(cacheNames = "ProductGetAll", allEntries = true)
+    public void clearProductGetAllCache() {
         System.out.println("cache temizlendi");
     }
 
     @LogMethodCall(value = "ProductUpdate is started")
-    @Transactional(propagation = Propagation.REQUIRED , rollbackFor = Exception.class ,timeout = 800)
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class, timeout = 800)
     public Result productUpdate(ProductUpdateDTO productUpdateDTO) {
         Product productToUpdate = productRepository.getById(productUpdateDTO.getProductId());
         if (Objects.nonNull(productToUpdate)) {
             if (productUpdateDTO.getProductName() != null) {
                 productToUpdate.setProductName(productUpdateDTO.getProductName());
             }
-            if (productUpdateDTO.getBarcode()!= null) {
+            if (productUpdateDTO.getBarcode() != null) {
                 productToUpdate.setBarcode(productUpdateDTO.getBarcode());
             }
             if (productUpdateDTO.getDescription() != null) {
@@ -223,14 +227,15 @@ public class ProductServiceImpl implements ProductService {
                 productToUpdate.setUnitsInStock(productUpdateDTO.getUnitsInStock());
             }
 
-            if (productUpdateDTO.getProductPriceDTOS()!= null) {
-                productPriceRepository.getAllByProduct_ProductId(productToUpdate.getProductId()).stream().forEach(item-> {
-                    item.setIsActive(false);
-                    productPriceRepository.save(item);
-                });
+            if (productUpdateDTO.getProductPriceDTOS() != null) {
+                List<ProductPrice> productPriceList = productPriceRepository.getAllByProduct_ProductId(productToUpdate.getProductId());
+                for (ProductPrice productPrice : productPriceList) {
+                    productPrice.setIsActive(false);
+                    this.productPriceRepository.save(productPrice);
+                }
 
                 List<ProductPrice> productPrices = productMapper.mapToEntities(productUpdateDTO.getProductPriceDTOS());
-                productPrices.stream().forEach(item-> item.setProduct(productToUpdate));
+                productPrices.stream().forEach(item -> item.setProduct(productToUpdate));
                 productPriceRepository.saveAll(productPrices);
 
             }
@@ -243,22 +248,23 @@ public class ProductServiceImpl implements ProductService {
 
             if (productUpdateDTO.getProductAttributeTermDTOS() != null) {
 
-               productAttributeTermRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
-               List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productUpdateDTO.getProductAttributeTermDTOS());
-               productAttributeTerms.stream().forEach(item -> item.setProduct(productToUpdate));
-               productAttributeTermRepository.saveAll(productAttributeTerms);
+                productAttributeTermRepository.deleteAllByProduct_ProductId(productToUpdate.getProductId());
+                List<ProductAttributeTerm> productAttributeTerms = productMapper.mapToProductAttributeTerm(productUpdateDTO.getProductAttributeTermDTOS());
+                productAttributeTerms.stream().forEach(item -> item.setProduct(productToUpdate));
+                productAttributeTermRepository.saveAll(productAttributeTerms);
 
             }
 
 
         }
-    logService.loglama(EnumLogIslemTipi.ProductUpdate,securityVerificationService.inquireLoggedInUser());
-    Method m = new Object() {}
-            .getClass()
-            .getEnclosingMethod();
+        logService.loglama(EnumLogIslemTipi.ProductUpdate, securityVerificationService.inquireLoggedInUser());
+        Method m = new Object() {
+        }
+                .getClass()
+                .getEnclosingMethod();
 
-    LogMethodCall logMethodCall =  m.getAnnotation(LogMethodCall.class);
-    productRepository.save(productToUpdate);
+        LogMethodCall logMethodCall = m.getAnnotation(LogMethodCall.class);
+        productRepository.save(productToUpdate);
         return new SuccessResult(ResultMessage.PRODUCT_UPDATED);
     }
-    }
+}
