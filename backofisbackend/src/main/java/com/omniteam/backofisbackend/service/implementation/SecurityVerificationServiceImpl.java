@@ -18,7 +18,7 @@ public class SecurityVerificationServiceImpl implements SecurityVerificationServ
     @Autowired
     private UserRepository userRepository;
 
-    private User obtainTokenizedUser(Object principal) {
+    public User obtainTokenizedUser(Object principal) {
         return principal instanceof User ? (User) principal : null;
     }
 
@@ -27,9 +27,10 @@ public class SecurityVerificationServiceImpl implements SecurityVerificationServ
     public com.omniteam.backofisbackend.entity.User inquireLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = authentication != null ? obtainTokenizedUser(authentication.getPrincipal()) : null;
-        if (userDetails != null)
+    if (userDetails != null)
             return userRepository.findUserByEmailAndIsActive(userDetails.getUsername(), true);
-        else return null;
+      else return null;
+
     }
 
 }

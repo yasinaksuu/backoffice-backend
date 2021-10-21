@@ -3,10 +3,7 @@ package com.omniteam.backofisbackend.service.implementation;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.product.*;
 import com.omniteam.backofisbackend.entity.*;
-import com.omniteam.backofisbackend.repository.ProductAttributeTermRepository;
-import com.omniteam.backofisbackend.repository.ProductImageRepository;
-import com.omniteam.backofisbackend.repository.ProductPriceRepository;
-import com.omniteam.backofisbackend.repository.ProductRepository;
+import com.omniteam.backofisbackend.repository.*;
 import com.omniteam.backofisbackend.requests.ProductGetAllRequest;
 import com.omniteam.backofisbackend.shared.constant.ResultMessage;
 import com.omniteam.backofisbackend.shared.mapper.ProductMapper;
@@ -34,15 +31,17 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.lenient;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -69,9 +68,15 @@ public class ProductServiceImplTest {
     @Mock
     private LogServiceImpl logService;
     @Mock
+    private CategoryRepository  categoryRepository;
+    @Mock
     private SecurityVerificationServiceImpl securityVerificationService;
 
     private MockHttpServletRequest mockRequest;
+
+
+    private final PrintStream standardOut = System.out;
+    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
     @BeforeEach
     void setupEach()
     {
@@ -201,23 +206,47 @@ public class ProductServiceImplTest {
     public void update(){
 
         ProductUpdateDTO productUpdateDTO =new ProductUpdateDTO();
-
+        List<ProductPriceDTO>  productPrices = new ArrayList();
+        ProductPrice productPrice = new ProductPrice();
+        Category category = new Category();
+       List<ProductAttributeTermDTO> productAttributeTermDTOS = new ArrayList<>();
+       List<ProductAttributeTerm> productAttributeTerms = new ArrayList<>();
+        List<ProductPrice> productPriceList = new ArrayList<>();
         productUpdateDTO.setProductId(84);
         productUpdateDTO.setProductName("test");
+        productUpdateDTO.setBarcode("987");
+        productUpdateDTO.setDescription("telefon");
+        productUpdateDTO.setShortDescription("tel");
+        productUpdateDTO.setUnitsInStock(5);
+        productUpdateDTO.setCategoryId(4);
+        productUpdateDTO.setProductPriceDTOS(productPrices);
+        productUpdateDTO.setProductAttributeTermDTOS(productAttributeTermDTOS);
 
         Product productUpdate = new Product();
 
+        productPrice.setProductPriceId(8);
+        productPrice.setIsActive(false);
         Mockito.when(productRepository.getById(Mockito.eq(84))).thenReturn(productUpdate);
            assertNotNull(productUpdate);
-            assertNotNull(productUpdateDTO.getProductName());
+           assertNotNull(productUpdateDTO.getProductName());
+           assertNotEquals(null,productUpdateDTO.getProductPriceDTOS());
 
-            productUpdate.setProductName(productUpdateDTO.getProductName());
+
+
+        productUpdate.setProductName(productUpdateDTO.getProductName());
+
+        Mockito.when(categoryRepository.getById(Mockito.eq(4))).thenReturn(category);
 
         Mockito.when(productRepository.save(Mockito.any(Product.class))).thenReturn(productUpdate);
+        Mockito.when(productAttributeTermRepository.saveAll(Mockito.anyList())).thenReturn(productAttributeTerms);
+        Mockito.when(productPriceRepository.getAllByProduct_ProductId(Mockito.any())).thenReturn(productPriceList);
+        //Mockito.when(productPriceRepository.save(Mockito.any(ProductPrice.class))).thenReturn(productPrice);
+
+
 
         String serviceResult = productService.productUpdate(productUpdateDTO).getMessage();
-
         assertEquals(serviceResult,ResultMessage.PRODUCT_UPDATED);
+        Assertions.assertThat(serviceResult).isNotNull();
 
 
     }
@@ -263,5 +292,10 @@ public class ProductServiceImplTest {
         Assertions.assertThat(result.getData().getTotalElements()).isEqualTo(10);
     }
 
+    @Test
+    void clearProductGetAllCache() {
+        productService.clearProductGetAllCache();
+        System.setOut(new PrintStream(outputStreamCaptor));
+    }
 
 }
