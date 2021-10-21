@@ -61,7 +61,7 @@ public class OrderServiceImplTest {
     @Spy
     private OrderMapper orderMapper = Mappers.getMapper(OrderMapper.class);
     @Spy
-    private OrderDetailMapper orderDetailMapper= Mappers.getMapper(OrderDetailMapper.class);
+    private OrderDetailMapper orderDetailMapper = Mappers.getMapper(OrderDetailMapper.class);
 
     @InjectMocks
     OrderServiceImpl orderService;
@@ -85,14 +85,14 @@ public class OrderServiceImplTest {
         Mockito.when(orderRepository.findById(orderId)).thenReturn(Optional.of(mockedOrder));
         Mockito.when(orderRepository.findById(orderId + 1)).thenReturn(Optional.ofNullable(null));
 
-        assertThrows(Exception.class,()->orderService.getById(orderId + 1));
+        assertThrows(Exception.class, () -> orderService.getById(orderId + 1));
         DataResult<OrderDto> orderGetById = orderService.getById(orderId);
         assertNotNull(orderGetById);
         assertNotNull(orderGetById.getData());
         assertNotNull(orderGetById.getId());
-        assertEquals(mockedOrder.getOrderId(),orderGetById.getId());
-        assertEquals(mockedOrder.getOrderId(),orderGetById.getData().getOrderId());
-        assertEquals(mockedOrder.getStatus(),orderGetById.getData().getStatus());
+        assertEquals(mockedOrder.getOrderId(), orderGetById.getId());
+        assertEquals(mockedOrder.getOrderId(), orderGetById.getData().getOrderId());
+        assertEquals(mockedOrder.getStatus(), orderGetById.getData().getStatus());
     }
 
     @Test
@@ -110,12 +110,12 @@ public class OrderServiceImplTest {
     }
 
     @Test
-    void getAll(){
+    void getAll() {
         List<Order> orders = new ArrayList<>();
-        for (int i =0; i<10;i++){
+        for (int i = 0; i < 10; i++) {
             orders.add(new Order());
         }
-        Page<Order> orderPage = new PageImpl<Order>(orders,PageRequest.of(0,5),10);
+        Page<Order> orderPage = new PageImpl<Order>(orders, PageRequest.of(0, 5), 10);
 
         Mockito.when(
                 this.orderRepository.findAll(
