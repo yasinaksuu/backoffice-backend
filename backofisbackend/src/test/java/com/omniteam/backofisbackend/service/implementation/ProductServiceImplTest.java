@@ -207,11 +207,13 @@ public class ProductServiceImplTest {
 
         ProductUpdateDTO productUpdateDTO =new ProductUpdateDTO();
         List<ProductPriceDTO>  productPrices = new ArrayList();
+        productPrices.add(new ProductPriceDTO());
         ProductPrice productPrice = new ProductPrice();
         Category category = new Category();
        List<ProductAttributeTermDTO> productAttributeTermDTOS = new ArrayList<>();
        List<ProductAttributeTerm> productAttributeTerms = new ArrayList<>();
         List<ProductPrice> productPriceList = new ArrayList<>();
+        productPriceList.add(new ProductPrice());
         productUpdateDTO.setProductId(84);
         productUpdateDTO.setProductName("test");
         productUpdateDTO.setBarcode("987");
