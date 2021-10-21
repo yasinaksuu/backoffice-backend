@@ -1,26 +1,21 @@
 package com.omniteam.backofisbackend.service.implementation;
 
 import com.omniteam.backofisbackend.repository.UserRepository;
-import com.omniteam.backofisbackend.shared.constant.ResultMessage;
-import jdk.nashorn.internal.ir.annotations.Ignore;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,6 +28,9 @@ public class SecurityVerificationServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private HttpServletRequest servletRequest;
+
 
     private User obtainTokenizedUser(Object principal) {
         return principal instanceof User ? (User) principal : null;
@@ -40,29 +38,35 @@ public class SecurityVerificationServiceImplTest {
 
 
     @Test
-     public void inquireLoggedInUser() {
+    public void inquireLoggedInUser() {
         Authentication auth = Mockito.mock(Authentication.class);
-        SecurityContextHolder securityContextHolder = Mockito.mock(SecurityContextHolder.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(auth);
+        SecurityContextHolder.setContext(securityContext);
 
-    //Mockito.when(SecurityContextHolder.getContext().getAuthentication()).thenReturn(auth);
+        Mockito.when(auth.getPrincipal()).thenReturn(new User("tester", "123", new ArrayList<>()));
         com.omniteam.backofisbackend.entity.User user = new com.omniteam.backofisbackend.entity.User();
         user.setEmail("test@etiya");
         user.setPassword("123");
         user.setIsActive(true);
 
 
-        UserDetails userDetails = new User("username", "password", true, true, true, true, auth.getAuthorities()  );
+        UserDetails userDetails = new User("username", "password", true, true, true, true, auth.getAuthorities());
         assertNotNull(userDetails);
 
-      //  Mockito.when(userRepository.findUserByEmailAndIsActive(user.getEmail(), user.getIsActive())).thenReturn(user);
-        assertNotEquals(null,userDetails);
-      //  assertEquals(user,userDetails);
+        //  Mockito.when(userRepository.findUserByEmailAndIsActive(user.getEmail(), user.getIsActive())).thenReturn(user);
+        assertNotEquals(null, userDetails);
+        //  assertEquals(user,userDetails);
 
-     com.omniteam.backofisbackend.entity.User userService = securityVerificationService.inquireLoggedInUser();
+        com.omniteam.backofisbackend.entity.User userService = securityVerificationService.inquireLoggedInUser();
         assertNull(userService);
 
+        Mockito.when(securityContext.getAuthentication()).thenReturn(null);
+        com.omniteam.backofisbackend.entity.User userServiceDenied = securityVerificationService.inquireLoggedInUser();
+        assertNull(userServiceDenied);
 
-   //   Assertions.assertThat(userrservice).isNotNull();
+
+        //   Assertions.assertThat(userrservice).isNotNull();
     }
 
     @Test
@@ -73,7 +77,7 @@ public class SecurityVerificationServiceImplTest {
                 return null;
             }
         };
-    User user = securityVerificationService.obtainTokenizedUser(principal);
+        User user = securityVerificationService.obtainTokenizedUser(principal);
 
     }
 }
