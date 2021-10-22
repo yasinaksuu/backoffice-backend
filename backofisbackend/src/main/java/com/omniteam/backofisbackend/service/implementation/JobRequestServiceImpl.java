@@ -1,5 +1,6 @@
 package com.omniteam.backofisbackend.service.implementation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.jobrequest.JobRequestAddDto;
 import com.omniteam.backofisbackend.dto.jobrequest.JobRequestUpdateDto;
@@ -35,35 +36,30 @@ public class JobRequestServiceImpl implements JobRequestService {
     }
 
     @Override
-    public DataResult<JobRequest> getById() {
-        return null;
-    }
-
-    @Override
     public Result add(JobRequestAddDto jobRequestAdd) {
         JobRequest jobRequestEntity = jobRequestMapper.toJobRequestAdd(jobRequestAdd);
         jobRequestEntity.setRequestStatus(RequestStatus.WAITING);
-        jobRequestRepository.save(jobRequestEntity);
+        jobRequestEntity=jobRequestRepository.save(jobRequestEntity);
         return new SuccessResult(jobRequestEntity.getJobRequestId());
     }
 
     @Override
-    public Result update(JobRequestUpdateDto jobRequestUpdate) {
+    public Result update(JobRequestUpdateDto jobRequestUpdate) throws JsonProcessingException {
         JobRequest jobRequestEntity = jobRequestRepository.getById(jobRequestUpdate.getJobRequestId());
         if (jobRequestEntity==null || jobRequestEntity.getRequestStatus()==null)
             return new ErrorResult("Jobrequst cannot found in database.");
         jobRequestMapper.update(jobRequestEntity,jobRequestUpdate);
         jobRequestEntity.setRequestStatus(RequestStatus.WAITING);
-        jobRequestRepository.save(jobRequestEntity);
-        return new SuccessResult(ResultMessage.CUSTOMER_ADDED);
+        jobRequestEntity=jobRequestRepository.save(jobRequestEntity);
+        return new SuccessResult(jobRequestEntity.getJobRequestId(),jobRequestEntity);
     }
 
     @Override
-    public Result setStatus(Integer JobRequestId, RequestStatus requestStatus) {
+    public Result setStatus(Integer JobRequestId, RequestStatus requestStatus) throws JsonProcessingException {
         JobRequest jobRequestEntity = jobRequestRepository.getById(JobRequestId);
         jobRequestEntity.setRequestStatus(requestStatus);
-        jobRequestRepository.save(jobRequestEntity);
-        return new SuccessResult();
+        jobRequestEntity=jobRequestRepository.save(jobRequestEntity);
+        return new SuccessResult(jobRequestEntity.getJobRequestId(),jobRequestEntity);
     }
 
 

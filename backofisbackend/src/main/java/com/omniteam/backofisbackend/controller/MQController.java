@@ -19,13 +19,8 @@ public class MQController {
     AMQPService amqpService;
 
     @GetMapping
-    public ResponseEntity runMQTest()
-    {
-        try {
-            amqpService.sendSystemEmail("orcunozbay@gmail.com","test mail");
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public ResponseEntity runMQTest() throws JsonProcessingException {
+        amqpService.sendSystemEmail("orcunozbay@gmail.com","test mail");
         return ResponseEntity.ok().build();
     }
 

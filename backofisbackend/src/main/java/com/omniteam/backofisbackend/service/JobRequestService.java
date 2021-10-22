@@ -1,5 +1,6 @@
 package com.omniteam.backofisbackend.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.omniteam.backofisbackend.dto.PagedDataWrapper;
 import com.omniteam.backofisbackend.dto.jobrequest.JobRequestAddDto;
 import com.omniteam.backofisbackend.dto.jobrequest.JobRequestUpdateDto;
@@ -12,13 +13,11 @@ import org.springframework.data.domain.Pageable;
 public interface JobRequestService {
     DataResult<PagedDataWrapper<JobRequest>> getAll(Pageable pageable);
 
-    DataResult<JobRequest> getById();
-
     Result add(JobRequestAddDto jobRequestAdd);
 
-    Result update(JobRequestUpdateDto jobRequestUpdate);
+    Result update(JobRequestUpdateDto jobRequestUpdate) throws JsonProcessingException;
 
-    Result setStatus(Integer JobRequestId, RequestStatus requestStatus);
+    Result setStatus(Integer JobRequestId, RequestStatus requestStatus) throws JsonProcessingException;
 
 
 }

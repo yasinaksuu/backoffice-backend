@@ -1,6 +1,8 @@
 package com.omniteam.backofisbackend.shared.result;
 
-import com.omniteam.backofisbackend.entity.BaseEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,14 +17,20 @@ public class Result {
         this.success = success;
     }
 
-    public Result(boolean success,String message) {
+    public Result(boolean success, String message) {
         this(success);
         this.message = message;
     }
 
-    public Result(Boolean success,Integer id) {
-        this.id=id;
-        this.success=success;
+    public Result(Boolean success, Integer id) {
+        this.id = id;
+        this.success = success;
+    }
+
+    public Result(Boolean success, Integer id,String message) {
+        this.id = id;
+        this.success = success;
+        this.message=message;
     }
 
     public boolean isSuccess() {
@@ -33,9 +41,16 @@ public class Result {
         return this.message;
     }
 
-    protected void setMessage(String message) {this.message=message;}
+    protected void setMessage(String message) {
+        this.message = message;
+    }
 
-
+    protected static ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new Jdk8Module());
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper;
+    }
 
 
 }

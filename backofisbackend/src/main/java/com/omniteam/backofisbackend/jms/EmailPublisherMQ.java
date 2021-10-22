@@ -16,7 +16,7 @@ public class EmailPublisherMQ {
     @Autowired
     ObjectMapper objectMapper;
 
-    public void send(String from, String to, String message) throws JsonProcessingException {
+    public EmailMessage send(String from, String to, String message) throws JsonProcessingException {
 
         EmailMessage emailMessage = EmailMessage.builder()
                 .from(from)
@@ -25,6 +25,7 @@ public class EmailPublisherMQ {
                 .build();
 
         jmsTemplate.convertAndSend("EmailQueue", objectMapper.writeValueAsString(emailMessage));
+        return emailMessage;
 
     }
 
