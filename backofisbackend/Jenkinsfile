@@ -3,10 +3,11 @@ pipeline{
     stages{
         stage("build")
         {
+           withMaven {
+                              sh "mvn -v"
+                            }
             steps{
-                withMaven {
-                      sh "mvn -v"
-                    }
+
 
                 echo "build step"
             }
